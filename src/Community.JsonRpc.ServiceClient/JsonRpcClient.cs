@@ -26,7 +26,7 @@ namespace Community.JsonRpc.ServiceClient
                 new Dictionary<JsonRpcId, JsonRpcResponseContract>(1));
 
         /// <summary>Initializes a new instance of the <see cref="JsonRpcClient" /> class.</summary>
-        /// <param name="serviceUri">The service URL.</param>
+        /// <param name="serviceUri">The service URI.</param>
         /// <param name="httpMessageInvoker">The component for sending HTTP requests.</param>
         /// <exception cref="ArgumentNullException"><paramref name="serviceUri" /> is <see langword="null" />.</exception>
         /// <exception cref="FormatException"><paramref name="serviceUri" /> contains a relative URI or is not correctly formed.</exception>

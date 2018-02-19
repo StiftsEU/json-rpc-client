@@ -1,6 +1,6 @@
 ## Community.JsonRpc.ServiceClient
 
-A lightweight [JSON-RPC 2.0](http://www.jsonrpc.org/specification) service client based on the [JSON-RPC 2.0 Transport: HTTP](https://www.simple-is-better.org/json-rpc/transport_http.html) specification..
+A lightweight [JSON-RPC 2.0](http://www.jsonrpc.org/specification) service client based on the [JSON-RPC 2.0 Transport: HTTP](https://www.simple-is-better.org/json-rpc/transport_http.html) specification.
 
 [![NuGet package](https://img.shields.io/nuget/v/Community.JsonRpc.ServiceClient.svg?style=flat-square)](https://www.nuget.org/packages/Community.JsonRpc.ServiceClient)
 
@@ -21,7 +21,7 @@ A lightweight [JSON-RPC 2.0](http://www.jsonrpc.org/specification) service clien
 
 ### Examples
 
-Retrieving RANDOM.ORG service API key usage information:
+Retrieving API key usage information for the [RANDOM.ORG](https://api.random.org/json-rpc/2) service:
 
 ```cs
 public class KeyUsage
@@ -34,15 +34,14 @@ public class KeyUsage
     }
 }
 ```
-\+
 ```cs
+var parameters = new Dictionary<string, object>
+{
+    ["apiKey"] = "00000000-0000-0000-0000-000000000000"
+};
+
 using (var client = new JsonRpcClient("https://api.random.org/json-rpc/2/invoke"))
 {
-    var parameters = new Dictionary<string, object>
-    {
-        ["apiKey"] = Guid.Empty.ToString()
-    };
-
     var result = await client.InvokeAsync<KeyUsage>("getUsage", parameters);
 
     Console.WriteLine(result.BitsLeft);
