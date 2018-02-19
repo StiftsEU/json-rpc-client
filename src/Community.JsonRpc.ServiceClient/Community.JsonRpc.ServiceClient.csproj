@@ -9,8 +9,9 @@
     <PackageLicenseUrl>https://raw.github.com/alexanderkozlenko/json-rpc-client/master/LICENSE</PackageLicenseUrl>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard1.1</TargetFramework>
     <OutputPath>$(RepositoryPath)/bin/bin/$(AssemblyName)/$(Configuration)/</OutputPath>
+    <BaseIntermediateOutputPath>$(RepositoryPath)/bin/obj/$(AssemblyName)/</BaseIntermediateOutputPath>
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)../solution.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>True</SignAssembly>
  </PropertyGroup>
