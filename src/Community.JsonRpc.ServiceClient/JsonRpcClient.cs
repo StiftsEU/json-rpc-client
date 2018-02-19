@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
+using Community.JsonRpc.ServiceClient.Internal;
 using Community.JsonRpc.ServiceClient.Resources;
 
 namespace Community.JsonRpc.ServiceClient
@@ -232,7 +233,7 @@ namespace Community.JsonRpc.ServiceClient
 
         private static JsonRpcResponseContract CreateContract<T>()
         {
-            return typeof(T) != typeof(VoidValue) ? new JsonRpcResponseContract(typeof(T)) : null;
+            return typeof(T) != typeof(VoidValue) ? JsonRpcResponseContract<T>.Instance : null;
         }
 
         private static JsonRpcId CreateIdentifier<T>()
