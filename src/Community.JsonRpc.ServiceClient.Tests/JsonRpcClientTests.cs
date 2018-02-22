@@ -434,8 +434,10 @@ namespace Community.JsonRpc.ServiceClient.Tests
 
             using (var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpMessageHandler(_output, handler))))
             {
-                await Assert.ThrowsAsync<JsonRpcContractException>(() =>
+                var exception = await Assert.ThrowsAsync<JsonRpcContractException>(() =>
                     client.InvokeAsync<VoidValue>("m"));
+
+                Assert.Equal(string.Empty, exception.RequestId);
             }
         }
 
@@ -454,8 +456,10 @@ namespace Community.JsonRpc.ServiceClient.Tests
 
             using (var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpMessageHandler(_output, handler))))
             {
-                await Assert.ThrowsAsync<JsonRpcContractException>(() =>
+                var exception = await Assert.ThrowsAsync<JsonRpcContractException>(() =>
                     client.InvokeAsync<long>("m"));
+
+                Assert.NotEqual(string.Empty, exception.RequestId);
             }
         }
 

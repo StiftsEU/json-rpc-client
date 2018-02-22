@@ -153,7 +153,7 @@ namespace Community.JsonRpc.ServiceClient
                             {
                                 if (contract == null)
                                 {
-                                    throw new JsonRpcContractException(Strings.GetString("protocol.service.message.invalid_value"));
+                                    throw new JsonRpcContractException(request.Id.ToString(), Strings.GetString("protocol.service.message.invalid_value"));
                                 }
 
                                 var contentType = httpResponseMessage.Content.Headers.ContentType;
@@ -189,7 +189,7 @@ namespace Community.JsonRpc.ServiceClient
                                 }
                                 catch (JsonRpcException e)
                                 {
-                                    throw new JsonRpcContractException(Strings.GetString("protocol.rpc.message.invalid_value"), e);
+                                    throw new JsonRpcContractException(request.Id.ToString(), Strings.GetString("protocol.rpc.message.invalid_value"), e);
                                 }
                                 finally
                                 {
@@ -200,14 +200,14 @@ namespace Community.JsonRpc.ServiceClient
 
                                 if (responseData.IsBatch)
                                 {
-                                    throw new JsonRpcContractException(Strings.GetString("protocol.service.message.invalid_value"));
+                                    throw new JsonRpcContractException(request.Id.ToString(), Strings.GetString("protocol.service.message.invalid_value"));
                                 }
 
                                 var jsonRpcItem = responseData.Item;
 
                                 if (!jsonRpcItem.IsValid)
                                 {
-                                    throw new JsonRpcContractException(Strings.GetString("protocol.service.message.invalid_value"), jsonRpcItem.Exception);
+                                    throw new JsonRpcContractException(request.Id.ToString(), Strings.GetString("protocol.service.message.invalid_value"), jsonRpcItem.Exception);
                                 }
 
                                 var response = jsonRpcItem.Message;
@@ -223,7 +223,7 @@ namespace Community.JsonRpc.ServiceClient
                             {
                                 if (contract != null)
                                 {
-                                    throw new JsonRpcContractException(Strings.GetString("protocol.service.message.invalid_value"));
+                                    throw new JsonRpcContractException(request.Id.ToString(), Strings.GetString("protocol.service.message.invalid_value"));
                                 }
 
                                 return null;
