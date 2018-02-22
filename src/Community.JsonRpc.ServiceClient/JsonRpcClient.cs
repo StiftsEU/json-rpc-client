@@ -14,12 +14,12 @@ namespace Community.JsonRpc.ServiceClient
     /// <summary>Represents a JSON-RPC 2.0 service client.</summary>
     public sealed class JsonRpcClient : IDisposable
     {
-        private static readonly MediaTypeHeaderValue _mediaTypeHeaderValue = new MediaTypeHeaderValue("application/json");
+        private static readonly MediaTypeHeaderValue _mediaTypeValue = new MediaTypeHeaderValue("application/json");
 
-        private readonly HttpMessageInvoker _httpMessageInvoker;
+        private readonly HttpMessageInvoker _httpInvoker;
         private readonly Uri _serviceUri;
 
-        private readonly JsonRpcSerializer _jsonRpcSerializer =
+        private readonly JsonRpcSerializer _serializer =
             new JsonRpcSerializer(
                 new Dictionary<string, JsonRpcRequestContract>(0),
                 new Dictionary<string, JsonRpcResponseContract>(0),
@@ -39,7 +39,7 @@ namespace Community.JsonRpc.ServiceClient
             }
 
             _serviceUri = new Uri(serviceUri, UriKind.Absolute);
-            _httpMessageInvoker = httpMessageInvoker ?? CreateHttpMessageInvoker();
+            _httpInvoker = httpMessageInvoker ?? CreateHttpMessageInvoker();
         }
 
         /// <summary>Invokes the specified service method.</summary>
@@ -134,20 +134,20 @@ namespace Community.JsonRpc.ServiceClient
 
         private async Task<JsonRpcResponse> InvokeAsync(JsonRpcRequest request, JsonRpcResponseContract contract, CancellationToken cancellationToken)
         {
-            using (var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, _serviceUri))
+            using (var requestMessage = new HttpRequestMessage(HttpMethod.Post, _serviceUri))
             {
-                var httpRequestString = _jsonRpcSerializer.SerializeRequest(request);
+                var requestString = _serializer.SerializeRequest(request);
 
                 cancellationToken.ThrowIfCancellationRequested();
 
-                var httpRequestContent = new StringContent(httpRequestString);
+                var requestContent = new StringContent(requestString);
 
-                httpRequestContent.Headers.ContentType = _mediaTypeHeaderValue;
-                httpRequestMessage.Content = httpRequestContent;
+                requestContent.Headers.ContentType = _mediaTypeValue;
+                requestMessage.Content = requestContent;
 
-                using (var httpResponseMessage = await _httpMessageInvoker.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false))
+                using (var responseMessage = await _httpInvoker.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false))
                 {
-                    switch (httpResponseMessage.StatusCode)
+                    switch (responseMessage.StatusCode)
                     {
                         case HttpStatusCode.OK:
                             {
@@ -156,36 +156,36 @@ namespace Community.JsonRpc.ServiceClient
                                     throw new JsonRpcContractException(request.Id.ToString(), Strings.GetString("protocol.service.message.invalid_value"));
                                 }
 
-                                var contentType = httpResponseMessage.Content.Headers.ContentType;
+                                var contentType = responseMessage.Content.Headers.ContentType;
 
-                                if ((contentType == null) || (string.Compare(contentType.MediaType, _mediaTypeHeaderValue.MediaType, StringComparison.OrdinalIgnoreCase) != 0))
+                                if ((contentType == null) || (string.Compare(contentType.MediaType, _mediaTypeValue.MediaType, StringComparison.OrdinalIgnoreCase) != 0))
                                 {
-                                    throw new JsonRpcRequestException(Strings.GetString("protocol.http.headers.invalid_set"), httpResponseMessage.StatusCode);
+                                    throw new JsonRpcRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.headers.invalid_set"));
                                 }
 
-                                var contentLength = httpResponseMessage.Content.Headers.ContentLength;
+                                var contentLength = responseMessage.Content.Headers.ContentLength;
 
                                 if (contentLength == null)
                                 {
-                                    throw new JsonRpcRequestException(Strings.GetString("protocol.http.headers.invalid_set"), httpResponseMessage.StatusCode);
+                                    throw new JsonRpcRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.headers.invalid_set"));
                                 }
 
-                                var httpResponseString = await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+                                var responseString = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                                 cancellationToken.ThrowIfCancellationRequested();
 
-                                if (httpResponseString?.Length != contentLength)
+                                if (responseString?.Length != contentLength)
                                 {
-                                    throw new JsonRpcRequestException(Strings.GetString("protocol.http.headers.invalid_set"), httpResponseMessage.StatusCode);
+                                    throw new JsonRpcRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.headers.invalid_set"));
                                 }
 
-                                _jsonRpcSerializer.DynamicResponseBindings[request.Id] = contract;
+                                _serializer.DynamicResponseBindings[request.Id] = contract;
 
                                 var responseData = default(JsonRpcData<JsonRpcResponse>);
 
                                 try
                                 {
-                                    responseData = _jsonRpcSerializer.DeserializeResponseData(httpResponseString);
+                                    responseData = _serializer.DeserializeResponseData(responseString);
                                 }
                                 catch (JsonRpcException e)
                                 {
@@ -193,7 +193,7 @@ namespace Community.JsonRpc.ServiceClient
                                 }
                                 finally
                                 {
-                                    _jsonRpcSerializer.DynamicResponseBindings.Remove(request.Id);
+                                    _serializer.DynamicResponseBindings.Remove(request.Id);
                                 }
 
                                 cancellationToken.ThrowIfCancellationRequested();
@@ -203,14 +203,14 @@ namespace Community.JsonRpc.ServiceClient
                                     throw new JsonRpcContractException(request.Id.ToString(), Strings.GetString("protocol.service.message.invalid_value"));
                                 }
 
-                                var jsonRpcItem = responseData.Item;
+                                var responseItem = responseData.Item;
 
-                                if (!jsonRpcItem.IsValid)
+                                if (!responseItem.IsValid)
                                 {
-                                    throw new JsonRpcContractException(request.Id.ToString(), Strings.GetString("protocol.service.message.invalid_value"), jsonRpcItem.Exception);
+                                    throw new JsonRpcContractException(request.Id.ToString(), Strings.GetString("protocol.service.message.invalid_value"), responseItem.Exception);
                                 }
 
-                                var response = jsonRpcItem.Message;
+                                var response = responseItem.Message;
 
                                 if (!response.Success)
                                 {
@@ -230,7 +230,7 @@ namespace Community.JsonRpc.ServiceClient
                             }
                         default:
                             {
-                                throw new JsonRpcRequestException(Strings.GetString("protocol.http.status_code.invalid_value"), httpResponseMessage.StatusCode);
+                                throw new JsonRpcRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.status_code.invalid_value"));
                             }
                     }
                 }
@@ -240,8 +240,8 @@ namespace Community.JsonRpc.ServiceClient
         /// <summary>Releases all resources used by the current instance of the <see cref="JsonRpcClient" />.</summary>
         public void Dispose()
         {
-            _httpMessageInvoker.Dispose();
-            _jsonRpcSerializer.Dispose();
+            _httpInvoker.Dispose();
+            _serializer.Dispose();
         }
 
         private static JsonRpcResponseContract CreateContract<T>()
@@ -264,7 +264,7 @@ namespace Community.JsonRpc.ServiceClient
 
             var httpClient = new HttpClient(httpHandler);
 
-            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(_mediaTypeHeaderValue.MediaType));
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(_mediaTypeValue.MediaType));
             httpClient.DefaultRequestHeaders.ExpectContinue = false;
 
             return httpClient;
