@@ -47,12 +47,17 @@ namespace Community.JsonRpc.ServiceClient
         /// <param name="method">The name of the service method.</param>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
         /// <returns>A task that represents the asynchronous operation. The task result is the service method result.</returns>
+        /// <exception cref="ArgumentException"><paramref name="method" /> is a system extension method.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="method" /> is <see langword="null" />.</exception>
         public async Task<T> InvokeAsync<T>(string method, CancellationToken cancellationToken = default)
         {
             if (method == null)
             {
                 throw new ArgumentNullException(nameof(method));
+            }
+            if (JsonRpcRequest.IsSystemMethod(method))
+            {
+                throw new ArgumentException(Strings.GetString("invoke.method.invalid_name"), nameof(method));
             }
 
             var request = new JsonRpcRequest(method, CreateIdentifier<T>());
@@ -67,13 +72,17 @@ namespace Community.JsonRpc.ServiceClient
         /// <param name="parameters">The parameters to be used during the invocation of the service method.</param>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
         /// <returns>A task that represents the asynchronous operation. The task result is the service method result.</returns>
-        /// <exception cref="ArgumentException"><paramref name="parameters" /> is empty.</exception>
+        /// <exception cref="ArgumentException"><paramref name="method" /> is a system extension method or parameters count equals zero.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="method" /> or <paramref name="parameters" /> is <see langword="null" />.</exception>
         public async Task<T> InvokeAsync<T>(string method, IReadOnlyList<object> parameters, CancellationToken cancellationToken = default)
         {
             if (method == null)
             {
                 throw new ArgumentNullException(nameof(method));
+            }
+            if (JsonRpcRequest.IsSystemMethod(method))
+            {
+                throw new ArgumentException(Strings.GetString("invoke.method.invalid_name"), nameof(method));
             }
             if (parameters == null)
             {
@@ -96,13 +105,17 @@ namespace Community.JsonRpc.ServiceClient
         /// <param name="parameters">The parameters to be used during the invocation of the service method.</param>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
         /// <returns>A task that represents the asynchronous operation. The task result is the service method result.</returns>
-        /// <exception cref="ArgumentException"><paramref name="parameters" /> is empty.</exception>
+        /// <exception cref="ArgumentException"><paramref name="method" /> is a system extension method or parameters count equals zero.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="method" /> or <paramref name="parameters" /> is <see langword="null" />.</exception>
         public async Task<T> InvokeAsync<T>(string method, IReadOnlyDictionary<string, object> parameters, CancellationToken cancellationToken = default)
         {
             if (method == null)
             {
                 throw new ArgumentNullException(nameof(method));
+            }
+            if (JsonRpcRequest.IsSystemMethod(method))
+            {
+                throw new ArgumentException(Strings.GetString("invoke.method.invalid_name"), nameof(method));
             }
             if (parameters == null)
             {

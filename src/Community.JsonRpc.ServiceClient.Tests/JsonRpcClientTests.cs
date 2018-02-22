@@ -82,6 +82,45 @@ namespace Community.JsonRpc.ServiceClient.Tests
         }
 
         [Fact]
+        public async void InvokeWhenMethodIsSystem()
+        {
+            var client = new JsonRpcClient("https://localhost", CreateEmptyHttpMessageInvoker());
+
+            await Assert.ThrowsAsync<ArgumentException>(() =>
+                client.InvokeAsync<long>("rpc.m"));
+        }
+
+        [Fact]
+        public async void InvokeWhenMethodIsSystemAndParametersAreByPosition()
+        {
+            var client = new JsonRpcClient("https://localhost", CreateEmptyHttpMessageInvoker());
+
+            var parameters = new object[]
+            {
+                1L,
+                2L
+            };
+
+            await Assert.ThrowsAsync<ArgumentException>(() =>
+                client.InvokeAsync<long>("rpc.m", parameters));
+        }
+
+        [Fact]
+        public async void InvokeWhenMethodIsSystemAndParametersAreByName()
+        {
+            var client = new JsonRpcClient("https://localhost", CreateEmptyHttpMessageInvoker());
+
+            var parameters = new Dictionary<string, object>
+            {
+                ["p1"] = 1L,
+                ["p2"] = 2L
+            };
+
+            await Assert.ThrowsAsync<ArgumentException>(() =>
+                client.InvokeAsync<long>("rpc.m", parameters));
+        }
+
+        [Fact]
         public async void InvokeWhenParametersAreByPositionAndIsNull()
         {
             var client = new JsonRpcClient("https://localhost", CreateEmptyHttpMessageInvoker());
