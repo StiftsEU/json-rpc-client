@@ -12,7 +12,9 @@ namespace Community.JsonRpc.ServiceClient.Benchmarks.Suites
     [BenchmarkSuite(nameof(JsonRpcClient))]
     public abstract class JsonRpcClientBenchmarks
     {
-        private readonly IReadOnlyDictionary<string, JsonRpcClient> _clients;
+        private static readonly Uri _serviceUrl = new Uri("https://localhost", UriKind.Absolute);
+
+        private readonly IReadOnlyDictionary<string, HttpMessageInvoker> _invokers;
         private readonly IReadOnlyList<object> _parametersByPosition;
         private readonly IReadOnlyDictionary<string, object> _parametersByName;
 
@@ -25,17 +27,14 @@ namespace Community.JsonRpc.ServiceClient.Benchmarks.Suites
                 "result_true_success_true"
             };
 
-            var clients = new Dictionary<string, JsonRpcClient>(assets.Length, StringComparer.Ordinal);
+            var clients = new Dictionary<string, HttpMessageInvoker>(assets.Length, StringComparer.Ordinal);
 
             foreach (var asset in assets)
             {
-                var httpContent = EmbeddedResourceManager.GetString($"Assets.{asset}.json");
-                var httpClient = new HttpClient(new JsonRpcClientBenchmarkHandler(httpContent));
-
-                clients[asset] = new JsonRpcClient("https://localhost", httpClient);
+                clients[asset] = new HttpClient(new JsonRpcClientBenchmarkHandler(EmbeddedResourceManager.GetString($"Assets.{asset}.json")));
             }
 
-            _clients = clients;
+            _invokers = clients;
 
             _parametersByPosition = new object[]
             {
@@ -52,7 +51,7 @@ namespace Community.JsonRpc.ServiceClient.Benchmarks.Suites
         [Benchmark(Description = "not-non")]
         public async Task InvokeMethodWithVoidResultAndNoParameters()
         {
-            await _clients["result_false"]
+            await new JsonRpcClient(_serviceUrl, _invokers["result_false"])
                 .InvokeAsync<VoidValue>("m")
                 .ConfigureAwait(false);
         }
@@ -60,7 +59,7 @@ namespace Community.JsonRpc.ServiceClient.Benchmarks.Suites
         [Benchmark(Description = "not-pos")]
         public async Task InvokeMethodWithVoidResultAndParametersByPosition()
         {
-            await _clients["result_false"]
+            await new JsonRpcClient(_serviceUrl, _invokers["result_false"])
                 .InvokeAsync<VoidValue>("m", _parametersByPosition)
                 .ConfigureAwait(false);
         }
@@ -68,7 +67,7 @@ namespace Community.JsonRpc.ServiceClient.Benchmarks.Suites
         [Benchmark(Description = "not-nam")]
         public async Task InvokeMethodWithVoidResultAndParametersByName()
         {
-            await _clients["result_false"]
+            await new JsonRpcClient(_serviceUrl, _invokers["result_false"])
                 .InvokeAsync<VoidValue>("m", _parametersByName)
                 .ConfigureAwait(false);
         }
@@ -78,7 +77,7 @@ namespace Community.JsonRpc.ServiceClient.Benchmarks.Suites
         {
             try
             {
-                await _clients["result_true_success_false"]
+                await new JsonRpcClient(_serviceUrl, _invokers["result_true_success_false"])
                     .InvokeAsync<long>("m")
                     .ConfigureAwait(false);
             }
@@ -92,7 +91,7 @@ namespace Community.JsonRpc.ServiceClient.Benchmarks.Suites
         {
             try
             {
-                await _clients["result_true_success_false"]
+                await new JsonRpcClient(_serviceUrl, _invokers["result_true_success_false"])
                     .InvokeAsync<long>("m", _parametersByPosition)
                     .ConfigureAwait(false);
             }
@@ -106,7 +105,7 @@ namespace Community.JsonRpc.ServiceClient.Benchmarks.Suites
         {
             try
             {
-                await _clients["result_true_success_false"]
+                await new JsonRpcClient(_serviceUrl, _invokers["result_true_success_false"])
                     .InvokeAsync<long>("m", _parametersByName)
                     .ConfigureAwait(false);
             }
@@ -118,7 +117,7 @@ namespace Community.JsonRpc.ServiceClient.Benchmarks.Suites
         [Benchmark(Description = "scs-non")]
         public async Task InvokeMethodWithValueResultAndNoParameters()
         {
-            await _clients["result_true_success_true"]
+            await new JsonRpcClient(_serviceUrl, _invokers["result_true_success_true"])
                 .InvokeAsync<long>("m")
                 .ConfigureAwait(false);
         }
@@ -126,7 +125,7 @@ namespace Community.JsonRpc.ServiceClient.Benchmarks.Suites
         [Benchmark(Description = "scs-pos")]
         public async Task InvokeMethodWithValueResultAndParametersByPosition()
         {
-            await _clients["result_true_success_true"]
+            await new JsonRpcClient(_serviceUrl, _invokers["result_true_success_true"])
                 .InvokeAsync<long>("m", _parametersByPosition)
                 .ConfigureAwait(false);
         }
@@ -134,7 +133,7 @@ namespace Community.JsonRpc.ServiceClient.Benchmarks.Suites
         [Benchmark(Description = "scs-nam")]
         public async Task InvokeMethodWithValueResultAndParametersByName()
         {
-            await _clients["result_true_success_true"]
+            await new JsonRpcClient(_serviceUrl, _invokers["result_true_success_true"])
                 .InvokeAsync<long>("m", _parametersByName)
                 .ConfigureAwait(false);
         }

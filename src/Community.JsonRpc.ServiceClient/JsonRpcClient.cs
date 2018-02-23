@@ -21,16 +21,16 @@ namespace Community.JsonRpc.ServiceClient
 
         private readonly JsonRpcSerializer _serializer =
             new JsonRpcSerializer(
-                new Dictionary<string, JsonRpcRequestContract>(0),
-                new Dictionary<string, JsonRpcResponseContract>(0),
-                new Dictionary<JsonRpcId, string>(0),
+                EmptyDictionary<string, JsonRpcRequestContract>.Instance,
+                EmptyDictionary<string, JsonRpcResponseContract>.Instance,
+                EmptyDictionary<JsonRpcId, string>.Instance,
                 new Dictionary<JsonRpcId, JsonRpcResponseContract>(1));
 
         /// <summary>Initializes a new instance of the <see cref="JsonRpcClient" /> class.</summary>
         /// <param name="serviceUri">The service URI.</param>
         /// <param name="httpMessageInvoker">The component for sending HTTP requests.</param>
         /// <exception cref="ArgumentNullException"><paramref name="serviceUri" /> is <see langword="null" />.</exception>
-        /// <exception cref="FormatException"><paramref name="serviceUri" /> contains a relative URI or is not correctly formed.</exception>
+        /// <exception cref="FormatException"><paramref name="serviceUri" /> is a relative URI or is not correctly formed.</exception>
         public JsonRpcClient(string serviceUri, HttpMessageInvoker httpMessageInvoker = null)
         {
             if (serviceUri == null)
@@ -39,6 +39,26 @@ namespace Community.JsonRpc.ServiceClient
             }
 
             _serviceUri = new Uri(serviceUri, UriKind.Absolute);
+            _httpInvoker = httpMessageInvoker ?? CreateHttpMessageInvoker();
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="JsonRpcClient" /> class.</summary>
+        /// <param name="serviceUri">The service URI.</param>
+        /// <param name="httpMessageInvoker">The component for sending HTTP requests.</param>
+        /// <exception cref="ArgumentException"><paramref name="serviceUri" /> is a relative URI.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="serviceUri" /> is <see langword="null" />.</exception>
+        public JsonRpcClient(Uri serviceUri, HttpMessageInvoker httpMessageInvoker = null)
+        {
+            if (serviceUri == null)
+            {
+                throw new ArgumentNullException(nameof(serviceUri));
+            }
+            if (!serviceUri.IsAbsoluteUri)
+            {
+                throw new ArgumentException(Strings.GetString("client.uri.relative"), nameof(serviceUri));
+            }
+
+            _serviceUri = serviceUri;
             _httpInvoker = httpMessageInvoker ?? CreateHttpMessageInvoker();
         }
 

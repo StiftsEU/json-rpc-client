@@ -29,17 +29,31 @@ namespace Community.JsonRpc.ServiceClient.Tests
         }
 
         [Fact]
-        public void ConstructorWhenServiceUriIsNull()
+        public void ConstructorWhenServiceUriIsStringAndIsNull()
         {
             Assert.Throws<ArgumentNullException>(() =>
                 new JsonRpcClient((string)null, CreateEmptyHttpMessageInvoker()));
         }
 
         [Fact]
-        public void ConstructorWhenServiceUriIsInvalid()
+        public void ConstructorWhenServiceUriIsStringAndIsRelative()
         {
             Assert.Throws<UriFormatException>(() =>
                 new JsonRpcClient("/api", CreateEmptyHttpMessageInvoker()));
+        }
+
+        [Fact]
+        public void ConstructorWhenServiceUriIsUriAndIsNull()
+        {
+            Assert.Throws<ArgumentNullException>(() =>
+                new JsonRpcClient((Uri)null, CreateEmptyHttpMessageInvoker()));
+        }
+
+        [Fact]
+        public void ConstructorWhenServiceUriIssUriAndIsRelative()
+        {
+            Assert.Throws<ArgumentException>(() =>
+                new JsonRpcClient(new Uri("/api", UriKind.Relative), CreateEmptyHttpMessageInvoker()));
         }
 
         [Fact]
