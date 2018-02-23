@@ -413,9 +413,7 @@ namespace Community.JsonRpc.ServiceClient.Tests
 
             using (var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpMessageHandler(_output, handler))))
             {
-                // NOTE: JsonRpcContractException should be expected after serializer update
-
-                await Assert.ThrowsAnyAsync<Exception>(() =>
+                await Assert.ThrowsAsync<JsonRpcContractException>(() =>
                     client.InvokeAsync<long>("m"));
             }
         }
