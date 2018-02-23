@@ -28,10 +28,10 @@ namespace Community.JsonRpc.ServiceClient
 
         /// <summary>Initializes a new instance of the <see cref="JsonRpcClient" /> class.</summary>
         /// <param name="serviceUri">The service URI.</param>
-        /// <param name="httpMessageInvoker">The component for sending HTTP requests.</param>
+        /// <param name="httpInvoker">The component for sending HTTP requests.</param>
         /// <exception cref="ArgumentNullException"><paramref name="serviceUri" /> is <see langword="null" />.</exception>
         /// <exception cref="FormatException"><paramref name="serviceUri" /> is a relative URI or is not correctly formed.</exception>
-        public JsonRpcClient(string serviceUri, HttpMessageInvoker httpMessageInvoker = null)
+        public JsonRpcClient(string serviceUri, HttpMessageInvoker httpInvoker = null)
         {
             if (serviceUri == null)
             {
@@ -39,15 +39,15 @@ namespace Community.JsonRpc.ServiceClient
             }
 
             _serviceUri = new Uri(serviceUri, UriKind.Absolute);
-            _httpInvoker = httpMessageInvoker ?? CreateHttpMessageInvoker();
+            _httpInvoker = httpInvoker ?? CreateHttpInvoker();
         }
 
         /// <summary>Initializes a new instance of the <see cref="JsonRpcClient" /> class.</summary>
         /// <param name="serviceUri">The service URI.</param>
-        /// <param name="httpMessageInvoker">The component for sending HTTP requests.</param>
+        /// <param name="httpInvoker">The component for sending HTTP requests.</param>
         /// <exception cref="ArgumentException"><paramref name="serviceUri" /> is a relative URI.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="serviceUri" /> is <see langword="null" />.</exception>
-        public JsonRpcClient(Uri serviceUri, HttpMessageInvoker httpMessageInvoker = null)
+        public JsonRpcClient(Uri serviceUri, HttpMessageInvoker httpInvoker = null)
         {
             if (serviceUri == null)
             {
@@ -59,7 +59,7 @@ namespace Community.JsonRpc.ServiceClient
             }
 
             _serviceUri = serviceUri;
-            _httpInvoker = httpMessageInvoker ?? CreateHttpMessageInvoker();
+            _httpInvoker = httpInvoker ?? CreateHttpInvoker();
         }
 
         /// <summary>Invokes the specified service method.</summary>
@@ -274,7 +274,7 @@ namespace Community.JsonRpc.ServiceClient
             return typeof(T) != typeof(VoidValue) ? new JsonRpcId(Guid.NewGuid().ToString("D")) : default;
         }
 
-        private static HttpMessageInvoker CreateHttpMessageInvoker()
+        private static HttpMessageInvoker CreateHttpInvoker()
         {
             var httpHandler = new HttpClientHandler
             {
