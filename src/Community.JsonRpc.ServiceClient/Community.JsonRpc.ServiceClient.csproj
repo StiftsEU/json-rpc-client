@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <Description><![CDATA[A lightweight JSON-RPC 2.0 service client]]></Description>
     <Authors><![CDATA[Alexander Kozlenko]]></Authors>
     <Copyright><![CDATA[© Alexander Kozlenko. All rights reserved.]]></Copyright>
@@ -20,6 +20,6 @@
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="System.Data.JsonRpc" Version="1.10.0" />
+    <PackageReference Include="System.Data.JsonRpc" Version="1.10.1" />
   </ItemGroup>
 </Project>
