@@ -69,6 +69,7 @@ namespace Community.JsonRpc.ServiceClient
         /// <returns>A task that represents the asynchronous operation. The task result is the service method result.</returns>
         /// <exception cref="ArgumentException"><paramref name="method" /> is a system extension method.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="method" /> is <see langword="null" />.</exception>
+        /// <exception cref="JsonRpcException">An error occurred during parameters serialization.</exception>
         public async Task<T> InvokeAsync<T>(string method, CancellationToken cancellationToken = default)
         {
             if (method == null)
@@ -94,6 +95,7 @@ namespace Community.JsonRpc.ServiceClient
         /// <returns>A task that represents the asynchronous operation. The task result is the service method result.</returns>
         /// <exception cref="ArgumentException"><paramref name="method" /> is a system extension method or parameters count equals zero.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="method" /> or <paramref name="parameters" /> is <see langword="null" />.</exception>
+        /// <exception cref="JsonRpcException">An error occurred during parameters serialization.</exception>
         public async Task<T> InvokeAsync<T>(string method, IReadOnlyList<object> parameters, CancellationToken cancellationToken = default)
         {
             if (method == null)
@@ -127,6 +129,7 @@ namespace Community.JsonRpc.ServiceClient
         /// <returns>A task that represents the asynchronous operation. The task result is the service method result.</returns>
         /// <exception cref="ArgumentException"><paramref name="method" /> is a system extension method or parameters count equals zero.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="method" /> or <paramref name="parameters" /> is <see langword="null" />.</exception>
+        /// <exception cref="JsonRpcException">An error occurred during parameters serialization.</exception>
         public async Task<T> InvokeAsync<T>(string method, IReadOnlyDictionary<string, object> parameters, CancellationToken cancellationToken = default)
         {
             if (method == null)
