@@ -72,6 +72,7 @@ namespace Community.JsonRpc.ServiceClient
         /// <exception cref="JsonRpcContractException">An error occurred during parameters or service result handling.</exception>
         /// <exception cref="JsonRpcRequestException">An error occurred during HTTP request execution.</exception>
         /// <exception cref="JsonRpcServiceException">An error occurred during service method invocation.</exception>
+        /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<T> InvokeAsync<T>(string method, CancellationToken cancellationToken = default)
         {
             if (method == null)
@@ -100,6 +101,7 @@ namespace Community.JsonRpc.ServiceClient
         /// <exception cref="JsonRpcContractException">An error occurred during parameters or service result handling.</exception>
         /// <exception cref="JsonRpcRequestException">An error occurred during HTTP request execution.</exception>
         /// <exception cref="JsonRpcServiceException">An error occurred during service method invocation.</exception>
+        /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<T> InvokeAsync<T>(string method, IReadOnlyList<object> parameters, CancellationToken cancellationToken = default)
         {
             if (method == null)
@@ -136,6 +138,7 @@ namespace Community.JsonRpc.ServiceClient
         /// <exception cref="JsonRpcContractException">An error occurred during parameters or service result handling.</exception>
         /// <exception cref="JsonRpcRequestException">An error occurred during HTTP request execution.</exception>
         /// <exception cref="JsonRpcServiceException">An error occurred during service method invocation.</exception>
+        /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<T> InvokeAsync<T>(string method, IReadOnlyDictionary<string, object> parameters, CancellationToken cancellationToken = default)
         {
             if (method == null)
