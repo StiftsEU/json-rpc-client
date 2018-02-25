@@ -69,7 +69,9 @@ namespace Community.JsonRpc.ServiceClient
         /// <returns>A task that represents the asynchronous operation. The task result is the service method result.</returns>
         /// <exception cref="ArgumentException"><paramref name="method" /> is a system extension method.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="method" /> is <see langword="null" />.</exception>
-        /// <exception cref="JsonRpcException">An error occurred during parameters serialization.</exception>
+        /// <exception cref="JsonRpcContractException">An error occurred during parameters or service result handling.</exception>
+        /// <exception cref="JsonRpcRequestException">An error occurred during HTTP request execution.</exception>
+        /// <exception cref="JsonRpcServiceException">An error occurred during service method invocation.</exception>
         public async Task<T> InvokeAsync<T>(string method, CancellationToken cancellationToken = default)
         {
             if (method == null)
@@ -95,7 +97,9 @@ namespace Community.JsonRpc.ServiceClient
         /// <returns>A task that represents the asynchronous operation. The task result is the service method result.</returns>
         /// <exception cref="ArgumentException"><paramref name="method" /> is a system extension method or parameters count equals zero.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="method" /> or <paramref name="parameters" /> is <see langword="null" />.</exception>
-        /// <exception cref="JsonRpcException">An error occurred during parameters serialization.</exception>
+        /// <exception cref="JsonRpcContractException">An error occurred during parameters or service result handling.</exception>
+        /// <exception cref="JsonRpcRequestException">An error occurred during HTTP request execution.</exception>
+        /// <exception cref="JsonRpcServiceException">An error occurred during service method invocation.</exception>
         public async Task<T> InvokeAsync<T>(string method, IReadOnlyList<object> parameters, CancellationToken cancellationToken = default)
         {
             if (method == null)
@@ -129,7 +133,9 @@ namespace Community.JsonRpc.ServiceClient
         /// <returns>A task that represents the asynchronous operation. The task result is the service method result.</returns>
         /// <exception cref="ArgumentException"><paramref name="method" /> is a system extension method or parameters count equals zero.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="method" /> or <paramref name="parameters" /> is <see langword="null" />.</exception>
-        /// <exception cref="JsonRpcException">An error occurred during parameters serialization.</exception>
+        /// <exception cref="JsonRpcContractException">An error occurred during parameters or service result handling.</exception>
+        /// <exception cref="JsonRpcRequestException">An error occurred during HTTP request execution.</exception>
+        /// <exception cref="JsonRpcServiceException">An error occurred during service method invocation.</exception>
         public async Task<T> InvokeAsync<T>(string method, IReadOnlyDictionary<string, object> parameters, CancellationToken cancellationToken = default)
         {
             if (method == null)
@@ -159,7 +165,16 @@ namespace Community.JsonRpc.ServiceClient
         {
             using (var requestMessage = new HttpRequestMessage(HttpMethod.Post, _serviceUri))
             {
-                var requestString = _serializer.SerializeRequest(request);
+                var requestString = default(string);
+
+                try
+                {
+                    requestString = _serializer.SerializeRequest(request);
+                }
+                catch (JsonRpcException e)
+                {
+                    throw new JsonRpcContractException(request.Id.ToString(), Strings.GetString("invoke.params.invalid_values"), e);
+                }
 
                 cancellationToken.ThrowIfCancellationRequested();
 
