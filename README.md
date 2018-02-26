@@ -22,7 +22,6 @@ A lightweight [JSON-RPC 2.0](http://www.jsonrpc.org/specification) service clien
 ### Examples
 
 Retrieving API key usage information for the [RANDOM.ORG](https://api.random.org/json-rpc/2) service:
-
 ```cs
 public class KeyUsage
 {
@@ -45,5 +44,30 @@ using (var client = new JsonRpcClient("https://api.random.org/json-rpc/2/invoke"
     var result = await client.InvokeAsync<KeyUsage>("getUsage", parameters);
 
     Console.WriteLine(result.BitsLeft);
+}
+```
+The corresponding JSON-RPC messages:
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "getUsage",
+    "params": {
+        "apiKey": "00000000-0000-0000-0000-000000000000"
+    },
+    "id": "89999193-0e46-4a14-b471-69191baf2c2b"
+}
+```
+```json
+{
+    "jsonrpc": "2.0",
+    "result": {
+        "status": "running",
+        "creationTime": "2013-02-01 17:53:40Z",
+        "bitsLeft": 970409,
+        "requestsLeft": 198935,
+        "totalBits": 208391002,
+        "totalRequests": 2963905
+    },
+    "id": "89999193-0e46-4a14-b471-69191baf2c2b"
 }
 ```
