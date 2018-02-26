@@ -15,6 +15,7 @@ namespace Community.JsonRpc.ServiceClient
     public sealed class JsonRpcClient : IDisposable
     {
         private static readonly MediaTypeHeaderValue _mediaTypeValue = new MediaTypeHeaderValue("application/json");
+        private static readonly MediaTypeWithQualityHeaderValue _mediaTypeWithQualityValue = new MediaTypeWithQualityHeaderValue("application/json");
 
         private readonly HttpMessageInvoker _httpInvoker;
         private readonly Uri _serviceUri;
@@ -84,6 +85,8 @@ namespace Community.JsonRpc.ServiceClient
                 throw new ArgumentException(Strings.GetString("invoke.method.invalid_name"), nameof(method));
             }
 
+            cancellationToken.ThrowIfCancellationRequested();
+
             var request = new JsonRpcRequest(method, CreateIdentifier<T>());
             var response = await InvokeAsync(request, CreateContract<T>(), cancellationToken).ConfigureAwait(false);
 
@@ -120,6 +123,8 @@ namespace Community.JsonRpc.ServiceClient
             {
                 throw new ArgumentException(Strings.GetString("invoke.params.invalid_count"), nameof(parameters));
             }
+
+            cancellationToken.ThrowIfCancellationRequested();
 
             var request = new JsonRpcRequest(method, CreateIdentifier<T>(), parameters);
             var response = await InvokeAsync(request, CreateContract<T>(), cancellationToken).ConfigureAwait(false);
@@ -158,6 +163,8 @@ namespace Community.JsonRpc.ServiceClient
                 throw new ArgumentException(Strings.GetString("invoke.params.invalid_count"), nameof(parameters));
             }
 
+            cancellationToken.ThrowIfCancellationRequested();
+
             var request = new JsonRpcRequest(method, CreateIdentifier<T>(), parameters);
             var response = await InvokeAsync(request, CreateContract<T>(), cancellationToken).ConfigureAwait(false);
 
@@ -166,21 +173,21 @@ namespace Community.JsonRpc.ServiceClient
 
         private async Task<JsonRpcResponse> InvokeAsync(JsonRpcRequest request, JsonRpcResponseContract contract, CancellationToken cancellationToken)
         {
+            var requestString = default(string);
+
+            try
+            {
+                requestString = _serializer.SerializeRequest(request);
+            }
+            catch (JsonRpcException e)
+            {
+                throw new JsonRpcContractException(request.Id.ToString(), Strings.GetString("invoke.params.invalid_values"), e);
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
             using (var requestMessage = new HttpRequestMessage(HttpMethod.Post, _serviceUri))
             {
-                var requestString = default(string);
-
-                try
-                {
-                    requestString = _serializer.SerializeRequest(request);
-                }
-                catch (JsonRpcException e)
-                {
-                    throw new JsonRpcContractException(request.Id.ToString(), Strings.GetString("invoke.params.invalid_values"), e);
-                }
-
-                cancellationToken.ThrowIfCancellationRequested();
-
                 var requestContent = new StringContent(requestString);
 
                 requestContent.Headers.ContentType = _mediaTypeValue;
@@ -305,7 +312,7 @@ namespace Community.JsonRpc.ServiceClient
 
             var httpClient = new HttpClient(httpHandler);
 
-            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(_mediaTypeValue.MediaType));
+            httpClient.DefaultRequestHeaders.Accept.Add(_mediaTypeWithQualityValue);
             httpClient.DefaultRequestHeaders.ExpectContinue = false;
 
             return httpClient;
