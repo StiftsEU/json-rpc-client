@@ -494,7 +494,9 @@ namespace Community.JsonRpc.ServiceClient.Tests
 
             using (var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler(_output, handler))))
             {
-                await client.InvokeAsync<VoidValue>("m");
+                var result = await client.InvokeAsync<VoidValue>("m");
+
+                Assert.Equal(default, result);
             }
         }
 
