@@ -18,6 +18,7 @@ namespace Community.JsonRpc.ServiceClient
         private static readonly MediaTypeWithQualityHeaderValue _mediaTypeWithQualityValue = new MediaTypeWithQualityHeaderValue("application/json");
 
         private readonly HttpMessageInvoker _httpInvoker;
+        private readonly Version _httpVersion;
         private readonly Uri _serviceUri;
 
         private readonly JsonRpcSerializer _serializer =
@@ -30,9 +31,10 @@ namespace Community.JsonRpc.ServiceClient
         /// <summary>Initializes a new instance of the <see cref="JsonRpcClient" /> class.</summary>
         /// <param name="serviceUri">The service URI.</param>
         /// <param name="httpInvoker">The component for sending HTTP requests.</param>
+        /// <param name="httpVersion">The HTTP message version.</param>
         /// <exception cref="ArgumentNullException"><paramref name="serviceUri" /> is <see langword="null" />.</exception>
         /// <exception cref="UriFormatException"><paramref name="serviceUri" /> is a relative URI or is not correctly formed.</exception>
-        public JsonRpcClient(string serviceUri, HttpMessageInvoker httpInvoker = null)
+        public JsonRpcClient(string serviceUri, HttpMessageInvoker httpInvoker = null, Version httpVersion = null)
         {
             if (serviceUri == null)
             {
@@ -41,14 +43,16 @@ namespace Community.JsonRpc.ServiceClient
 
             _serviceUri = new Uri(serviceUri, UriKind.Absolute);
             _httpInvoker = httpInvoker ?? CreateHttpInvoker();
+            _httpVersion = httpVersion;
         }
 
         /// <summary>Initializes a new instance of the <see cref="JsonRpcClient" /> class.</summary>
         /// <param name="serviceUri">The service URI.</param>
         /// <param name="httpInvoker">The component for sending HTTP requests.</param>
+        /// <param name="httpVersion">The HTTP message version.</param>
         /// <exception cref="ArgumentException"><paramref name="serviceUri" /> is a relative URI.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="serviceUri" /> is <see langword="null" />.</exception>
-        public JsonRpcClient(Uri serviceUri, HttpMessageInvoker httpInvoker = null)
+        public JsonRpcClient(Uri serviceUri, HttpMessageInvoker httpInvoker = null, Version httpVersion = null)
         {
             if (serviceUri == null)
             {
@@ -61,6 +65,7 @@ namespace Community.JsonRpc.ServiceClient
 
             _serviceUri = serviceUri;
             _httpInvoker = httpInvoker ?? CreateHttpInvoker();
+            _httpVersion = httpVersion;
         }
 
         /// <summary>Invokes the specified service method.</summary>
@@ -192,6 +197,11 @@ namespace Community.JsonRpc.ServiceClient
 
                 requestContent.Headers.ContentType = _mediaTypeValue;
                 requestMessage.Content = requestContent;
+
+                if (_httpVersion != null)
+                {
+                    requestMessage.Version = _httpVersion;
+                }
 
                 using (var responseMessage = await _httpInvoker.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false))
                 {
