@@ -569,5 +569,26 @@ namespace Community.JsonRpc.ServiceClient.Tests
                 Assert.Equal("e", exception.Message);
             }
         }
+
+        [Fact]
+        public async void InvokeWithSpecificHttpVersion()
+        {
+            var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
+            {
+                Assert.Equal(new Version(2, 0), request.Version);
+
+                var message = new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.NoContent
+                };
+
+                return Task.FromResult(message);
+            });
+
+            using (var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler(_output, handler)), new Version(2, 0)))
+            {
+                await client.InvokeAsync<VoidValue>("m");
+            }
+        }
     }
 }
