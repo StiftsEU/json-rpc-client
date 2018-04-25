@@ -197,6 +197,7 @@ namespace Community.JsonRpc.ServiceClient
 
                 requestContent.Headers.ContentType = _mediaTypeValue;
                 requestMessage.Content = requestContent;
+                requestMessage.Headers.Accept.Add(_mediaTypeWithQualityValue);
 
                 if (_httpVersion != null)
                 {
@@ -322,7 +323,6 @@ namespace Community.JsonRpc.ServiceClient
 
             var httpClient = new HttpClient(httpHandler);
 
-            httpClient.DefaultRequestHeaders.Accept.Add(_mediaTypeWithQualityValue);
             httpClient.DefaultRequestHeaders.ExpectContinue = false;
 
             return httpClient;

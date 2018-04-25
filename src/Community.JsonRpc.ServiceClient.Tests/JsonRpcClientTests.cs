@@ -482,8 +482,12 @@ namespace Community.JsonRpc.ServiceClient.Tests
         [Fact]
         public async void InvokeWhenResponseIsNotExpected()
         {
+            var requestAcceptHeader = default(HttpHeaderValueCollection<MediaTypeWithQualityHeaderValue>);
+
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
             {
+                requestAcceptHeader = request.Headers.Accept;
+
                 var message = new HttpResponseMessage
                 {
                     StatusCode = HttpStatusCode.NoContent
@@ -496,6 +500,7 @@ namespace Community.JsonRpc.ServiceClient.Tests
             {
                 var result = await client.InvokeAsync<VoidValue>("m");
 
+                Assert.Contains(new MediaTypeWithQualityHeaderValue("application/json"), requestAcceptHeader);
                 Assert.Equal(default, result);
             }
         }
@@ -503,8 +508,12 @@ namespace Community.JsonRpc.ServiceClient.Tests
         [Fact]
         public async void InvokeWhenResponseIsExpected()
         {
+            var requestAcceptHeader = default(HttpHeaderValueCollection<MediaTypeWithQualityHeaderValue>);
+
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)(async (request) =>
             {
+                requestAcceptHeader = request.Headers.Accept;
+
                 var requestString = await request.Content.ReadAsStringAsync();
                 var requestObject = JObject.Parse(requestString);
                 var responseObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.result_true_success_true.json"));
@@ -530,6 +539,7 @@ namespace Community.JsonRpc.ServiceClient.Tests
             {
                 var result = await client.InvokeAsync<long>("m");
 
+                Assert.Contains(new MediaTypeWithQualityHeaderValue("application/json"), requestAcceptHeader);
                 Assert.Equal(1L, result);
             }
         }
@@ -537,8 +547,12 @@ namespace Community.JsonRpc.ServiceClient.Tests
         [Fact]
         public async void InvokeWhenResponseWithErrorIsExpected()
         {
+            var requestAcceptHeader = default(HttpHeaderValueCollection<MediaTypeWithQualityHeaderValue>);
+
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)(async (request) =>
             {
+                requestAcceptHeader = request.Headers.Accept;
+
                 var requestString = await request.Content.ReadAsStringAsync();
                 var requestObject = JObject.Parse(requestString);
                 var responseObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.result_true_success_false.json"));
@@ -565,13 +579,14 @@ namespace Community.JsonRpc.ServiceClient.Tests
                 var exception = await Assert.ThrowsAsync<JsonRpcServiceException>(() =>
                     client.InvokeAsync<long>("m"));
 
+                Assert.Contains(new MediaTypeWithQualityHeaderValue("application/json"), requestAcceptHeader);
                 Assert.Equal(1L, exception.Code);
                 Assert.Equal("e", exception.Message);
             }
         }
 
         [Fact]
-        public async void InvokeWithSpecificHttpVersion()
+        public async void InvokeWhenHttpVersionIsSpecified()
         {
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
             {
