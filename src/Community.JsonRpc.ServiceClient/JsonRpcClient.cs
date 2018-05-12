@@ -101,7 +101,7 @@ namespace Community.JsonRpc.ServiceClient
         /// <summary>Invokes the specified service method.</summary>
         /// <typeparam name="T">The type of the service method result.</typeparam>
         /// <param name="method">The name of the service method.</param>
-        /// <param name="parameters">The parameters to be used during the invocation of the service method.</param>
+        /// <param name="parameters">The parameters to be used during the invocation of the service method, specified by position.</param>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
         /// <returns>A task that represents the asynchronous operation. The task result is the service method result.</returns>
         /// <exception cref="ArgumentException"><paramref name="method" /> is a system extension method or parameters count equals zero.</exception>
@@ -140,10 +140,10 @@ namespace Community.JsonRpc.ServiceClient
         /// <summary>Invokes the specified service method.</summary>
         /// <typeparam name="T">The type of the service method result.</typeparam>
         /// <param name="method">The name of the service method.</param>
-        /// <param name="parameters">The parameters to be used during the invocation of the service method.</param>
+        /// <param name="parameters">The parameters to be used during the invocation of the service method, specified by name.</param>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
         /// <returns>A task that represents the asynchronous operation. The task result is the service method result.</returns>
-        /// <exception cref="ArgumentException"><paramref name="method" /> is a system extension method or parameters count equals zero.</exception>
+        /// <exception cref="ArgumentException"><paramref name="method" /> is a system extension method.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="method" /> or <paramref name="parameters" /> is <see langword="null" />.</exception>
         /// <exception cref="JsonRpcContractException">An error occurred during parameters or service result handling.</exception>
         /// <exception cref="JsonRpcRequestException">An error occurred during HTTP request execution.</exception>
@@ -162,10 +162,6 @@ namespace Community.JsonRpc.ServiceClient
             if (parameters == null)
             {
                 throw new ArgumentNullException(nameof(parameters));
-            }
-            if (parameters.Count == 0)
-            {
-                throw new ArgumentException(Strings.GetString("invoke.params.invalid_count"), nameof(parameters));
             }
 
             cancellationToken.ThrowIfCancellationRequested();

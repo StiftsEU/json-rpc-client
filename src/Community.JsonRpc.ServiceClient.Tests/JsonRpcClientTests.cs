@@ -165,16 +165,6 @@ namespace Community.JsonRpc.ServiceClient.Tests
         }
 
         [Fact]
-        public async void InvokeWhenParametersAreByNameAndIsEmpty()
-        {
-            var client = new JsonRpcClient("https://localhost", CreateEmptyHttpInvoker());
-            var parameters = new Dictionary<string, object>();
-
-            await Assert.ThrowsAsync<ArgumentException>(() =>
-                client.InvokeAsync<long>("m", parameters));
-        }
-
-        [Fact]
         public async void InvokeWhenCancellationTokenIsCancelled()
         {
             var client = new JsonRpcClient("https://localhost", CreateEmptyHttpInvoker());
