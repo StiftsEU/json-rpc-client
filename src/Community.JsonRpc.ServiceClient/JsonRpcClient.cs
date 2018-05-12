@@ -33,7 +33,7 @@ namespace Community.JsonRpc.ServiceClient
         /// <param name="httpInvoker">The component for sending HTTP requests.</param>
         /// <param name="httpVersion">The HTTP message version.</param>
         /// <exception cref="ArgumentNullException"><paramref name="serviceUri" /> is <see langword="null" />.</exception>
-        /// <exception cref="UriFormatException"><paramref name="serviceUri" /> is a relative URI or is not correctly formed.</exception>
+        /// <exception cref="FormatException"><paramref name="serviceUri" /> is a relative URI or is not correctly formed.</exception>
         public JsonRpcClient(string serviceUri, HttpMessageInvoker httpInvoker = null, Version httpVersion = null)
         {
             if (serviceUri == null)
