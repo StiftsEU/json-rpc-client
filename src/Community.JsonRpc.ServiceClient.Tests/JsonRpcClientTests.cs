@@ -595,5 +595,36 @@ namespace Community.JsonRpc.ServiceClient.Tests
                 await client.InvokeAsync<VoidValue>("m");
             }
         }
+
+        [Fact]
+        public async void InvokeWithAuthorizationHeader()
+        {
+            var authorizationToken = Convert.ToBase64String(Encoding.UTF8.GetBytes("PASSWORD"));
+
+            var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
+            {
+                var authorizationHeader = request.Headers.Authorization;
+
+                Assert.NotNull(authorizationHeader);
+                Assert.Equal("Basic", authorizationHeader.Scheme);
+                Assert.Equal(authorizationToken, authorizationHeader.Parameter);
+
+                var message = new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.NoContent
+                };
+
+                return Task.FromResult(message);
+            });
+
+            var httpClient = new HttpClient(new TestHttpHandler(_output, handler));
+
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authorizationToken);
+
+            using (var client = new JsonRpcClient("https://localhost", httpClient))
+            {
+                await client.InvokeAsync<VoidValue>("m");
+            }
+        }
     }
 }
