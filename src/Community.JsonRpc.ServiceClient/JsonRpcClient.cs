@@ -12,13 +12,12 @@ using Community.JsonRpc.ServiceClient.Resources;
 namespace Community.JsonRpc.ServiceClient
 {
     /// <summary>Represents a JSON-RPC 2.0 service client.</summary>
-    public sealed class JsonRpcClient : IDisposable
+    public class JsonRpcClient : IDisposable
     {
         private static readonly MediaTypeHeaderValue _mediaTypeValue = new MediaTypeHeaderValue("application/json");
         private static readonly MediaTypeWithQualityHeaderValue _mediaTypeWithQualityValue = new MediaTypeWithQualityHeaderValue("application/json");
 
         private readonly HttpMessageInvoker _httpInvoker;
-        private readonly Version _httpVersion;
         private readonly Uri _serviceUri;
 
         private readonly JsonRpcSerializer _serializer =
@@ -31,10 +30,9 @@ namespace Community.JsonRpc.ServiceClient
         /// <summary>Initializes a new instance of the <see cref="JsonRpcClient" /> class.</summary>
         /// <param name="serviceUri">The service URI.</param>
         /// <param name="httpInvoker">The component for sending HTTP requests.</param>
-        /// <param name="httpVersion">The HTTP message version.</param>
         /// <exception cref="ArgumentNullException"><paramref name="serviceUri" /> is <see langword="null" />.</exception>
         /// <exception cref="FormatException"><paramref name="serviceUri" /> is a relative URI or is not correctly formed.</exception>
-        public JsonRpcClient(string serviceUri, HttpMessageInvoker httpInvoker = null, Version httpVersion = null)
+        public JsonRpcClient(string serviceUri, HttpMessageInvoker httpInvoker = null)
         {
             if (serviceUri == null)
             {
@@ -43,16 +41,14 @@ namespace Community.JsonRpc.ServiceClient
 
             _serviceUri = new Uri(serviceUri, UriKind.Absolute);
             _httpInvoker = httpInvoker ?? CreateHttpInvoker();
-            _httpVersion = httpVersion;
         }
 
         /// <summary>Initializes a new instance of the <see cref="JsonRpcClient" /> class.</summary>
         /// <param name="serviceUri">The service URI.</param>
         /// <param name="httpInvoker">The component for sending HTTP requests.</param>
-        /// <param name="httpVersion">The HTTP message version.</param>
         /// <exception cref="ArgumentException"><paramref name="serviceUri" /> is a relative URI.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="serviceUri" /> is <see langword="null" />.</exception>
-        public JsonRpcClient(Uri serviceUri, HttpMessageInvoker httpInvoker = null, Version httpVersion = null)
+        public JsonRpcClient(Uri serviceUri, HttpMessageInvoker httpInvoker = null)
         {
             if (serviceUri == null)
             {
@@ -65,7 +61,6 @@ namespace Community.JsonRpc.ServiceClient
 
             _serviceUri = serviceUri;
             _httpInvoker = httpInvoker ?? CreateHttpInvoker();
-            _httpVersion = httpVersion;
         }
 
         /// <summary>Invokes the specified service method.</summary>
@@ -189,19 +184,27 @@ namespace Community.JsonRpc.ServiceClient
 
             using (var requestMessage = new HttpRequestMessage(HttpMethod.Post, _serviceUri))
             {
+                var httpVersion = HttpVersion;
+
+                if (httpVersion != null)
+                {
+                    requestMessage.Version = httpVersion;
+                }
+
+                VisitRequestHeaders(requestMessage.Headers);
+
+                requestMessage.Headers.Accept.Clear();
+                requestMessage.Headers.Accept.Add(_mediaTypeWithQualityValue);
+
                 var requestContent = new StringContent(requestString);
 
                 requestContent.Headers.ContentType = _mediaTypeValue;
                 requestMessage.Content = requestContent;
-                requestMessage.Headers.Accept.Add(_mediaTypeWithQualityValue);
-
-                if (_httpVersion != null)
-                {
-                    requestMessage.Version = _httpVersion;
-                }
 
                 using (var responseMessage = await _httpInvoker.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false))
                 {
+                    VisitResponseHeaders(responseMessage.Headers);
+
                     switch (responseMessage.StatusCode)
                     {
                         case HttpStatusCode.OK:
@@ -299,6 +302,18 @@ namespace Community.JsonRpc.ServiceClient
             _serializer.Dispose();
         }
 
+        /// <summary>Visits request headers.</summary>
+        /// <param name="headers">A collection of request headers.</param>
+        protected virtual void VisitRequestHeaders(HttpRequestHeaders headers)
+        {
+        }
+
+        /// <summary>Visits response headers.</summary>
+        /// <param name="headers">A collection of response headers.</param>
+        protected virtual void VisitResponseHeaders(HttpResponseHeaders headers)
+        {
+        }
+
         private static JsonRpcResponseContract CreateContract<T>()
         {
             return typeof(T) != typeof(VoidValue) ? JsonRpcResponseContract<T>.Instance : null;
@@ -322,6 +337,12 @@ namespace Community.JsonRpc.ServiceClient
             httpClient.DefaultRequestHeaders.ExpectContinue = false;
 
             return httpClient;
+        }
+
+        /// <summary>Gets the HTTP message version.</summary>
+        protected virtual Version HttpVersion
+        {
+            get => null;
         }
     }
 }

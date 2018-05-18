@@ -578,36 +578,11 @@ namespace Community.JsonRpc.ServiceClient.Tests
         [Fact]
         public async void InvokeWhenHttpVersionIsSpecified()
         {
-            var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
-            {
-                Assert.Equal(new Version(2, 0), request.Version);
-
-                var message = new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.NoContent
-                };
-
-                return Task.FromResult(message);
-            });
-
-            using (var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler(_output, handler)), new Version(2, 0)))
-            {
-                await client.InvokeAsync<VoidValue>("m");
-            }
-        }
-
-        [Fact]
-        public async void InvokeWithAuthorizationHeader()
-        {
-            var authorizationToken = Convert.ToBase64String(Encoding.UTF8.GetBytes("PASSWORD"));
+            var httpVersion = new Version(2, 0);
 
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
             {
-                var authorizationHeader = request.Headers.Authorization;
-
-                Assert.NotNull(authorizationHeader);
-                Assert.Equal("Basic", authorizationHeader.Scheme);
-                Assert.Equal(authorizationToken, authorizationHeader.Parameter);
+                Assert.Equal(httpVersion, request.Version);
 
                 var message = new HttpResponseMessage
                 {
@@ -619,9 +594,34 @@ namespace Community.JsonRpc.ServiceClient.Tests
 
             var httpClient = new HttpClient(new TestHttpHandler(_output, handler));
 
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authorizationToken);
+            using (var client = new TestJsonRpcClientWithHttpVersion("https://localhost", httpClient, httpVersion))
+            {
+                await client.InvokeAsync<VoidValue>("m");
+            }
+        }
 
-            using (var client = new JsonRpcClient("https://localhost", httpClient))
+        [Fact]
+        public async void InvokeWithAuthorizationHeader()
+        {
+            var authorizationHeader = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.UTF8.GetBytes("PASSWORD")));
+
+            var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
+            {
+                Assert.NotNull(request.Headers.Authorization);
+                Assert.Equal(authorizationHeader.Scheme, request.Headers.Authorization.Scheme);
+                Assert.Equal(authorizationHeader.Parameter, request.Headers.Authorization.Parameter);
+
+                var message = new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.NoContent
+                };
+
+                return Task.FromResult(message);
+            });
+
+            var httpClient = new HttpClient(new TestHttpHandler(_output, handler));
+
+            using (var client = new TestJsonRpcClientWithAuthorizationHeader("https://localhost", httpClient, authorizationHeader))
             {
                 await client.InvokeAsync<VoidValue>("m");
             }
