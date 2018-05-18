@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -8,29 +9,28 @@ using Newtonsoft.Json.Linq;
 
 namespace Community.JsonRpc.ServiceClient.Benchmarks.Internal
 {
-    /// <summary>A benchmark HTTP message handler for the <see cref="JsonRpcClient" />.</summary>
     internal sealed class JsonRpcClientBenchmarkHandler : HttpMessageHandler
     {
         private static readonly MediaTypeHeaderValue _mediaTypeHeaderValue = new MediaTypeHeaderValue("application/json");
 
-        private readonly string _content;
+        private readonly IReadOnlyDictionary<string, string> _contents;
 
-        /// <summary>Initializes a new instance of the <see cref="JsonRpcClientBenchmarkHandler" /> class.</summary>
-        /// <param name="content">The handler response.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="content" /> is <see langword="null" />.</exception>
-        public JsonRpcClientBenchmarkHandler(string content)
+        public JsonRpcClientBenchmarkHandler(IReadOnlyDictionary<string, string> contents)
         {
-            if (content == null)
+            if (contents == null)
             {
-                throw new ArgumentNullException(nameof(content));
+                throw new ArgumentNullException(nameof(contents));
             }
 
-            _content = content;
+            _contents = contents;
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(_content))
+            var requestToken = JObject.Parse(await request.Content.ReadAsStringAsync());
+            var responseContent = _contents[(string)requestToken["method"]];
+
+            if (responseContent == null)
             {
                 return new HttpResponseMessage
                 {
@@ -39,8 +39,7 @@ namespace Community.JsonRpc.ServiceClient.Benchmarks.Internal
             }
             else
             {
-                var requestToken = JObject.Parse(await request.Content.ReadAsStringAsync().ConfigureAwait(false));
-                var content = new StringContent(_content.Replace("{id}", (string)requestToken["id"]));
+                var content = new StringContent(responseContent.Replace("{id}", (string)requestToken["id"]));
 
                 content.Headers.ContentType = _mediaTypeHeaderValue;
 
