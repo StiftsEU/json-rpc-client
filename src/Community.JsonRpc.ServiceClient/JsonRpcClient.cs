@@ -211,21 +211,25 @@ namespace Community.JsonRpc.ServiceClient
                             {
                                 if (contract == null)
                                 {
-                                    throw new JsonRpcContractException(request.Id.ToString(), Strings.GetString("protocol.service.message.invalid_value"));
+                                    throw new JsonRpcContractException(request.Id.ToString(), Strings.GetString("protocol.service.message.unexpected_content"));
                                 }
 
                                 var contentType = responseMessage.Content.Headers.ContentType;
 
-                                if ((contentType == null) || (string.Compare(contentType.MediaType, _mediaTypeValue.MediaType, StringComparison.OrdinalIgnoreCase) != 0))
+                                if (contentType == null)
                                 {
-                                    throw new JsonRpcRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.headers.invalid_values"));
+                                    throw new JsonRpcRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.headers.content_type.missing_value"));
+                                }
+                                if (string.Compare(contentType.MediaType, _mediaTypeValue.MediaType, StringComparison.OrdinalIgnoreCase) != 0)
+                                {
+                                    throw new JsonRpcRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
                                 }
 
                                 var contentLength = responseMessage.Content.Headers.ContentLength;
 
                                 if (contentLength == null)
                                 {
-                                    throw new JsonRpcRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.headers.invalid_values"));
+                                    throw new JsonRpcRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.headers.content_length.missing_value"));
                                 }
 
                                 var responseString = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -234,7 +238,7 @@ namespace Community.JsonRpc.ServiceClient
 
                                 if (responseString?.Length != contentLength)
                                 {
-                                    throw new JsonRpcRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.headers.invalid_values"));
+                                    throw new JsonRpcRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.headers.content_length.invalid_value"));
                                 }
 
                                 _serializer.DynamicResponseBindings[request.Id] = contract;
@@ -258,7 +262,7 @@ namespace Community.JsonRpc.ServiceClient
 
                                 if (responseData.IsBatch)
                                 {
-                                    throw new JsonRpcContractException(request.Id.ToString(), Strings.GetString("protocol.service.message.invalid_value"));
+                                    throw new JsonRpcContractException(request.Id.ToString(), Strings.GetString("protocol.service.message.batch_value"));
                                 }
 
                                 var responseItem = responseData.Item;
@@ -281,7 +285,7 @@ namespace Community.JsonRpc.ServiceClient
                             {
                                 if (contract != null)
                                 {
-                                    throw new JsonRpcContractException(request.Id.ToString(), Strings.GetString("protocol.service.message.invalid_value"));
+                                    throw new JsonRpcContractException(request.Id.ToString(), Strings.GetString("protocol.service.message.unexpected_blank"));
                                 }
 
                                 return null;

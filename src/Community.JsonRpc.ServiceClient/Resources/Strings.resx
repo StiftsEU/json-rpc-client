@@ -129,8 +129,17 @@
   <data name="invoke.params.invalid_values" xml:space="preserve">
     <value>The specified parameters are invalid</value>
   </data>
-  <data name="protocol.http.headers.invalid_values" xml:space="preserve">
-    <value>The HTTP response has invalid JSON-RPC transport headers</value>
+  <data name="protocol.http.headers.content_length.invalid_value" xml:space="preserve">
+    <value>The HTTP response has invalid Content-Length header value</value>
+  </data>
+  <data name="protocol.http.headers.content_length.missing_value" xml:space="preserve">
+    <value>The HTTP response does not have the Content-Length header</value>
+  </data>
+  <data name="protocol.http.headers.content_type.invalid_value" xml:space="preserve">
+    <value>The HTTP response has invalid Content-Type header value</value>
+  </data>
+  <data name="protocol.http.headers.content_type.missing_value" xml:space="preserve">
+    <value>The HTTP response does not have the Content-Type header</value>
   </data>
   <data name="protocol.http.status_code.invalid_value" xml:space="preserve">
     <value>The HTTP response status code does not indicate a successful service response</value>
@@ -138,7 +147,16 @@
   <data name="protocol.rpc.message.invalid_value" xml:space="preserve">
     <value>The JSON-RPC response is invalid</value>
   </data>
+  <data name="protocol.service.message.batch_value" xml:space="preserve">
+    <value>The service response is a batch</value>
+  </data>
   <data name="protocol.service.message.invalid_value" xml:space="preserve">
     <value>The service response is invalid</value>
+  </data>
+  <data name="protocol.service.message.unexpected_blank" xml:space="preserve">
+    <value>The service response has no content</value>
+  </data>
+  <data name="protocol.service.message.unexpected_content" xml:space="preserve">
+    <value>The service response has a content</value>
   </data>
 </root>

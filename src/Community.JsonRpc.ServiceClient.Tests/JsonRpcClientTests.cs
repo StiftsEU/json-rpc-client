@@ -237,6 +237,34 @@ namespace Community.JsonRpc.ServiceClient.Tests
         }
 
         [Fact]
+        public async void InvokeWhenHttpContentTypeIsEmpty()
+        {
+            var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
+            {
+                var content = new ByteArrayContent(Array.Empty<byte>());
+
+                content.Headers.ContentType = null;
+                content.Headers.ContentLength = 0L;
+
+                var message = new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = content
+                };
+
+                return Task.FromResult(message);
+            });
+
+            using (var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler(_output, handler))))
+            {
+                var exception = await Assert.ThrowsAsync<JsonRpcRequestException>(() =>
+                    client.InvokeAsync<long>("m"));
+
+                Assert.Equal(HttpStatusCode.OK, exception.StatusCode);
+            }
+        }
+
+        [Fact]
         public async void InvokeWhenHttpContentTypeIsInvalid()
         {
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
