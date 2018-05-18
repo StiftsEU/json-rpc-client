@@ -8,8 +8,9 @@ A lightweight [JSON-RPC 2.0](http://www.jsonrpc.org/specification) service clien
 
 - The client supports operation cancellation via a cancellation token.
 - The client supports `gzip` and `DEFLATE` response encodings.
+- The client supports working with request and response headers.
+- The client supports specifying HTTP protocol version.
 - The client supports usage of a custom HTTP message invoker instance.
-- The client supports usage of a specific HTTP message version.
 
 ### Specifics
 
