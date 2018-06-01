@@ -31,9 +31,14 @@ namespace Community.JsonRpc.ServiceClient.Benchmarks.Framework
             }
         }
 
+        protected override string FileCaption
+        {
+            get => null;
+        }
+
         protected override string FileNameSuffix
         {
-            get => "-" + DateTime.Now.ToString("yyyyMMddHHmmss");
+            get => DateTime.Now.ToString("yyyy.MM.dd-HH.mm.ss");
         }
     }
 }

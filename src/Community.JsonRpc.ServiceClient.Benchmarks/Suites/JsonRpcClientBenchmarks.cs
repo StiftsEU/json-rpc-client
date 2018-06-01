@@ -70,21 +70,21 @@ namespace Community.JsonRpc.ServiceClient.Benchmarks.Suites
         }
 
         [Benchmark(Description = "not-non")]
-        public async Task<VoidValue> InvokeMethodWithVoidResultAndNoParameters()
+        public async Task InvokeMethodWithVoidResultAndNoParameters()
         {
-            return await _client.InvokeAsync<VoidValue>("not-non");
+            await _client.InvokeAsync("not-non");
         }
 
         [Benchmark(Description = "not-pos")]
-        public async Task<VoidValue> InvokeMethodWithVoidResultAndParametersByPosition()
+        public async Task InvokeMethodWithVoidResultAndParametersByPosition()
         {
-            return await _client.InvokeAsync<VoidValue>("not-pos", _parametersByPosition);
+            await _client.InvokeAsync("not-pos", _parametersByPosition);
         }
 
         [Benchmark(Description = "not-nam")]
-        public async Task<VoidValue> InvokeMethodWithVoidResultAndParametersByName()
+        public async Task InvokeMethodWithVoidResultAndParametersByName()
         {
-            return await _client.InvokeAsync<VoidValue>("not-nam", _parametersByName);
+            await _client.InvokeAsync("not-nam", _parametersByName);
         }
 
         [Benchmark(Description = "err-non")]

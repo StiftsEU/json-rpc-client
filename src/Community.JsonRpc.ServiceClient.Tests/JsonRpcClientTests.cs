@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.JsonRpc;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -43,6 +44,13 @@ namespace Community.JsonRpc.ServiceClient.Tests
         }
 
         [Fact]
+        public void ConstructorWhenServiceUriIsStringAndInvokerIsNull()
+        {
+            Assert.Throws<ArgumentNullException>(() =>
+                new JsonRpcClient("https://localhost", null));
+        }
+
+        [Fact]
         public void ConstructorWhenServiceUriIsUriAndIsNull()
         {
             Assert.Throws<ArgumentNullException>(() =>
@@ -50,10 +58,17 @@ namespace Community.JsonRpc.ServiceClient.Tests
         }
 
         [Fact]
-        public void ConstructorWhenServiceUriIssUriAndIsRelative()
+        public void ConstructorWhenServiceUriIsUriAndIsRelative()
         {
             Assert.Throws<ArgumentException>(() =>
                 new JsonRpcClient(new Uri("/api", UriKind.Relative), CreateEmptyHttpInvoker()));
+        }
+
+        [Fact]
+        public void ConstructorWhenServiceUriIsUriAndInvokerIsNull()
+        {
+            Assert.Throws<ArgumentNullException>(() =>
+                new JsonRpcClient(new Uri("https://localhost", UriKind.Absolute), null));
         }
 
         [Fact]
@@ -63,6 +78,15 @@ namespace Community.JsonRpc.ServiceClient.Tests
 
             await Assert.ThrowsAsync<ArgumentNullException>(() =>
                 client.InvokeAsync<long>((string)null));
+        }
+
+        [Fact]
+        public async void InvokeWhenIdentifierIsEmpty()
+        {
+            var client = new JsonRpcClient("https://localhost", CreateEmptyHttpInvoker());
+
+            await Assert.ThrowsAsync<ArgumentException>(() =>
+                client.InvokeAsync<long>("m", new JsonRpcId()));
         }
 
         [Fact]
@@ -81,6 +105,21 @@ namespace Community.JsonRpc.ServiceClient.Tests
         }
 
         [Fact]
+        public async void InvokeWhenIdentifierIsEmptyAndParametersAreByPosition()
+        {
+            var client = new JsonRpcClient("https://localhost", CreateEmptyHttpInvoker());
+
+            var parameters = new object[]
+            {
+               1L,
+               2L
+            };
+
+            await Assert.ThrowsAsync<ArgumentException>(() =>
+                client.InvokeAsync<long>("m", new JsonRpcId(), parameters));
+        }
+
+        [Fact]
         public async void InvokeWhenMethodIsNullAndParametersAreByName()
         {
             var client = new JsonRpcClient("https://localhost", CreateEmptyHttpInvoker());
@@ -93,6 +132,21 @@ namespace Community.JsonRpc.ServiceClient.Tests
 
             await Assert.ThrowsAsync<ArgumentNullException>(() =>
                 client.InvokeAsync<long>((string)null, parameters));
+        }
+
+        [Fact]
+        public async void InvokeWhenIdentifierIsEmptyAndParametersAreByName()
+        {
+            var client = new JsonRpcClient("https://localhost", CreateEmptyHttpInvoker());
+
+            var parameters = new Dictionary<string, object>
+            {
+                ["p1"] = 1L,
+                ["p2"] = 2L
+            };
+
+            await Assert.ThrowsAsync<ArgumentException>(() =>
+                client.InvokeAsync<long>("m", new JsonRpcId(), parameters));
         }
 
         [Fact]
@@ -141,16 +195,6 @@ namespace Community.JsonRpc.ServiceClient.Tests
             var parameters = (object[])null;
 
             await Assert.ThrowsAsync<ArgumentNullException>(() =>
-                client.InvokeAsync<long>("m", parameters));
-        }
-
-        [Fact]
-        public async void InvokeWhenParametersAreByPositionAndIsEmpty()
-        {
-            var client = new JsonRpcClient("https://localhost", CreateEmptyHttpInvoker());
-            var parameters = new object[] { };
-
-            await Assert.ThrowsAsync<ArgumentException>(() =>
                 client.InvokeAsync<long>("m", parameters));
         }
 
@@ -469,7 +513,7 @@ namespace Community.JsonRpc.ServiceClient.Tests
             using (var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler(_output, handler))))
             {
                 var exception = await Assert.ThrowsAsync<JsonRpcContractException>(() =>
-                    client.InvokeAsync<VoidValue>("m"));
+                    client.InvokeAsync("m"));
 
                 Assert.Equal(string.Empty, exception.RequestId);
             }
@@ -516,10 +560,9 @@ namespace Community.JsonRpc.ServiceClient.Tests
 
             using (var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler(_output, handler))))
             {
-                var result = await client.InvokeAsync<VoidValue>("m");
+                await client.InvokeAsync("m");
 
                 Assert.Contains(new MediaTypeWithQualityHeaderValue("application/json"), requestAcceptHeader);
-                Assert.Equal(default, result);
             }
         }
 
@@ -624,7 +667,7 @@ namespace Community.JsonRpc.ServiceClient.Tests
 
             using (var client = new TestJsonRpcClientWithHttpVersion("https://localhost", httpClient, httpVersion))
             {
-                await client.InvokeAsync<VoidValue>("m");
+                await client.InvokeAsync("m");
             }
         }
 
@@ -651,7 +694,7 @@ namespace Community.JsonRpc.ServiceClient.Tests
 
             using (var client = new TestJsonRpcClientWithAuthorizationHeader("https://localhost", httpClient, authorizationHeader))
             {
-                await client.InvokeAsync<VoidValue>("m");
+                await client.InvokeAsync("m");
             }
         }
     }

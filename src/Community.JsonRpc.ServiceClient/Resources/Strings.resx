@@ -120,11 +120,11 @@
   <data name="client.uri.relative" xml:space="preserve">
     <value>The specified URI is relative</value>
   </data>
+  <data name="invoke.identifier.invalid_value" xml:space="preserve">
+    <value>The specified identifier is void</value>
+  </data>
   <data name="invoke.method.invalid_name" xml:space="preserve">
     <value>The specified method is a system extension method</value>
-  </data>
-  <data name="invoke.params.invalid_count" xml:space="preserve">
-    <value>The parameters count equals zero</value>
   </data>
   <data name="invoke.params.invalid_values" xml:space="preserve">
     <value>The specified parameters are invalid</value>
