@@ -471,9 +471,9 @@ namespace Community.JsonRpc.ServiceClient
                                     throw new JsonRpcRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
                                 }
 
-                                var contentLength = responseMessage.Content.Headers.ContentLength;
+                                var transferEncodingChunked = responseMessage.Headers.TransferEncodingChunked == true;
 
-                                if (contentLength == null)
+                                if (!transferEncodingChunked && (responseMessage.Content.Headers.ContentLength == null))
                                 {
                                     throw new JsonRpcRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.headers.content_length.missing_value"));
                                 }
@@ -482,7 +482,7 @@ namespace Community.JsonRpc.ServiceClient
 
                                 cancellationToken.ThrowIfCancellationRequested();
 
-                                if (responseString?.Length != contentLength)
+                                if (!transferEncodingChunked && (responseString.Length != responseMessage.Content.Headers.ContentLength.Value))
                                 {
                                     throw new JsonRpcRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.headers.content_length.invalid_value"));
                                 }
