@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.JsonRpc;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -24,7 +26,7 @@ namespace Community.JsonRpc.ServiceClient
             EmptyDictionary<string, JsonRpcRequestContract>.Instance,
             EmptyDictionary<string, JsonRpcResponseContract>.Instance,
             EmptyDictionary<JsonRpcId, string>.Instance,
-            new Dictionary<JsonRpcId, JsonRpcResponseContract>(1));
+            new ConcurrentDictionary<JsonRpcId, JsonRpcResponseContract>());
 
         /// <summary>Initializes a new instance of the <see cref="JsonRpcClient" /> class.</summary>
         /// <param name="serviceUri">The service URI.</param>
@@ -415,131 +417,123 @@ namespace Community.JsonRpc.ServiceClient
 
         private async Task<JsonRpcResponse> InvokeAsync(JsonRpcRequest request, JsonRpcResponseContract contract, CancellationToken cancellationToken)
         {
-            var requestString = default(string);
-
-            try
+            using (var requestStream = new MemoryStream())
             {
-                requestString = _serializer.SerializeRequest(request);
-            }
-            catch (JsonRpcException e)
-            {
-                throw new JsonRpcContractException(request.Id.ToString(), Strings.GetString("invoke.params.invalid_values"), e);
-            }
-
-            cancellationToken.ThrowIfCancellationRequested();
-
-            using (var requestMessage = new HttpRequestMessage(HttpMethod.Post, _serviceUri))
-            {
-                var httpVersion = HttpVersion;
-
-                if (httpVersion != null)
+                try
                 {
-                    requestMessage.Version = httpVersion;
+                    _serializer.SerializeRequest(request, requestStream);
+                }
+                catch (JsonRpcException e)
+                {
+                    throw new JsonRpcContractException(request.Id.ToString(), Strings.GetString("invoke.params.invalid_values"), e);
                 }
 
-                VisitRequestHeaders(requestMessage.Headers);
+                cancellationToken.ThrowIfCancellationRequested();
+                requestStream.Position = 0;
 
-                requestMessage.Headers.Accept.Clear();
-                requestMessage.Headers.Accept.Add(_mediaTypeWithQualityValue);
-
-                var requestContent = new StringContent(requestString);
-
-                requestContent.Headers.ContentType = _mediaTypeValue;
-                requestMessage.Content = requestContent;
-
-                using (var responseMessage = await _httpInvoker.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false))
+                using (var requestMessage = new HttpRequestMessage(HttpMethod.Post, _serviceUri))
                 {
-                    VisitResponseHeaders(responseMessage.Headers);
+                    var httpVersion = HttpVersion;
 
-                    switch (responseMessage.StatusCode)
+                    if (httpVersion != null)
                     {
-                        case HttpStatusCode.OK:
-                            {
-                                if (contract == null)
+                        requestMessage.Version = httpVersion;
+                    }
+
+                    VisitRequestHeaders(requestMessage.Headers);
+
+                    requestMessage.Headers.Accept.Clear();
+                    requestMessage.Headers.Accept.Add(_mediaTypeWithQualityValue);
+
+                    var requestContent = new StreamContent(requestStream);
+
+                    requestContent.Headers.ContentType = _mediaTypeValue;
+                    requestMessage.Content = requestContent;
+
+                    using (var responseMessage = await _httpInvoker.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false))
+                    {
+                        VisitResponseHeaders(responseMessage.Headers);
+
+                        switch (responseMessage.StatusCode)
+                        {
+                            case HttpStatusCode.OK:
                                 {
-                                    throw new JsonRpcContractException(request.Id.ToString(), Strings.GetString("protocol.service.message.unexpected_content"));
+                                    if (contract == null)
+                                    {
+                                        throw new JsonRpcContractException(request.Id.ToString(), Strings.GetString("protocol.service.message.unexpected_content"));
+                                    }
+
+                                    var contentType = responseMessage.Content.Headers.ContentType;
+
+                                    if (contentType == null)
+                                    {
+                                        throw new JsonRpcRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.headers.content_type.missing_value"));
+                                    }
+                                    if (string.Compare(contentType.MediaType, _mediaTypeValue.MediaType, StringComparison.OrdinalIgnoreCase) != 0)
+                                    {
+                                        throw new JsonRpcRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
+                                    }
+
+                                    // Verification of the Content-Length header is required by the "JSON-RPC 2.0 Transport: HTTP" specification;
+                                    // however, is skipped since the header can be omitted in case of compressed content.
+
+                                    var responseData = default(JsonRpcData<JsonRpcResponse>);
+
+                                    using (var responseStream = await responseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                                    {
+                                        cancellationToken.ThrowIfCancellationRequested();
+
+                                        _serializer.DynamicResponseBindings[request.Id] = contract;
+
+                                        try
+                                        {
+                                            responseData = await _serializer.DeserializeResponseDataAsync(responseStream, cancellationToken).ConfigureAwait(false);
+                                        }
+                                        catch (JsonRpcException e)
+                                        {
+                                            throw new JsonRpcContractException(request.Id.ToString(), Strings.GetString("protocol.rpc.message.invalid_value"), e);
+                                        }
+                                        finally
+                                        {
+                                            _serializer.DynamicResponseBindings.Remove(request.Id);
+                                        }
+                                    }
+
+                                    if (responseData.IsBatch)
+                                    {
+                                        throw new JsonRpcContractException(request.Id.ToString(), Strings.GetString("protocol.service.message.batch_value"));
+                                    }
+
+                                    var responseItem = responseData.Item;
+
+                                    if (!responseItem.IsValid)
+                                    {
+                                        throw new JsonRpcContractException(request.Id.ToString(), Strings.GetString("protocol.service.message.invalid_value"), responseItem.Exception);
+                                    }
+
+                                    var response = responseItem.Message;
+
+                                    if (!response.Success)
+                                    {
+                                        throw new JsonRpcServiceException(response.Error.Code, response.Error.Message);
+                                    }
+
+                                    return response;
                                 }
-
-                                var contentType = responseMessage.Content.Headers.ContentType;
-
-                                if (contentType == null)
+                            case HttpStatusCode.NoContent:
                                 {
-                                    throw new JsonRpcRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.headers.content_type.missing_value"));
+                                    if (contract != null)
+                                    {
+                                        throw new JsonRpcContractException(request.Id.ToString(), Strings.GetString("protocol.service.message.unexpected_blank"));
+                                    }
+
+                                    return null;
                                 }
-                                if (string.Compare(contentType.MediaType, _mediaTypeValue.MediaType, StringComparison.OrdinalIgnoreCase) != 0)
+                            default:
                                 {
-                                    throw new JsonRpcRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
+                                    throw new JsonRpcRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.status_code.invalid_value"));
                                 }
-
-                                var transferEncodingChunked = responseMessage.Headers.TransferEncodingChunked == true;
-
-                                if (!transferEncodingChunked && (responseMessage.Content.Headers.ContentLength == null))
-                                {
-                                    throw new JsonRpcRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.headers.content_length.missing_value"));
-                                }
-
-                                var responseString = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-                                cancellationToken.ThrowIfCancellationRequested();
-
-                                if (!transferEncodingChunked && (responseString.Length != responseMessage.Content.Headers.ContentLength.Value))
-                                {
-                                    throw new JsonRpcRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.headers.content_length.invalid_value"));
-                                }
-
-                                _serializer.DynamicResponseBindings[request.Id] = contract;
-
-                                var responseData = default(JsonRpcData<JsonRpcResponse>);
-
-                                try
-                                {
-                                    responseData = _serializer.DeserializeResponseData(responseString);
-                                }
-                                catch (JsonRpcException e)
-                                {
-                                    throw new JsonRpcContractException(request.Id.ToString(), Strings.GetString("protocol.rpc.message.invalid_value"), e);
-                                }
-                                finally
-                                {
-                                    _serializer.DynamicResponseBindings.Remove(request.Id);
-                                }
-
-                                cancellationToken.ThrowIfCancellationRequested();
-
-                                if (responseData.IsBatch)
-                                {
-                                    throw new JsonRpcContractException(request.Id.ToString(), Strings.GetString("protocol.service.message.batch_value"));
-                                }
-
-                                var responseItem = responseData.Item;
-
-                                if (!responseItem.IsValid)
-                                {
-                                    throw new JsonRpcContractException(request.Id.ToString(), Strings.GetString("protocol.service.message.invalid_value"), responseItem.Exception);
-                                }
-
-                                var response = responseItem.Message;
-
-                                if (!response.Success)
-                                {
-                                    throw new JsonRpcServiceException(response.Error.Code, response.Error.Message);
-                                }
-
-                                return response;
-                            }
-                        case HttpStatusCode.NoContent:
-                            {
-                                if (contract != null)
-                                {
-                                    throw new JsonRpcContractException(request.Id.ToString(), Strings.GetString("protocol.service.message.unexpected_blank"));
-                                }
-
-                                return null;
-                            }
-                        default:
-                            {
-                                throw new JsonRpcRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.status_code.invalid_value"));
-                            }
+                        }
                     }
                 }
             }

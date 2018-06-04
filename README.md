@@ -16,6 +16,7 @@ A lightweight [JSON-RPC 2.0](http://www.jsonrpc.org/specification) service clien
 ### Specifics
 
 - The client uses string representation of an UUID as a message identifier.
+- The client does not verify the `Content-Length` header.
 
 ### Limitations
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using Community.JsonRpc.ServiceClient.Benchmarks.Internal;
@@ -10,37 +11,24 @@ namespace Community.JsonRpc.ServiceClient.Benchmarks.Suites
 {
     public abstract class JsonRpcClientBenchmarks
     {
-        private static readonly IReadOnlyDictionary<string, string> _resources = CreateResourceDictionary();
+        private static readonly IReadOnlyDictionary<string, byte[]> _resources = CreateResourceDictionary();
         private static readonly IReadOnlyList<object> _parametersByPosition = CreateParametersByPosition();
         private static readonly IReadOnlyDictionary<string, object> _parametersByName = CreateParametersByName();
 
-        private readonly JsonRpcClient _client;
+        private readonly JsonRpcClient _clientNotification =
+            new JsonRpcClient("https://localhost", new HttpClient(new JsonRpcClientBenchmarkHandler()));
+        private readonly JsonRpcClient _clientResponseResult =
+            new JsonRpcClient("https://localhost", new HttpClient(new JsonRpcClientBenchmarkHandler(_resources["response_result"])));
+        private readonly JsonRpcClient _clientResponseError =
+            new JsonRpcClient("https://localhost", new HttpClient(new JsonRpcClientBenchmarkHandler(_resources["response_error"])));
 
-        protected JsonRpcClientBenchmarks()
+        private static IReadOnlyDictionary<string, byte[]> CreateResourceDictionary()
         {
-            var contents = new Dictionary<string, string>(StringComparer.Ordinal)
-            {
-                ["not-non"] = null,
-                ["not-pos"] = null,
-                ["not-nam"] = null,
-                ["err-non"] = _resources["success_false"],
-                ["err-pos"] = _resources["success_false"],
-                ["err-nam"] = _resources["success_false"],
-                ["scs-non"] = _resources["success_true"],
-                ["scs-pos"] = _resources["success_true"],
-                ["scs-nam"] = _resources["success_true"]
-            };
-
-            _client = new JsonRpcClient("https://localhost", new HttpClient(new JsonRpcClientBenchmarkHandler(contents)));
-        }
-
-        private static IReadOnlyDictionary<string, string> CreateResourceDictionary()
-        {
-            var resources = new Dictionary<string, string>(StringComparer.Ordinal);
+            var resources = new Dictionary<string, byte[]>(StringComparer.Ordinal);
 
             foreach (var code in GetResponseCodes())
             {
-                resources[code] = EmbeddedResourceManager.GetString($"Assets.{code}.json");
+                resources[code] = Encoding.UTF8.GetBytes(EmbeddedResourceManager.GetString($"Assets.{code}.json"));
             }
 
             return resources;
@@ -66,33 +54,33 @@ namespace Community.JsonRpc.ServiceClient.Benchmarks.Suites
 
         private static IEnumerable<string> GetResponseCodes()
         {
-            return new[] { "success_false", "success_true" };
+            return new[] { "response_error", "response_result" };
         }
 
-        [Benchmark(Description = "not-non")]
-        public async Task InvokeMethodWithVoidResultAndNoParameters()
+        [Benchmark]
+        public async Task InvokeAsyncWithNotificationAndNoParams()
         {
-            await _client.InvokeAsync("not-non");
+            await _clientNotification.InvokeAsync("m");
         }
 
-        [Benchmark(Description = "not-pos")]
-        public async Task InvokeMethodWithVoidResultAndParametersByPosition()
+        [Benchmark]
+        public async Task InvokeAsyncWithNotificationAndParamsByPosition()
         {
-            await _client.InvokeAsync("not-pos", _parametersByPosition);
+            await _clientNotification.InvokeAsync("m", _parametersByPosition);
         }
 
-        [Benchmark(Description = "not-nam")]
-        public async Task InvokeMethodWithVoidResultAndParametersByName()
+        [Benchmark]
+        public async Task InvokeAsyncWithNotificationAndParamsByName()
         {
-            await _client.InvokeAsync("not-nam", _parametersByName);
+            await _clientNotification.InvokeAsync("m", _parametersByName);
         }
 
-        [Benchmark(Description = "err-non")]
-        public async Task<long> InvokeMethodWithErrorResultAndNoParameters()
+        [Benchmark]
+        public async Task<long> InvokeAsyncWithResponseErrorAndNoParams()
         {
             try
             {
-                return await _client.InvokeAsync<long>("err-non");
+                return await _clientResponseError.InvokeAsync<long>("m", 0L);
             }
             catch (JsonRpcServiceException)
             {
@@ -100,12 +88,12 @@ namespace Community.JsonRpc.ServiceClient.Benchmarks.Suites
             }
         }
 
-        [Benchmark(Description = "err-pos")]
-        public async Task<long> InvokeMethodWithErrorResultAndParametersByPosition()
+        [Benchmark]
+        public async Task<long> InvokeAsyncWithResponseErrorAndParamsByPosition()
         {
             try
             {
-                return await _client.InvokeAsync<long>("err-pos", _parametersByPosition);
+                return await _clientResponseError.InvokeAsync<long>("m", 0L, _parametersByPosition);
             }
             catch (JsonRpcServiceException)
             {
@@ -113,12 +101,12 @@ namespace Community.JsonRpc.ServiceClient.Benchmarks.Suites
             }
         }
 
-        [Benchmark(Description = "err-nam")]
-        public async Task<long> InvokeMethodWithErrorResultAndParametersByName()
+        [Benchmark]
+        public async Task<long> InvokeAsyncWithResponseErrorAndParamsByName()
         {
             try
             {
-                return await _client.InvokeAsync<long>("err-nam", _parametersByName);
+                return await _clientResponseError.InvokeAsync<long>("m", 0L, _parametersByName);
             }
             catch (JsonRpcServiceException)
             {
@@ -126,22 +114,22 @@ namespace Community.JsonRpc.ServiceClient.Benchmarks.Suites
             }
         }
 
-        [Benchmark(Description = "scs-non")]
-        public async Task<long> InvokeMethodWithValueResultAndNoParameters()
+        [Benchmark]
+        public async Task<long> InvokeAsyncWithResponseResultAndNoParams()
         {
-            return await _client.InvokeAsync<long>("scs-non");
+            return await _clientResponseResult.InvokeAsync<long>("m", 0L);
         }
 
-        [Benchmark(Description = "scs-pos")]
-        public async Task<long> InvokeMethodWithValueResultAndParametersByPosition()
+        [Benchmark]
+        public async Task<long> InvokeAsyncWithResponseResultAndParamsByPosition()
         {
-            return await _client.InvokeAsync<long>("scs-pos", _parametersByPosition);
+            return await _clientResponseResult.InvokeAsync<long>("m", 0L, _parametersByPosition);
         }
 
-        [Benchmark(Description = "scs-nam")]
-        public async Task<long> InvokeMethodWithValueResultAndParametersByName()
+        [Benchmark]
+        public async Task<long> InvokeAsyncWithResponseResultAndParamsByName()
         {
-            return await _client.InvokeAsync<long>("scs-nam", _parametersByName);
+            return await _clientResponseResult.InvokeAsync<long>("m", 0L, _parametersByName);
         }
     }
 }
