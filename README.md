@@ -8,20 +8,20 @@ A lightweight [JSON-RPC 2.0](http://www.jsonrpc.org/specification) service clien
 
 - The client supports operation cancellation via a cancellation token.
 - The client supports specifying JSON-RPC message identifier.
-- The client supports `gzip` and `DEFLATE` response encodings.
 - The client supports working with request and response headers.
+- The client supports `gzip` and `DEFLATE` response encodings.
 - The client supports specifying HTTP protocol version.
 - The client supports usage of a custom HTTP message invoker instance.
 
 ### Specifics
 
-- The client uses string representation of an UUID as a message identifier.
+- The client uses an UUID string as a message identifier by default.
 - The client does not verify the `Content-Length` header.
 
 ### Limitations
 
-- Working with batch requests is not supported.
-- Working with optional error data value is not supported.
+- The client does not support batch requests.
+- The client does not support optional error data.
 
 ### Examples
 
