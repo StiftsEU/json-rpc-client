@@ -7,9 +7,9 @@ using BenchmarkDotNet.Attributes;
 using Community.JsonRpc.ServiceClient.Benchmarks.Internal;
 using Community.JsonRpc.ServiceClient.Benchmarks.Resources;
 
-namespace Community.JsonRpc.ServiceClient.Benchmarks.Suites
+namespace Community.JsonRpc.ServiceClient.Benchmarks.TestSuites
 {
-    public abstract class JsonRpcClientBenchmarks
+    public sealed class JsonRpcClientBenchmarks
     {
         private static readonly IReadOnlyDictionary<string, byte[]> _resources = CreateResourceDictionary();
         private static readonly IReadOnlyList<object> _parametersByPosition = CreateParametersByPosition();
@@ -57,25 +57,43 @@ namespace Community.JsonRpc.ServiceClient.Benchmarks.Suites
             return new[] { "response_error", "response_result" };
         }
 
-        [Benchmark]
+        [Benchmark(Description = "InvokeAsync-ID=N-PARAMS=U-ERROR=N")]
         public async Task InvokeAsyncWithNotificationAndNoParams()
         {
             await _clientNotification.InvokeAsync("m");
         }
 
-        [Benchmark]
+        [Benchmark(Description = "InvokeAsync-ID=N-PARAMS=P-ERROR=N")]
         public async Task InvokeAsyncWithNotificationAndParamsByPosition()
         {
             await _clientNotification.InvokeAsync("m", _parametersByPosition);
         }
 
-        [Benchmark]
+        [Benchmark(Description = "InvokeAsync-ID=N-PARAMS=N-ERROR=N")]
         public async Task InvokeAsyncWithNotificationAndParamsByName()
         {
             await _clientNotification.InvokeAsync("m", _parametersByName);
         }
 
-        [Benchmark]
+        [Benchmark(Description = "InvokeAsync-ID=Y-PARAMS=U-ERROR=N")]
+        public async Task<long> InvokeAsyncWithResponseResultAndNoParams()
+        {
+            return await _clientResponseResult.InvokeAsync<long>("m", 0L);
+        }
+
+        [Benchmark(Description = "InvokeAsync-ID=Y-PARAMS=P-ERROR=N")]
+        public async Task<long> InvokeAsyncWithResponseResultAndParamsByPosition()
+        {
+            return await _clientResponseResult.InvokeAsync<long>("m", 0L, _parametersByPosition);
+        }
+
+        [Benchmark(Description = "InvokeAsync-ID=Y-PARAMS=N-ERROR=N")]
+        public async Task<long> InvokeAsyncWithResponseResultAndParamsByName()
+        {
+            return await _clientResponseResult.InvokeAsync<long>("m", 0L, _parametersByName);
+        }
+
+        [Benchmark(Description = "InvokeAsync-ID=Y-PARAMS=U-ERROR=Y")]
         public async Task<long> InvokeAsyncWithResponseErrorAndNoParams()
         {
             try
@@ -88,7 +106,7 @@ namespace Community.JsonRpc.ServiceClient.Benchmarks.Suites
             }
         }
 
-        [Benchmark]
+        [Benchmark(Description = "InvokeAsync-ID=Y-PARAMS=P-ERROR=Y")]
         public async Task<long> InvokeAsyncWithResponseErrorAndParamsByPosition()
         {
             try
@@ -101,7 +119,7 @@ namespace Community.JsonRpc.ServiceClient.Benchmarks.Suites
             }
         }
 
-        [Benchmark]
+        [Benchmark(Description = "InvokeAsync-ID=Y-PARAMS=N-ERROR=Y")]
         public async Task<long> InvokeAsyncWithResponseErrorAndParamsByName()
         {
             try
@@ -112,24 +130,6 @@ namespace Community.JsonRpc.ServiceClient.Benchmarks.Suites
             {
                 return default;
             }
-        }
-
-        [Benchmark]
-        public async Task<long> InvokeAsyncWithResponseResultAndNoParams()
-        {
-            return await _clientResponseResult.InvokeAsync<long>("m", 0L);
-        }
-
-        [Benchmark]
-        public async Task<long> InvokeAsyncWithResponseResultAndParamsByPosition()
-        {
-            return await _clientResponseResult.InvokeAsync<long>("m", 0L, _parametersByPosition);
-        }
-
-        [Benchmark]
-        public async Task<long> InvokeAsyncWithResponseResultAndParamsByName()
-        {
-            return await _clientResponseResult.InvokeAsync<long>("m", 0L, _parametersByName);
         }
     }
 }

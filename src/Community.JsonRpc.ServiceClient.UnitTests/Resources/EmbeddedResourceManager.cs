@@ -1,4 +1,6 @@
 ﻿using System;
+// © Alexander Kozlenko. Licensed under the MIT License.
+
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -23,7 +25,7 @@ namespace Community.JsonRpc.ServiceClient.Tests.Resources
             {
                 if (resourceStream == null)
                 {
-                    throw new InvalidOperationException(FormattableString.Invariant($"The specified resource \"{name}\" is not found"));
+                    throw new InvalidOperationException($"The resource \"{name}\" was not found");
                 }
 
                 using (var bufferStream = new MemoryStream((int)resourceStream.Length))

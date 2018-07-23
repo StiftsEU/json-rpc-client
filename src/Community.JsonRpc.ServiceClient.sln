@@ -5,9 +5,17 @@ VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Community.JsonRpc.ServiceClient", "Community.JsonRpc.ServiceClient\Community.JsonRpc.ServiceClient.csproj", "{55424C78-F5D0-4549-B369-7D833B39752F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Community.JsonRpc.ServiceClient.Tests", "Community.JsonRpc.ServiceClient.Tests\Community.JsonRpc.ServiceClient.Tests.csproj", "{4517A3CE-025C-478D-A1B9-C850AFF07D6F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Community.JsonRpc.ServiceClient.UnitTests", "Community.JsonRpc.ServiceClient.UnitTests\Community.JsonRpc.ServiceClient.UnitTests.csproj", "{4517A3CE-025C-478D-A1B9-C850AFF07D6F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Community.JsonRpc.ServiceClient.Benchmarks", "Community.JsonRpc.ServiceClient.Benchmarks\Community.JsonRpc.ServiceClient.Benchmarks.csproj", "{60D880E8-30AE-438E-973F-19E6F65A2A22}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution.Build", "Solution.Build", "{D7C20B1B-12C9-40FA-BE92-DDFE37352A26}"
+	ProjectSection(SolutionItems) = preProject
+		Community.JsonRpc.ServiceClient.Package.props = Community.JsonRpc.ServiceClient.Package.props
+		Community.JsonRpc.ServiceClient.Package.targets = Community.JsonRpc.ServiceClient.Package.targets
+		Directory.Build.props = Directory.Build.props
+		Directory.Build.targets = Directory.Build.targets
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

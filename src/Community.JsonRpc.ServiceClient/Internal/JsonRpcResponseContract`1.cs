@@ -1,4 +1,6 @@
-﻿using System.Data.JsonRpc;
+﻿// © Alexander Kozlenko. Licensed under the MIT License.
+
+using System.Data.JsonRpc;
 
 namespace Community.JsonRpc.ServiceClient.Internal
 {

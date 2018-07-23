@@ -4,16 +4,16 @@ A lightweight [JSON-RPC 2.0](http://www.jsonrpc.org/specification) service clien
 
 [![NuGet package](https://img.shields.io/nuget/v/Community.JsonRpc.ServiceClient.svg?style=flat-square)](https://www.nuget.org/packages/Community.JsonRpc.ServiceClient)
 
-### Features
+### Important Features
 
-- The client supports operation cancellation via a cancellation token.
+- The client supports operation cancellation via cancellation token.
 - The client supports specifying JSON-RPC message identifier.
 - The client supports working with request and response headers.
 - The client supports `gzip` and `DEFLATE` response encodings.
 - The client supports specifying HTTP protocol version.
-- The client supports usage of a custom HTTP message invoker instance.
+- The client supports usage of a custom HTTP message invoker.
 
-### Specifics
+### Characteristics
 
 - The client uses an UUID string as a message identifier by default.
 - The client does not verify the `Content-Length` header.
@@ -23,32 +23,25 @@ A lightweight [JSON-RPC 2.0](http://www.jsonrpc.org/specification) service clien
 - The client does not support batch requests.
 - The client does not support optional error data.
 
-### Examples
+### Usage Examples
 
 Retrieving API key usage information for the [RANDOM.ORG](https://api.random.org/json-rpc/2) service:
 ```cs
 public class KeyUsage
 {
     [JsonProperty("bitsLeft")]
-    public long BitsLeft
-    {
-        get;
-        set;
-    }
+    public long BitsLeft { get; set; }
 }
 ```
 ```cs
-var parameters = new Dictionary<string, object>
-{
-    ["apiKey"] = "00000000-0000-0000-0000-000000000000"
-};
+var parameters = new Dictionary<string, object>();
 
-using (var client = new JsonRpcClient("https://api.random.org/json-rpc/2/invoke"))
-{
-    var result = await client.InvokeAsync<KeyUsage>("getUsage", parameters);
+parameters["apiKey"] = "00000000-0000-0000-0000-000000000000";
 
-    Console.WriteLine(result.BitsLeft);
-}
+var client = new JsonRpcClient("https://api.random.org/json-rpc/2/invoke");
+var result = await client.InvokeAsync<KeyUsage>("getUsage", parameters);
+
+Console.WriteLine(result.BitsLeft);
 ```
 The corresponding JSON-RPC messages:
 ```json
