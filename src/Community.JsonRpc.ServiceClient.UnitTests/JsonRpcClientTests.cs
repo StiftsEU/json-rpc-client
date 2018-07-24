@@ -500,6 +500,7 @@ namespace Community.JsonRpc.ServiceClient.Tests
             {
                 await client.InvokeAsync("m");
 
+                Assert.IsNotNull(requestAcceptHeader);
                 CollectionAssert.Contains(requestAcceptHeader.ToArray(), new MediaTypeWithQualityHeaderValue("application/json"));
             }
         }
@@ -538,6 +539,7 @@ namespace Community.JsonRpc.ServiceClient.Tests
             {
                 var result = await client.InvokeAsync<long>("m");
 
+                Assert.IsNotNull(requestAcceptHeader);
                 CollectionAssert.Contains(requestAcceptHeader.ToArray(), new MediaTypeWithQualityHeaderValue("application/json"));
                 Assert.AreEqual(1L, result);
             }
@@ -578,6 +580,7 @@ namespace Community.JsonRpc.ServiceClient.Tests
                 var exception = await Assert.ThrowsExceptionAsync<JsonRpcServiceException>(() =>
                     client.InvokeAsync<long>("m"));
 
+                Assert.IsNotNull(requestAcceptHeader);
                 CollectionAssert.Contains(requestAcceptHeader.ToArray(), new MediaTypeWithQualityHeaderValue("application/json"));
                 Assert.AreEqual(1L, exception.Code);
                 Assert.AreEqual("e", exception.Message);
