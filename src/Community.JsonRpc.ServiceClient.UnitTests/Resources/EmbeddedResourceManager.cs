@@ -1,6 +1,6 @@
-﻿using System;
-// © Alexander Kozlenko. Licensed under the MIT License.
+﻿// © Alexander Kozlenko. Licensed under the MIT License.
 
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;

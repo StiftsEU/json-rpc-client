@@ -18,23 +18,18 @@ namespace Community.JsonRpc.ServiceClient.Tests
     [TestClass]
     public sealed class JsonRpcClientTests
     {
-        private HttpClient CreateEmptyHttpInvoker()
-        {
-            return new HttpClient(new TestHttpHandler());
-        }
-
         [TestMethod]
         public void ConstructorWhenServiceUriIsStringAndIsNull()
         {
             Assert.ThrowsException<ArgumentNullException>(() =>
-                new JsonRpcClient((string)null, CreateEmptyHttpInvoker()));
+                new JsonRpcClient((string)null, new HttpClient(new TestHttpHandler())));
         }
 
         [TestMethod]
         public void ConstructorWhenServiceUriIsStringAndIsRelative()
         {
             Assert.ThrowsException<UriFormatException>(() =>
-                new JsonRpcClient("/api", CreateEmptyHttpInvoker()));
+                new JsonRpcClient("/api", new HttpClient(new TestHttpHandler())));
         }
 
         [TestMethod]
@@ -48,14 +43,14 @@ namespace Community.JsonRpc.ServiceClient.Tests
         public void ConstructorWhenServiceUriIsUriAndIsNull()
         {
             Assert.ThrowsException<ArgumentNullException>(() =>
-                new JsonRpcClient((Uri)null, CreateEmptyHttpInvoker()));
+                new JsonRpcClient((Uri)null, new HttpClient(new TestHttpHandler())));
         }
 
         [TestMethod]
         public void ConstructorWhenServiceUriIsUriAndIsRelative()
         {
             Assert.ThrowsException<ArgumentException>(() =>
-                new JsonRpcClient(new Uri("/api", UriKind.Relative), CreateEmptyHttpInvoker()));
+                new JsonRpcClient(new Uri("/api", UriKind.Relative), new HttpClient(new TestHttpHandler())));
         }
 
         [TestMethod]
@@ -68,7 +63,7 @@ namespace Community.JsonRpc.ServiceClient.Tests
         [TestMethod]
         public async Task InvokeWhenMethodIsNull()
         {
-            var client = new JsonRpcClient("https://localhost", CreateEmptyHttpInvoker());
+            var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
 
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(() =>
                 client.InvokeAsync<long>((string)null));
@@ -77,7 +72,7 @@ namespace Community.JsonRpc.ServiceClient.Tests
         [TestMethod]
         public async Task InvokeWhenIdentifierIsEmpty()
         {
-            var client = new JsonRpcClient("https://localhost", CreateEmptyHttpInvoker());
+            var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
 
             await Assert.ThrowsExceptionAsync<ArgumentException>(() =>
                 client.InvokeAsync<long>("m", new JsonRpcId()));
@@ -86,7 +81,7 @@ namespace Community.JsonRpc.ServiceClient.Tests
         [TestMethod]
         public async Task InvokeWhenMethodIsNullAndParametersAreByPosition()
         {
-            var client = new JsonRpcClient("https://localhost", CreateEmptyHttpInvoker());
+            var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
 
             var parameters = new object[]
             {
@@ -101,7 +96,7 @@ namespace Community.JsonRpc.ServiceClient.Tests
         [TestMethod]
         public async Task InvokeWhenIdentifierIsEmptyAndParametersAreByPosition()
         {
-            var client = new JsonRpcClient("https://localhost", CreateEmptyHttpInvoker());
+            var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
 
             var parameters = new object[]
             {
@@ -116,7 +111,7 @@ namespace Community.JsonRpc.ServiceClient.Tests
         [TestMethod]
         public async Task InvokeWhenMethodIsNullAndParametersAreByName()
         {
-            var client = new JsonRpcClient("https://localhost", CreateEmptyHttpInvoker());
+            var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
 
             var parameters = new Dictionary<string, object>
             {
@@ -131,7 +126,7 @@ namespace Community.JsonRpc.ServiceClient.Tests
         [TestMethod]
         public async Task InvokeWhenIdentifierIsEmptyAndParametersAreByName()
         {
-            var client = new JsonRpcClient("https://localhost", CreateEmptyHttpInvoker());
+            var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
 
             var parameters = new Dictionary<string, object>
             {
@@ -146,7 +141,7 @@ namespace Community.JsonRpc.ServiceClient.Tests
         [TestMethod]
         public async Task InvokeWhenMethodIsSystem()
         {
-            var client = new JsonRpcClient("https://localhost", CreateEmptyHttpInvoker());
+            var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
 
             await Assert.ThrowsExceptionAsync<ArgumentException>(() =>
                 client.InvokeAsync<long>("rpc.m"));
@@ -155,7 +150,7 @@ namespace Community.JsonRpc.ServiceClient.Tests
         [TestMethod]
         public async Task InvokeWhenMethodIsSystemAndParametersAreByPosition()
         {
-            var client = new JsonRpcClient("https://localhost", CreateEmptyHttpInvoker());
+            var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
 
             var parameters = new object[]
             {
@@ -170,7 +165,7 @@ namespace Community.JsonRpc.ServiceClient.Tests
         [TestMethod]
         public async Task InvokeWhenMethodIsSystemAndParametersAreByName()
         {
-            var client = new JsonRpcClient("https://localhost", CreateEmptyHttpInvoker());
+            var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
 
             var parameters = new Dictionary<string, object>
             {
@@ -185,7 +180,7 @@ namespace Community.JsonRpc.ServiceClient.Tests
         [TestMethod]
         public async Task InvokeWhenParametersAreByPositionAndIsNull()
         {
-            var client = new JsonRpcClient("https://localhost", CreateEmptyHttpInvoker());
+            var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
             var parameters = (object[])null;
 
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(() =>
@@ -195,7 +190,7 @@ namespace Community.JsonRpc.ServiceClient.Tests
         [TestMethod]
         public async Task InvokeWhenParametersAreByNameAndIsNull()
         {
-            var client = new JsonRpcClient("https://localhost", CreateEmptyHttpInvoker());
+            var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
             var parameters = (Dictionary<string, object>)null;
 
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(() =>
@@ -205,7 +200,7 @@ namespace Community.JsonRpc.ServiceClient.Tests
         [TestMethod]
         public async Task InvokeWhenCancellationTokenIsCancelled()
         {
-            var client = new JsonRpcClient("https://localhost", CreateEmptyHttpInvoker());
+            var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
             var cancellationTokenSource = new CancellationTokenSource();
 
             cancellationTokenSource.Cancel();
@@ -217,7 +212,7 @@ namespace Community.JsonRpc.ServiceClient.Tests
         [TestMethod]
         public async Task InvokeWhenCancellationTokenIsCancelledAndParametersAreByPosition()
         {
-            var client = new JsonRpcClient("https://localhost", CreateEmptyHttpInvoker());
+            var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
 
             var parameters = new object[]
             {
@@ -236,7 +231,7 @@ namespace Community.JsonRpc.ServiceClient.Tests
         [TestMethod]
         public async Task InvokeWhenCancellationTokenIsCancelledAndParametersAreByName()
         {
-            var client = new JsonRpcClient("https://localhost", CreateEmptyHttpInvoker());
+            var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
 
             var parameters = new Dictionary<string, object>
             {
