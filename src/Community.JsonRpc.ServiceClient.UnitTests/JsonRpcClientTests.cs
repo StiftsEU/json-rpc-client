@@ -8,12 +8,12 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Community.JsonRpc.ServiceClient.Tests.Internal;
-using Community.JsonRpc.ServiceClient.Tests.Resources;
+using Community.JsonRpc.ServiceClient.UnitTests.Internal;
+using Community.JsonRpc.ServiceClient.UnitTests.Resources;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 
-namespace Community.JsonRpc.ServiceClient.Tests
+namespace Community.JsonRpc.ServiceClient.UnitTests
 {
     [TestClass]
     public sealed class JsonRpcClientTests

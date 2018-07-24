@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 
-namespace Community.JsonRpc.ServiceClient.Tests.Internal
+namespace Community.JsonRpc.ServiceClient.UnitTests.Internal
 {
     internal sealed class TestJsonRpcClientWithHttpVersion : JsonRpcClient
     {

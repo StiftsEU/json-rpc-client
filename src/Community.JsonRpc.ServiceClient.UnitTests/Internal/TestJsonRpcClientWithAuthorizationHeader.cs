@@ -1,7 +1,7 @@
 ﻿using System.Net.Http;
 using System.Net.Http.Headers;
 
-namespace Community.JsonRpc.ServiceClient.Tests.Internal
+namespace Community.JsonRpc.ServiceClient.UnitTests.Internal
 {
     internal sealed class TestJsonRpcClientWithAuthorizationHeader : JsonRpcClient
     {

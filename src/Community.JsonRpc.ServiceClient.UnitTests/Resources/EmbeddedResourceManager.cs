@@ -6,7 +6,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 
-namespace Community.JsonRpc.ServiceClient.Tests.Resources
+namespace Community.JsonRpc.ServiceClient.UnitTests.Resources
 {
     [DebuggerStepThrough]
     internal static class EmbeddedResourceManager
