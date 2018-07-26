@@ -36,20 +36,12 @@ namespace Community.JsonRpc.ServiceClient.Benchmarks.TestSuites
 
         private static IReadOnlyList<object> CreateParametersByPosition()
         {
-            return new object[]
-            {
-                1L,
-                2L
-            };
+            return new object[] { 1L, 2L };
         }
 
         private static IReadOnlyDictionary<string, object> CreateParametersByName()
         {
-            return new Dictionary<string, object>(2, StringComparer.Ordinal)
-            {
-                ["p1"] = 1L,
-                ["p2"] = 2L
-            };
+            return new Dictionary<string, object>(2, StringComparer.Ordinal) { ["p1"] = 1L, ["p2"] = 2L };
         }
 
         private static IEnumerable<string> GetResponseCodes()

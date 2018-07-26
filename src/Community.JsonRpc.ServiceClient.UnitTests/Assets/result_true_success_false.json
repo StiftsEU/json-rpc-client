@@ -2,6 +2,7 @@
     "jsonrpc": "2.0",
     "error": {
         "code": 1,
-        "message": "e"
+        "message": "e",
+        "data": 1
     }
 }

@@ -10,7 +10,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
-using Community.JsonRpc.ServiceClient.Internal;
 using Community.JsonRpc.ServiceClient.Resources;
 
 namespace Community.JsonRpc.ServiceClient
@@ -21,14 +20,9 @@ namespace Community.JsonRpc.ServiceClient
         private static readonly MediaTypeHeaderValue _mediaTypeValue = new MediaTypeHeaderValue("application/json");
         private static readonly MediaTypeWithQualityHeaderValue _mediaTypeWithQualityValue = new MediaTypeWithQualityHeaderValue("application/json");
 
-        private readonly HttpMessageInvoker _httpInvoker;
         private readonly Uri _serviceUri;
-
-        private readonly JsonRpcSerializer _serializer = new JsonRpcSerializer(
-            EmptyDictionary<string, JsonRpcRequestContract>.Instance,
-            EmptyDictionary<string, JsonRpcResponseContract>.Instance,
-            EmptyDictionary<JsonRpcId, string>.Instance,
-            new ConcurrentDictionary<JsonRpcId, JsonRpcResponseContract>());
+        private readonly HttpMessageInvoker _httpInvoker;
+        private readonly JsonRpcSerializer _serializer = new JsonRpcSerializer(dynamicResponseBindings: new ConcurrentDictionary<JsonRpcId, JsonRpcResponseContract>());
 
         /// <summary>Initializes a new instance of the <see cref="JsonRpcClient" /> class.</summary>
         /// <param name="serviceUri">The service URI.</param>
@@ -109,71 +103,6 @@ namespace Community.JsonRpc.ServiceClient
         }
 
         /// <summary>Invokes the specified service method.</summary>
-        /// <typeparam name="T">The type of the service method result.</typeparam>
-        /// <param name="method">The name of the service method.</param>
-        /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
-        /// <returns>A task that represents the asynchronous operation. The task result is the service method result.</returns>
-        /// <exception cref="ArgumentException"><paramref name="method" /> is a system extension method.</exception>
-        /// <exception cref="ArgumentNullException"><paramref name="method" /> is <see langword="null" />.</exception>
-        /// <exception cref="JsonRpcContractException">An error occurred during parameters or service result handling.</exception>
-        /// <exception cref="JsonRpcRequestException">An error occurred during HTTP request execution.</exception>
-        /// <exception cref="JsonRpcServiceException">An error occurred during service method invocation.</exception>
-        /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
-        public async Task<T> InvokeAsync<T>(string method, CancellationToken cancellationToken = default)
-        {
-            if (method == null)
-            {
-                throw new ArgumentNullException(nameof(method));
-            }
-            if (JsonRpcRequest.IsSystemMethod(method))
-            {
-                throw new ArgumentException(Strings.GetString("invoke.method.invalid_name"), nameof(method));
-            }
-
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var request = new JsonRpcRequest(method, Guid.NewGuid().ToString("D"));
-            var response = await InvokeAsync(request, JsonRpcResponseContract<T>.Instance, cancellationToken).ConfigureAwait(false);
-
-            return response != null ? (T)response.Result : default;
-        }
-
-        /// <summary>Invokes the specified service method.</summary>
-        /// <typeparam name="T">The type of the service method result.</typeparam>
-        /// <param name="method">The name of the service method.</param>
-        /// <param name="identifier">The message identifier.</param>
-        /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
-        /// <returns>A task that represents the asynchronous operation. The task result is the service method result.</returns>
-        /// <exception cref="ArgumentException"><paramref name="method" /> is a system extension method or <paramref name="identifier" /> is void.</exception>
-        /// <exception cref="ArgumentNullException"><paramref name="method" /> is <see langword="null" />.</exception>
-        /// <exception cref="JsonRpcContractException">An error occurred during parameters or service result handling.</exception>
-        /// <exception cref="JsonRpcRequestException">An error occurred during HTTP request execution.</exception>
-        /// <exception cref="JsonRpcServiceException">An error occurred during service method invocation.</exception>
-        /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
-        public async Task<T> InvokeAsync<T>(string method, JsonRpcId identifier, CancellationToken cancellationToken = default)
-        {
-            if (method == null)
-            {
-                throw new ArgumentNullException(nameof(method));
-            }
-            if (JsonRpcRequest.IsSystemMethod(method))
-            {
-                throw new ArgumentException(Strings.GetString("invoke.method.invalid_name"), nameof(method));
-            }
-            if (identifier.Type == JsonRpcIdType.None)
-            {
-                throw new ArgumentException(Strings.GetString("invoke.identifier.invalid_value"), nameof(identifier));
-            }
-
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var request = new JsonRpcRequest(method, identifier);
-            var response = await InvokeAsync(request, JsonRpcResponseContract<T>.Instance, cancellationToken).ConfigureAwait(false);
-
-            return response != null ? (T)response.Result : default;
-        }
-
-        /// <summary>Invokes the specified service method.</summary>
         /// <param name="method">The name of the service method.</param>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
@@ -202,18 +131,17 @@ namespace Community.JsonRpc.ServiceClient
         }
 
         /// <summary>Invokes the specified service method.</summary>
-        /// <typeparam name="T">The type of the service method result.</typeparam>
         /// <param name="method">The name of the service method.</param>
-        /// <param name="parameters">The parameters to be used during the invocation of the service method, specified by name.</param>
+        /// <param name="parameters">The parameters to be used during the invocation of the service method, specified by position.</param>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
-        /// <returns>A task that represents the asynchronous operation. The task result is the service method result.</returns>
+        /// <returns>A task that represents the asynchronous operation.</returns>
         /// <exception cref="ArgumentException"><paramref name="method" /> is a system extension method.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="method" /> or <paramref name="parameters" /> is <see langword="null" />.</exception>
         /// <exception cref="JsonRpcContractException">An error occurred during parameters or service result handling.</exception>
         /// <exception cref="JsonRpcRequestException">An error occurred during HTTP request execution.</exception>
         /// <exception cref="JsonRpcServiceException">An error occurred during service method invocation.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
-        public async Task<T> InvokeAsync<T>(string method, IReadOnlyDictionary<string, object> parameters, CancellationToken cancellationToken = default)
+        public Task InvokeAsync(string method, IReadOnlyList<object> parameters, CancellationToken cancellationToken = default)
         {
             if (method == null)
             {
@@ -230,50 +158,9 @@ namespace Community.JsonRpc.ServiceClient
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            var request = new JsonRpcRequest(method, Guid.NewGuid().ToString("D"), parameters);
-            var response = await InvokeAsync(request, JsonRpcResponseContract<T>.Instance, cancellationToken).ConfigureAwait(false);
+            var request = new JsonRpcRequest(method, parameters);
 
-            return response != null ? (T)response.Result : default;
-        }
-
-        /// <summary>Invokes the specified service method.</summary>
-        /// <typeparam name="T">The type of the service method result.</typeparam>
-        /// <param name="method">The name of the service method.</param>
-        /// <param name="identifier">The message identifier.</param>
-        /// <param name="parameters">The parameters to be used during the invocation of the service method, specified by name.</param>
-        /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
-        /// <returns>A task that represents the asynchronous operation. The task result is the service method result.</returns>
-        /// <exception cref="ArgumentException"><paramref name="method" /> is a system extension method or <paramref name="identifier" /> is void.</exception>
-        /// <exception cref="ArgumentNullException"><paramref name="method" /> or <paramref name="parameters" /> is <see langword="null" />.</exception>
-        /// <exception cref="JsonRpcContractException">An error occurred during parameters or service result handling.</exception>
-        /// <exception cref="JsonRpcRequestException">An error occurred during HTTP request execution.</exception>
-        /// <exception cref="JsonRpcServiceException">An error occurred during service method invocation.</exception>
-        /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
-        public async Task<T> InvokeAsync<T>(string method, JsonRpcId identifier, IReadOnlyDictionary<string, object> parameters, CancellationToken cancellationToken = default)
-        {
-            if (method == null)
-            {
-                throw new ArgumentNullException(nameof(method));
-            }
-            if (JsonRpcRequest.IsSystemMethod(method))
-            {
-                throw new ArgumentException(Strings.GetString("invoke.method.invalid_name"), nameof(method));
-            }
-            if (identifier.Type == JsonRpcIdType.None)
-            {
-                throw new ArgumentException(Strings.GetString("invoke.identifier.invalid_value"), nameof(identifier));
-            }
-            if (parameters == null)
-            {
-                throw new ArgumentNullException(nameof(parameters));
-            }
-
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var request = new JsonRpcRequest(method, identifier, parameters);
-            var response = await InvokeAsync(request, JsonRpcResponseContract<T>.Instance, cancellationToken).ConfigureAwait(false);
-
-            return response != null ? (T)response.Result : default;
+            return InvokeAsync(request, null, cancellationToken);
         }
 
         /// <summary>Invokes the specified service method.</summary>
@@ -310,7 +197,37 @@ namespace Community.JsonRpc.ServiceClient
         }
 
         /// <summary>Invokes the specified service method.</summary>
-        /// <typeparam name="T">The type of the service method result.</typeparam>
+        /// <typeparam name="TResult">The type of the service method result.</typeparam>
+        /// <param name="method">The name of the service method.</param>
+        /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result is the service method result.</returns>
+        /// <exception cref="ArgumentException"><paramref name="method" /> is a system extension method.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="method" /> is <see langword="null" />.</exception>
+        /// <exception cref="JsonRpcContractException">An error occurred during parameters or service result handling.</exception>
+        /// <exception cref="JsonRpcRequestException">An error occurred during HTTP request execution.</exception>
+        /// <exception cref="JsonRpcServiceException">An error occurred during service method invocation.</exception>
+        /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        public async Task<TResult> InvokeAsync<TResult>(string method, CancellationToken cancellationToken = default)
+        {
+            if (method == null)
+            {
+                throw new ArgumentNullException(nameof(method));
+            }
+            if (JsonRpcRequest.IsSystemMethod(method))
+            {
+                throw new ArgumentException(Strings.GetString("invoke.method.invalid_name"), nameof(method));
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var request = new JsonRpcRequest(method, Guid.NewGuid().ToString("D"));
+            var response = await InvokeAsync(request, JsonRpcResponseContract<TResult>.Instance, cancellationToken).ConfigureAwait(false);
+
+            return (TResult)response.Result;
+        }
+
+        /// <summary>Invokes the specified service method.</summary>
+        /// <typeparam name="TResult">The type of the service method result.</typeparam>
         /// <param name="method">The name of the service method.</param>
         /// <param name="parameters">The parameters to be used during the invocation of the service method, specified by position.</param>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
@@ -321,7 +238,7 @@ namespace Community.JsonRpc.ServiceClient
         /// <exception cref="JsonRpcRequestException">An error occurred during HTTP request execution.</exception>
         /// <exception cref="JsonRpcServiceException">An error occurred during service method invocation.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
-        public async Task<T> InvokeAsync<T>(string method, IReadOnlyList<object> parameters, CancellationToken cancellationToken = default)
+        public async Task<TResult> InvokeAsync<TResult>(string method, IReadOnlyList<object> parameters, CancellationToken cancellationToken = default)
         {
             if (method == null)
             {
@@ -339,13 +256,83 @@ namespace Community.JsonRpc.ServiceClient
             cancellationToken.ThrowIfCancellationRequested();
 
             var request = new JsonRpcRequest(method, Guid.NewGuid().ToString("D"), parameters);
-            var response = await InvokeAsync(request, JsonRpcResponseContract<T>.Instance, cancellationToken).ConfigureAwait(false);
+            var response = await InvokeAsync(request, JsonRpcResponseContract<TResult>.Instance, cancellationToken).ConfigureAwait(false);
 
-            return response != null ? (T)response.Result : default;
+            return (TResult)response.Result;
         }
 
         /// <summary>Invokes the specified service method.</summary>
-        /// <typeparam name="T">The type of the service method result.</typeparam>
+        /// <typeparam name="TResult">The type of the service method result.</typeparam>
+        /// <param name="method">The name of the service method.</param>
+        /// <param name="parameters">The parameters to be used during the invocation of the service method, specified by name.</param>
+        /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result is the service method result.</returns>
+        /// <exception cref="ArgumentException"><paramref name="method" /> is a system extension method.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="method" /> or <paramref name="parameters" /> is <see langword="null" />.</exception>
+        /// <exception cref="JsonRpcContractException">An error occurred during parameters or service result handling.</exception>
+        /// <exception cref="JsonRpcRequestException">An error occurred during HTTP request execution.</exception>
+        /// <exception cref="JsonRpcServiceException">An error occurred during service method invocation.</exception>
+        /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        public async Task<TResult> InvokeAsync<TResult>(string method, IReadOnlyDictionary<string, object> parameters, CancellationToken cancellationToken = default)
+        {
+            if (method == null)
+            {
+                throw new ArgumentNullException(nameof(method));
+            }
+            if (JsonRpcRequest.IsSystemMethod(method))
+            {
+                throw new ArgumentException(Strings.GetString("invoke.method.invalid_name"), nameof(method));
+            }
+            if (parameters == null)
+            {
+                throw new ArgumentNullException(nameof(parameters));
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var request = new JsonRpcRequest(method, Guid.NewGuid().ToString("D"), parameters);
+            var response = await InvokeAsync(request, JsonRpcResponseContract<TResult>.Instance, cancellationToken).ConfigureAwait(false);
+
+            return (TResult)response.Result;
+        }
+
+        /// <summary>Invokes the specified service method.</summary>
+        /// <typeparam name="TResult">The type of the service method result.</typeparam>
+        /// <param name="method">The name of the service method.</param>
+        /// <param name="identifier">The message identifier.</param>
+        /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result is the service method result.</returns>
+        /// <exception cref="ArgumentException"><paramref name="method" /> is a system extension method or <paramref name="identifier" /> is void.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="method" /> is <see langword="null" />.</exception>
+        /// <exception cref="JsonRpcContractException">An error occurred during parameters or service result handling.</exception>
+        /// <exception cref="JsonRpcRequestException">An error occurred during HTTP request execution.</exception>
+        /// <exception cref="JsonRpcServiceException">An error occurred during service method invocation.</exception>
+        /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        public async Task<TResult> InvokeAsync<TResult>(string method, JsonRpcId identifier, CancellationToken cancellationToken = default)
+        {
+            if (method == null)
+            {
+                throw new ArgumentNullException(nameof(method));
+            }
+            if (JsonRpcRequest.IsSystemMethod(method))
+            {
+                throw new ArgumentException(Strings.GetString("invoke.method.invalid_name"), nameof(method));
+            }
+            if (identifier.Type == JsonRpcIdType.None)
+            {
+                throw new ArgumentException(Strings.GetString("invoke.identifier.invalid_value"), nameof(identifier));
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var request = new JsonRpcRequest(method, identifier);
+            var response = await InvokeAsync(request, JsonRpcResponseContract<TResult>.Instance, cancellationToken).ConfigureAwait(false);
+
+            return (TResult)response.Result;
+        }
+
+        /// <summary>Invokes the specified service method.</summary>
+        /// <typeparam name="TResult">The type of the service method result.</typeparam>
         /// <param name="method">The name of the service method.</param>
         /// <param name="identifier">The message identifier.</param>
         /// <param name="parameters">The parameters to be used during the invocation of the service method, specified by position.</param>
@@ -357,7 +344,7 @@ namespace Community.JsonRpc.ServiceClient
         /// <exception cref="JsonRpcRequestException">An error occurred during HTTP request execution.</exception>
         /// <exception cref="JsonRpcServiceException">An error occurred during service method invocation.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
-        public async Task<T> InvokeAsync<T>(string method, JsonRpcId identifier, IReadOnlyList<object> parameters, CancellationToken cancellationToken = default)
+        public async Task<TResult> InvokeAsync<TResult>(string method, JsonRpcId identifier, IReadOnlyList<object> parameters, CancellationToken cancellationToken = default)
         {
             if (method == null)
             {
@@ -379,23 +366,96 @@ namespace Community.JsonRpc.ServiceClient
             cancellationToken.ThrowIfCancellationRequested();
 
             var request = new JsonRpcRequest(method, identifier, parameters);
-            var response = await InvokeAsync(request, JsonRpcResponseContract<T>.Instance, cancellationToken).ConfigureAwait(false);
+            var response = await InvokeAsync(request, JsonRpcResponseContract<TResult>.Instance, cancellationToken).ConfigureAwait(false);
 
-            return response != null ? (T)response.Result : default;
+            return (TResult)response.Result;
         }
 
         /// <summary>Invokes the specified service method.</summary>
+        /// <typeparam name="TResult">The type of the service method result.</typeparam>
+        /// <param name="method">The name of the service method.</param>
+        /// <param name="identifier">The message identifier.</param>
+        /// <param name="parameters">The parameters to be used during the invocation of the service method, specified by name.</param>
+        /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result is the service method result.</returns>
+        /// <exception cref="ArgumentException"><paramref name="method" /> is a system extension method or <paramref name="identifier" /> is void.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="method" /> or <paramref name="parameters" /> is <see langword="null" />.</exception>
+        /// <exception cref="JsonRpcContractException">An error occurred during parameters or service result handling.</exception>
+        /// <exception cref="JsonRpcRequestException">An error occurred during HTTP request execution.</exception>
+        /// <exception cref="JsonRpcServiceException">An error occurred during service method invocation.</exception>
+        /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        public async Task<TResult> InvokeAsync<TResult>(string method, JsonRpcId identifier, IReadOnlyDictionary<string, object> parameters, CancellationToken cancellationToken = default)
+        {
+            if (method == null)
+            {
+                throw new ArgumentNullException(nameof(method));
+            }
+            if (JsonRpcRequest.IsSystemMethod(method))
+            {
+                throw new ArgumentException(Strings.GetString("invoke.method.invalid_name"), nameof(method));
+            }
+            if (identifier.Type == JsonRpcIdType.None)
+            {
+                throw new ArgumentException(Strings.GetString("invoke.identifier.invalid_value"), nameof(identifier));
+            }
+            if (parameters == null)
+            {
+                throw new ArgumentNullException(nameof(parameters));
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var request = new JsonRpcRequest(method, identifier, parameters);
+            var response = await InvokeAsync(request, JsonRpcResponseContract<TResult>.Instance, cancellationToken).ConfigureAwait(false);
+
+            return (TResult)response.Result;
+        }
+
+        /// <summary>Invokes the specified service method.</summary>
+        /// <typeparam name="TResult">The type of the service method result.</typeparam>
+        /// <typeparam name="TErrorData">The type of the service method optional error data.</typeparam>
+        /// <param name="method">The name of the service method.</param>
+        /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result is the service method result.</returns>
+        /// <exception cref="ArgumentException"><paramref name="method" /> is a system extension method.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="method" /> is <see langword="null" />.</exception>
+        /// <exception cref="JsonRpcContractException">An error occurred during parameters or service result handling.</exception>
+        /// <exception cref="JsonRpcRequestException">An error occurred during HTTP request execution.</exception>
+        /// <exception cref="JsonRpcServiceException">An error occurred during service method invocation.</exception>
+        /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        public async Task<TResult> InvokeAsync<TResult, TErrorData>(string method, CancellationToken cancellationToken = default)
+        {
+            if (method == null)
+            {
+                throw new ArgumentNullException(nameof(method));
+            }
+            if (JsonRpcRequest.IsSystemMethod(method))
+            {
+                throw new ArgumentException(Strings.GetString("invoke.method.invalid_name"), nameof(method));
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var request = new JsonRpcRequest(method, Guid.NewGuid().ToString("D"));
+            var response = await InvokeAsync(request, JsonRpcResponseContract<TResult, TErrorData>.Instance, cancellationToken).ConfigureAwait(false);
+
+            return (TResult)response.Result;
+        }
+
+        /// <summary>Invokes the specified service method.</summary>
+        /// <typeparam name="TResult">The type of the service method result.</typeparam>
+        /// <typeparam name="TErrorData">The type of the service method optional error data.</typeparam>
         /// <param name="method">The name of the service method.</param>
         /// <param name="parameters">The parameters to be used during the invocation of the service method, specified by position.</param>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
-        /// <returns>A task that represents the asynchronous operation.</returns>
+        /// <returns>A task that represents the asynchronous operation. The task result is the service method result.</returns>
         /// <exception cref="ArgumentException"><paramref name="method" /> is a system extension method.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="method" /> or <paramref name="parameters" /> is <see langword="null" />.</exception>
         /// <exception cref="JsonRpcContractException">An error occurred during parameters or service result handling.</exception>
         /// <exception cref="JsonRpcRequestException">An error occurred during HTTP request execution.</exception>
         /// <exception cref="JsonRpcServiceException">An error occurred during service method invocation.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
-        public Task InvokeAsync(string method, IReadOnlyList<object> parameters, CancellationToken cancellationToken = default)
+        public async Task<TResult> InvokeAsync<TResult, TErrorData>(string method, IReadOnlyList<object> parameters, CancellationToken cancellationToken = default)
         {
             if (method == null)
             {
@@ -412,9 +472,164 @@ namespace Community.JsonRpc.ServiceClient
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            var request = new JsonRpcRequest(method, parameters);
+            var request = new JsonRpcRequest(method, Guid.NewGuid().ToString("D"), parameters);
+            var response = await InvokeAsync(request, JsonRpcResponseContract<TResult>.Instance, cancellationToken).ConfigureAwait(false);
 
-            return InvokeAsync(request, null, cancellationToken);
+            return (TResult)response.Result;
+        }
+
+        /// <summary>Invokes the specified service method.</summary>
+        /// <typeparam name="TResult">The type of the service method result.</typeparam>
+        /// <typeparam name="TErrorData">The type of the service method optional error data.</typeparam>
+        /// <param name="method">The name of the service method.</param>
+        /// <param name="parameters">The parameters to be used during the invocation of the service method, specified by name.</param>
+        /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result is the service method result.</returns>
+        /// <exception cref="ArgumentException"><paramref name="method" /> is a system extension method.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="method" /> or <paramref name="parameters" /> is <see langword="null" />.</exception>
+        /// <exception cref="JsonRpcContractException">An error occurred during parameters or service result handling.</exception>
+        /// <exception cref="JsonRpcRequestException">An error occurred during HTTP request execution.</exception>
+        /// <exception cref="JsonRpcServiceException">An error occurred during service method invocation.</exception>
+        /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        public async Task<TResult> InvokeAsync<TResult, TErrorData>(string method, IReadOnlyDictionary<string, object> parameters, CancellationToken cancellationToken = default)
+        {
+            if (method == null)
+            {
+                throw new ArgumentNullException(nameof(method));
+            }
+            if (JsonRpcRequest.IsSystemMethod(method))
+            {
+                throw new ArgumentException(Strings.GetString("invoke.method.invalid_name"), nameof(method));
+            }
+            if (parameters == null)
+            {
+                throw new ArgumentNullException(nameof(parameters));
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var request = new JsonRpcRequest(method, Guid.NewGuid().ToString("D"), parameters);
+            var response = await InvokeAsync(request, JsonRpcResponseContract<TResult, TErrorData>.Instance, cancellationToken).ConfigureAwait(false);
+
+            return (TResult)response.Result;
+        }
+
+        /// <summary>Invokes the specified service method.</summary>
+        /// <typeparam name="TResult">The type of the service method result.</typeparam>
+        /// <typeparam name="TErrorData">The type of the service method optional error data.</typeparam>
+        /// <param name="method">The name of the service method.</param>
+        /// <param name="identifier">The message identifier.</param>
+        /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result is the service method result.</returns>
+        /// <exception cref="ArgumentException"><paramref name="method" /> is a system extension method or <paramref name="identifier" /> is void.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="method" /> is <see langword="null" />.</exception>
+        /// <exception cref="JsonRpcContractException">An error occurred during parameters or service result handling.</exception>
+        /// <exception cref="JsonRpcRequestException">An error occurred during HTTP request execution.</exception>
+        /// <exception cref="JsonRpcServiceException">An error occurred during service method invocation.</exception>
+        /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        public async Task<TResult> InvokeAsync<TResult, TErrorData>(string method, JsonRpcId identifier, CancellationToken cancellationToken = default)
+        {
+            if (method == null)
+            {
+                throw new ArgumentNullException(nameof(method));
+            }
+            if (JsonRpcRequest.IsSystemMethod(method))
+            {
+                throw new ArgumentException(Strings.GetString("invoke.method.invalid_name"), nameof(method));
+            }
+            if (identifier.Type == JsonRpcIdType.None)
+            {
+                throw new ArgumentException(Strings.GetString("invoke.identifier.invalid_value"), nameof(identifier));
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var request = new JsonRpcRequest(method, identifier);
+            var response = await InvokeAsync(request, JsonRpcResponseContract<TResult, TErrorData>.Instance, cancellationToken).ConfigureAwait(false);
+
+            return (TResult)response.Result;
+        }
+
+        /// <summary>Invokes the specified service method.</summary>
+        /// <typeparam name="TResult">The type of the service method result.</typeparam>
+        /// <typeparam name="TErrorData">The type of the service method optional error data.</typeparam>
+        /// <param name="method">The name of the service method.</param>
+        /// <param name="identifier">The message identifier.</param>
+        /// <param name="parameters">The parameters to be used during the invocation of the service method, specified by position.</param>
+        /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result is the service method result.</returns>
+        /// <exception cref="ArgumentException"><paramref name="method" /> is a system extension method or <paramref name="identifier" /> is void.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="method" /> or <paramref name="parameters" /> is <see langword="null" />.</exception>
+        /// <exception cref="JsonRpcContractException">An error occurred during parameters or service result handling.</exception>
+        /// <exception cref="JsonRpcRequestException">An error occurred during HTTP request execution.</exception>
+        /// <exception cref="JsonRpcServiceException">An error occurred during service method invocation.</exception>
+        /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        public async Task<TResult> InvokeAsync<TResult, TErrorData>(string method, JsonRpcId identifier, IReadOnlyList<object> parameters, CancellationToken cancellationToken = default)
+        {
+            if (method == null)
+            {
+                throw new ArgumentNullException(nameof(method));
+            }
+            if (JsonRpcRequest.IsSystemMethod(method))
+            {
+                throw new ArgumentException(Strings.GetString("invoke.method.invalid_name"), nameof(method));
+            }
+            if (identifier.Type == JsonRpcIdType.None)
+            {
+                throw new ArgumentException(Strings.GetString("invoke.identifier.invalid_value"), nameof(identifier));
+            }
+            if (parameters == null)
+            {
+                throw new ArgumentNullException(nameof(parameters));
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var request = new JsonRpcRequest(method, identifier, parameters);
+            var response = await InvokeAsync(request, JsonRpcResponseContract<TResult, TErrorData>.Instance, cancellationToken).ConfigureAwait(false);
+
+            return (TResult)response.Result;
+        }
+
+        /// <summary>Invokes the specified service method.</summary>
+        /// <typeparam name="TResult">The type of the service method result.</typeparam>
+        /// <typeparam name="TErrorData">The type of the service method optional error data.</typeparam>
+        /// <param name="method">The name of the service method.</param>
+        /// <param name="identifier">The message identifier.</param>
+        /// <param name="parameters">The parameters to be used during the invocation of the service method, specified by name.</param>
+        /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result is the service method result.</returns>
+        /// <exception cref="ArgumentException"><paramref name="method" /> is a system extension method or <paramref name="identifier" /> is void.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="method" /> or <paramref name="parameters" /> is <see langword="null" />.</exception>
+        /// <exception cref="JsonRpcContractException">An error occurred during parameters or service result handling.</exception>
+        /// <exception cref="JsonRpcRequestException">An error occurred during HTTP request execution.</exception>
+        /// <exception cref="JsonRpcServiceException">An error occurred during service method invocation.</exception>
+        /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        public async Task<TResult> InvokeAsync<TResult, TErrorData>(string method, JsonRpcId identifier, IReadOnlyDictionary<string, object> parameters, CancellationToken cancellationToken = default)
+        {
+            if (method == null)
+            {
+                throw new ArgumentNullException(nameof(method));
+            }
+            if (JsonRpcRequest.IsSystemMethod(method))
+            {
+                throw new ArgumentException(Strings.GetString("invoke.method.invalid_name"), nameof(method));
+            }
+            if (identifier.Type == JsonRpcIdType.None)
+            {
+                throw new ArgumentException(Strings.GetString("invoke.identifier.invalid_value"), nameof(identifier));
+            }
+            if (parameters == null)
+            {
+                throw new ArgumentNullException(nameof(parameters));
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var request = new JsonRpcRequest(method, identifier, parameters);
+            var response = await InvokeAsync(request, JsonRpcResponseContract<TResult, TErrorData>.Instance, cancellationToken).ConfigureAwait(false);
+
+            return (TResult)response.Result;
         }
 
         private async Task<JsonRpcResponse> InvokeAsync(JsonRpcRequest request, JsonRpcResponseContract contract, CancellationToken cancellationToken)
@@ -517,7 +732,7 @@ namespace Community.JsonRpc.ServiceClient
 
                                     if (!response.Success)
                                     {
-                                        throw new JsonRpcServiceException(response.Error.Code, response.Error.Message);
+                                        throw new JsonRpcServiceException(response.Error.Code, response.Error.Message, response.Error.Data, response.Error.HasData);
                                     }
 
                                     return response;

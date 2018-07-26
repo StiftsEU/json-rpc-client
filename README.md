@@ -21,7 +21,6 @@ A lightweight [JSON-RPC 2.0](http://www.jsonrpc.org/specification) service clien
 ### Limitations
 
 - The client does not support batch requests.
-- The client does not support optional error data.
 
 ### Usage Examples
 
