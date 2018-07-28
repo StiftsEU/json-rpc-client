@@ -120,6 +120,30 @@
   <data name="client.uri.relative" xml:space="preserve">
     <value>The specified URI is relative</value>
   </data>
+  <data name="factory.interface_has_unsupported_members" xml:space="preserve">
+    <value>The interface "{0}" from the assembly "{1}" defines unsupported type memebers</value>
+  </data>
+  <data name="factory.method.attribute_not_found" xml:space="preserve">
+    <value>The method "{0}" in the type "{1}" from the assembly "{2}" does not have a JSON-RPC method contract attribute</value>
+  </data>
+  <data name="factory.method.invalid_parameter_modifier" xml:space="preserve">
+    <value>The parameter "{0}" of the method "{1}" in the type "{2}" from the assembly "{3}" has invalid modifier</value>
+  </data>
+  <data name="factory.method.invalid_parameters_count" xml:space="preserve">
+    <value>The method "{0}" in the type "{1}" from the assembly "{2}" has invalid parameters count</value>
+  </data>
+  <data name="factory.method.invalid_parameter_names" xml:space="preserve">
+    <value>The method "{0}" in the type "{1}" from the assembly "{2}" has invalid parameter names</value>
+  </data>
+  <data name="factory.method.invalid_parameter_positions" xml:space="preserve">
+    <value>The method "{0}" in the type "{1}" from the assembly "{2}" has invalid parameter positions</value>
+  </data>
+  <data name="factory.method.invalid_return_type" xml:space="preserve">
+    <value>The method "{0}" in the type "{1}" from the assembly "{2}" has invalid return type</value>
+  </data>
+  <data name="factory.type_is_not_interface" xml:space="preserve">
+    <value>The specified type is not an interface</value>
+  </data>
   <data name="invoke.identifier.invalid_value" xml:space="preserve">
     <value>The specified identifier is void</value>
   </data>

@@ -113,7 +113,7 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         public async Task InvokeWhenMethodIsNullAndParametersAreByName()
         {
             var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
-            var parameters = new Dictionary<string, object> { ["p1"] = 1L, ["p2"] = 2L };
+            var parameters = new Dictionary<string, object> { ["a"] = 1L, ["b"] = 2L };
 
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(() =>
                 client.InvokeAsync((string)null, parameters));
@@ -142,7 +142,7 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         public async Task InvokeWithResultWhenMethodIsNullAndParametersAreByName()
         {
             var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
-            var parameters = new Dictionary<string, object> { ["p1"] = 1L, ["p2"] = 2L };
+            var parameters = new Dictionary<string, object> { ["a"] = 1L, ["b"] = 2L };
 
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(() =>
                 client.InvokeAsync<long>((string)null, parameters));
@@ -171,7 +171,7 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         public async Task InvokeWithResultAndIdentifierWhenMethodIsNullAndParametersAreByName()
         {
             var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
-            var parameters = new Dictionary<string, object> { ["p1"] = 1L, ["p2"] = 2L };
+            var parameters = new Dictionary<string, object> { ["a"] = 1L, ["b"] = 2L };
 
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(() =>
                 client.InvokeAsync<long>((string)null, default(JsonRpcId), parameters));
@@ -200,7 +200,7 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         public async Task InvokeWithResultAndErrorDataWhenMethodIsNullAndParametersAreByName()
         {
             var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
-            var parameters = new Dictionary<string, object> { ["p1"] = 1L, ["p2"] = 2L };
+            var parameters = new Dictionary<string, object> { ["a"] = 1L, ["b"] = 2L };
 
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(() =>
                 client.InvokeAsync<long, long>((string)null, parameters));
@@ -229,7 +229,7 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         public async Task InvokeWithResultAndErrorDataAndIdentifierWhenMethodIsNullAndParametersAreByName()
         {
             var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
-            var parameters = new Dictionary<string, object> { ["p1"] = 1L, ["p2"] = 2L };
+            var parameters = new Dictionary<string, object> { ["a"] = 1L, ["b"] = 2L };
 
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(() =>
                 client.InvokeAsync<long, long>((string)null, default(JsonRpcId), parameters));
@@ -260,7 +260,7 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         public async Task InvokeWhenMethodIsSystemAndParametersAreByName()
         {
             var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
-            var parameters = new Dictionary<string, object> { ["p1"] = 1L, ["p2"] = 2L };
+            var parameters = new Dictionary<string, object> { ["a"] = 1L, ["b"] = 2L };
 
             await Assert.ThrowsExceptionAsync<ArgumentException>(() =>
                 client.InvokeAsync("rpc.m", parameters));
@@ -289,7 +289,7 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         public async Task InvokeWithResultWhenMethodIsSystemAndParametersAreByName()
         {
             var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
-            var parameters = new Dictionary<string, object> { ["p1"] = 1L, ["p2"] = 2L };
+            var parameters = new Dictionary<string, object> { ["a"] = 1L, ["b"] = 2L };
 
             await Assert.ThrowsExceptionAsync<ArgumentException>(() =>
                 client.InvokeAsync<long>("rpc.m", parameters));
@@ -318,7 +318,7 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         public async Task InvokeWithResultAndIdentifierWhenMethodIsSystemAndParametersAreByName()
         {
             var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
-            var parameters = new Dictionary<string, object> { ["p1"] = 1L, ["p2"] = 2L };
+            var parameters = new Dictionary<string, object> { ["a"] = 1L, ["b"] = 2L };
 
             await Assert.ThrowsExceptionAsync<ArgumentException>(() =>
                 client.InvokeAsync<long>("rpc.m", default(JsonRpcId), parameters));
@@ -347,7 +347,7 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         public async Task InvokeWithResultAndErrorDataWhenMethodIsSystemAndParametersAreByName()
         {
             var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
-            var parameters = new Dictionary<string, object> { ["p1"] = 1L, ["p2"] = 2L };
+            var parameters = new Dictionary<string, object> { ["a"] = 1L, ["b"] = 2L };
 
             await Assert.ThrowsExceptionAsync<ArgumentException>(() =>
                 client.InvokeAsync<long, long>("rpc.m", default(JsonRpcId), parameters));
@@ -376,7 +376,7 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         public async Task InvokeWithResultAndErrorDataAndIdentifierWhenMethodIsSystemAndParametersAreByName()
         {
             var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
-            var parameters = new Dictionary<string, object> { ["p1"] = 1L, ["p2"] = 2L };
+            var parameters = new Dictionary<string, object> { ["a"] = 1L, ["b"] = 2L };
 
             await Assert.ThrowsExceptionAsync<ArgumentException>(() =>
                 client.InvokeAsync<long, long>("rpc.m", parameters));
@@ -489,7 +489,7 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         public async Task InvokeWithResultWhenIdentifierIsEmptyAndParametersAreByName()
         {
             var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
-            var parameters = new Dictionary<string, object> { ["p1"] = 1L, ["p2"] = 2L };
+            var parameters = new Dictionary<string, object> { ["a"] = 1L, ["b"] = 2L };
 
             await Assert.ThrowsExceptionAsync<ArgumentException>(() =>
                 client.InvokeAsync<long>("m", default(JsonRpcId), parameters));
@@ -518,7 +518,7 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         public async Task InvokeWithResultAndErrorDataWhenIdentifierIsEmptyAndParametersAreByName()
         {
             var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
-            var parameters = new Dictionary<string, object> { ["p1"] = 1L, ["p2"] = 2L };
+            var parameters = new Dictionary<string, object> { ["a"] = 1L, ["b"] = 2L };
 
             await Assert.ThrowsExceptionAsync<ArgumentException>(() =>
                 client.InvokeAsync<long, long>("m", default(JsonRpcId), parameters));
@@ -555,7 +555,7 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         public async Task InvokeWhenCancellationTokenIsCancelledAndParametersAreByName()
         {
             var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
-            var parameters = new Dictionary<string, object> { ["p1"] = 1L, ["p2"] = 2L };
+            var parameters = new Dictionary<string, object> { ["a"] = 1L, ["b"] = 2L };
             var cancellationTokenSource = new CancellationTokenSource();
 
             cancellationTokenSource.Cancel();
@@ -593,7 +593,7 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         public async Task InvokeWithResultWhenCancellationTokenIsCancelledAndParametersAreByName()
         {
             var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
-            var parameters = new Dictionary<string, object> { ["p1"] = 1L, ["p2"] = 2L };
+            var parameters = new Dictionary<string, object> { ["a"] = 1L, ["b"] = 2L };
             var cancellationTokenSource = new CancellationTokenSource();
 
             cancellationTokenSource.Cancel();
@@ -631,7 +631,7 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         public async Task InvokeWithResultAndIdentifierWhenCancellationTokenIsCancelledAndParametersAreByName()
         {
             var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
-            var parameters = new Dictionary<string, object> { ["p1"] = 1L, ["p2"] = 2L };
+            var parameters = new Dictionary<string, object> { ["a"] = 1L, ["b"] = 2L };
             var cancellationTokenSource = new CancellationTokenSource();
 
             cancellationTokenSource.Cancel();
@@ -669,7 +669,7 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         public async Task InvokeWithResultAndErrorDataWhenCancellationTokenIsCancelledAndParametersAreByName()
         {
             var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
-            var parameters = new Dictionary<string, object> { ["p1"] = 1L, ["p2"] = 2L };
+            var parameters = new Dictionary<string, object> { ["a"] = 1L, ["b"] = 2L };
             var cancellationTokenSource = new CancellationTokenSource();
 
             cancellationTokenSource.Cancel();
@@ -707,7 +707,7 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         public async Task InvokeWithResultAndErrorDataAndIdentifierWhenCancellationTokenIsCancelledAndParametersAreByName()
         {
             var client = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
-            var parameters = new Dictionary<string, object> { ["p1"] = 1L, ["p2"] = 2L };
+            var parameters = new Dictionary<string, object> { ["a"] = 1L, ["b"] = 2L };
             var cancellationTokenSource = new CancellationTokenSource();
 
             cancellationTokenSource.Cancel();

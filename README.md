@@ -6,6 +6,7 @@ A lightweight [JSON-RPC 2.0](http://www.jsonrpc.org/specification) service clien
 
 ### Important Features
 
+- Support of defining a service client by interface only.
 - The client supports operation cancellation via cancellation token.
 - The client supports specifying JSON-RPC message identifier.
 - The client supports working with request and response headers.
@@ -39,6 +40,26 @@ parameters["apiKey"] = "00000000-0000-0000-0000-000000000000";
 
 var client = new JsonRpcClient("https://api.random.org/json-rpc/2/invoke");
 var result = await client.InvokeAsync<KeyUsage>("getUsage", parameters);
+
+Console.WriteLine(result.BitsLeft);
+```
+or
+```cs
+public class KeyUsage
+{
+    [JsonProperty("bitsLeft")]
+    public long BitsLeft { get; set; }
+}
+
+public interface IRandomOrgService
+{
+    [JsonRpcMethod("getUsage", "apiKey")]
+    Task<KeyUsage> GetUsageAsync(string apiKey);
+}
+```
+```cs
+var client = JsonRpcClientFactory.Create<IRandomOrgService>("https://api.random.org/json-rpc/2/invoke");
+var result = await client.GetUsageAsync("00000000-0000-0000-0000-000000000000");
 
 Console.WriteLine(result.BitsLeft);
 ```

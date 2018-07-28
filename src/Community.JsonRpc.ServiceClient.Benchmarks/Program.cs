@@ -27,6 +27,7 @@ namespace Community.JsonRpc.ServiceClient.Benchmarks
             configuration.Set(SummaryStyle.Default.WithTimeUnit(TimeUnit.Nanosecond).WithSizeUnit(SizeUnit.B));
 
             BenchmarkRunner.Run<JsonRpcClientBenchmarks>(configuration);
+            BenchmarkRunner.Run<JsonRpcClientFactoryBenchmarks>(configuration);
         }
     }
 }
