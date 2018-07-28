@@ -6,7 +6,7 @@ A lightweight [JSON-RPC 2.0](http://www.jsonrpc.org/specification) service clien
 
 ### Important Features
 
-- Support of defining a service client by interface only.
+- Support for defining a service client by interface only.
 - The client supports operation cancellation via cancellation token.
 - The client supports specifying JSON-RPC message identifier.
 - The client supports working with request and response headers.
