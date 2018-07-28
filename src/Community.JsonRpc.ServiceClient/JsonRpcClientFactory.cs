@@ -265,6 +265,13 @@ namespace Community.JsonRpc.ServiceClient
 
                         throw new InvalidOperationException(exceptionMessage);
                     }
+                    if (methodParameters[i].ParameterType.IsByRefLikeStruct())
+                    {
+                        var exceptionMessage = string.Format(Strings.GetString("factory.method.invalid_parameter_type"),
+                            methodParameters[i].Name, method.Name, interfaceType.FullName, interfaceTypeInfo.Assembly.FullName);
+
+                        throw new InvalidOperationException(exceptionMessage);
+                    }
                 }
 
                 var hasCancellationToken = false;
@@ -479,6 +486,26 @@ namespace Community.JsonRpc.ServiceClient
                     return proxyTypeInfo.GetDeclaredMethod(proxyMethodName).MakeGenericMethod(resultType, contractAttribute.ErrorDataType);
                 }
             }
+        }
+
+        private static bool IsByRefLikeStruct(this Type type)
+        {
+            var typeInfo = type.GetTypeInfo();
+
+            if (!typeInfo.IsValueType)
+            {
+                return false;
+            }
+
+            foreach (var attribute in typeInfo.GetCustomAttributes())
+            {
+                if (string.Equals(attribute.GetType().FullName, "System.Runtime.CompilerServices.IsByRefLikeAttribute"))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

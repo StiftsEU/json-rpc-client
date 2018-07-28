@@ -122,6 +122,15 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         }
 
         [TestMethod]
+        public void CreateWhenParameterIsByRefLikeStruct()
+        {
+            var executor = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
+
+            Assert.ThrowsException<InvalidOperationException>(() =>
+                JsonRpcClientFactory.Create<IServiceByRefLikeStruct>(executor));
+        }
+
+        [TestMethod]
         public void CreateWithSharedMethodName()
         {
             var executor = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
@@ -204,6 +213,12 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
             event EventHandler<EventArgs> Completed;
         }
 
+        public interface IServiceByRefLikeStruct
+        {
+            [JsonRpcMethod("m", 0)]
+            Task InvokeAsync(ByRefLikeStruct parameter);
+        }
+
         public interface IServiceSharedMethodName
         {
             [JsonRpcMethod("m0")]
@@ -271,6 +286,10 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
 
             [JsonRpcMethod("m221", typeof(long), "p")]
             Task<long> InvokeT221Async(long parameter, CancellationToken cancellationToken);
+        }
+
+        public ref struct ByRefLikeStruct
+        {
         }
 
         #endregion

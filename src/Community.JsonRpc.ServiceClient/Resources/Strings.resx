@@ -129,14 +129,17 @@
   <data name="factory.method.invalid_parameter_modifier" xml:space="preserve">
     <value>The parameter "{0}" of the method "{1}" in the type "{2}" from the assembly "{3}" has invalid modifier</value>
   </data>
-  <data name="factory.method.invalid_parameters_count" xml:space="preserve">
-    <value>The method "{0}" in the type "{1}" from the assembly "{2}" has invalid parameters count</value>
+  <data name="factory.method.invalid_parameter_type" xml:space="preserve">
+    <value>The parameter "{0}" of the method "{1}" in the type "{2}" from the assembly "{3}" has invalid type</value>
   </data>
   <data name="factory.method.invalid_parameter_names" xml:space="preserve">
     <value>The method "{0}" in the type "{1}" from the assembly "{2}" has invalid parameter names</value>
   </data>
   <data name="factory.method.invalid_parameter_positions" xml:space="preserve">
     <value>The method "{0}" in the type "{1}" from the assembly "{2}" has invalid parameter positions</value>
+  </data>
+  <data name="factory.method.invalid_parameters_count" xml:space="preserve">
+    <value>The method "{0}" in the type "{1}" from the assembly "{2}" has invalid parameters count</value>
   </data>
   <data name="factory.method.invalid_return_type" xml:space="preserve">
     <value>The method "{0}" in the type "{1}" from the assembly "{2}" has invalid return type</value>
