@@ -14,7 +14,7 @@ using Community.JsonRpc.ServiceClient.Resources;
 namespace Community.JsonRpc.ServiceClient
 {
     /// <summary>Represents a factory of interface-defined JSON-RPC client instances.</summary>
-    public static class JsonRpcClientFactory
+    public static partial class JsonRpcClientFactory
     {
         private static readonly ConcurrentDictionary<Type, Type> _types = new ConcurrentDictionary<Type, Type>();
         private static readonly ModuleBuilder _moduleBuilder = CreateModuleBuilder();
@@ -68,7 +68,7 @@ namespace Community.JsonRpc.ServiceClient
 
         private static Type CreateType(Type interfaceType)
         {
-            var contracts = new Dictionary<string, (JsonRpcMethodAttribute, Type, Type[], bool)>(StringComparer.Ordinal);
+            var contracts = new Dictionary<MethodInfoKey, (JsonRpcMethodAttribute, Type, Type[], bool)>();
 
             GetContracts(interfaceType, contracts);
 
@@ -81,7 +81,7 @@ namespace Community.JsonRpc.ServiceClient
             var parametersFactoryMethodT2 = proxyTypeInfo.GetDeclaredMethod(nameof(JsonRpcClientProxy.CreateParametersT2));
             var parametersStorageT2TypeInfo = typeof(Dictionary<,>).MakeGenericType(typeof(string), typeof(object)).GetTypeInfo();
             var parametersStorageT2AddMethod = parametersStorageT2TypeInfo.GetDeclaredMethod(nameof(Dictionary<string, object>.Add));
-            var constructorBuilder = typeBuilder.DefineConstructor(MethodAttributes.Public, CallingConventions.Standard, new[] { typeof(JsonRpcClient) });
+            var constructorBuilder = typeBuilder.DefineConstructor(MethodAttributes.Public, CallingConventions.HasThis, new[] { typeof(JsonRpcClient) });
             var constructorEmitter = constructorBuilder.GetILGenerator();
 
             constructorEmitter.Emit(OpCodes.Ldarg_0);
@@ -95,9 +95,10 @@ namespace Community.JsonRpc.ServiceClient
                 var contractResultType = kvp.Value.Item2;
                 var contractParameterTypes = kvp.Value.Item3;
                 var contractHasCancellationToken = kvp.Value.Item4;
+                var methodName = kvp.Key.MethodName;
                 var methodReturnType = contractResultType == null ? typeof(Task) : typeof(Task<>).MakeGenericType(contractResultType);
                 var methodParameterTypes = GetProxyMethodParameterTypes(contractParameterTypes, contractHasCancellationToken);
-                var methodBuilder = typeBuilder.DefineMethod(kvp.Key, methodAttributes, methodReturnType, methodParameterTypes);
+                var methodBuilder = typeBuilder.DefineMethod(methodName, methodAttributes, methodReturnType, methodParameterTypes);
                 var methodEmitter = methodBuilder.GetILGenerator();
                 var proxyMethod = GetProxyMethod(contractAttribute, contractResultType, contractHasCancellationToken);
 
@@ -191,7 +192,7 @@ namespace Community.JsonRpc.ServiceClient
             return typeBuilder.CreateTypeInfo().AsType();
         }
 
-        private static void GetContracts(Type interfaceType, IDictionary<string, (JsonRpcMethodAttribute, Type, Type[], bool)> contracts)
+        private static void GetContracts(Type interfaceType, IDictionary<MethodInfoKey, (JsonRpcMethodAttribute, Type, Type[], bool)> contracts)
         {
             var interfaceTypeInfo = interfaceType.GetTypeInfo();
 
@@ -211,7 +212,9 @@ namespace Community.JsonRpc.ServiceClient
 
             foreach (var method in interfaceTypeInfo.DeclaredMethods)
             {
-                if (contracts.ContainsKey(method.Name))
+                var methodKey = new MethodInfoKey(method);
+
+                if (contracts.ContainsKey(methodKey))
                 {
                     continue;
                 }
@@ -251,7 +254,7 @@ namespace Community.JsonRpc.ServiceClient
                     resultType = method.ReturnType.GenericTypeArguments[0];
                 }
 
-                var methodParameters = method.GetParameters().ToArray();
+                var methodParameters = method.GetParameters();
 
                 for (var i = 0; i < methodParameters.Length; i++)
                 {
@@ -339,7 +342,7 @@ namespace Community.JsonRpc.ServiceClient
                     contractParameterTypes[i] = methodParameters[i].ParameterType;
                 }
 
-                contracts.Add(method.Name, (attribute, resultType, contractParameterTypes, hasCancellationToken));
+                contracts.Add(methodKey, (attribute, resultType, contractParameterTypes, hasCancellationToken));
             }
 
             foreach (var implementedInterfaceType in interfaceTypeInfo.ImplementedInterfaces)

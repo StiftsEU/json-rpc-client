@@ -122,6 +122,15 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         }
 
         [TestMethod]
+        public void CreateWithSharedMethodName()
+        {
+            var executor = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
+            var service = JsonRpcClientFactory.Create<IServiceSharedMethodName>(executor);
+
+            Assert.IsNotNull(service);
+        }
+
+        [TestMethod]
         public void Create()
         {
             var executor = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
@@ -193,6 +202,18 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         public interface IServiceEvent
         {
             event EventHandler<EventArgs> Completed;
+        }
+
+        public interface IServiceSharedMethodName
+        {
+            [JsonRpcMethod("m0")]
+            Task InvokeAsync();
+
+            [JsonRpcMethod("m1", 0)]
+            Task InvokeAsync(long parameter);
+
+            [JsonRpcMethod("m2", 0)]
+            Task InvokeAsync(string parameter);
         }
 
         public interface IService : IDisposable
