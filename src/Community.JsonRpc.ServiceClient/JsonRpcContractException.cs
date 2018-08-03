@@ -7,14 +7,24 @@ namespace Community.JsonRpc.ServiceClient
     /// <summary>Represents an error that occur during service result handling.</summary>
     public sealed class JsonRpcContractException : Exception
     {
-        internal JsonRpcContractException(string requestId, string message)
+        internal JsonRpcContractException(string message)
+            : base(message)
+        {
+        }
+
+        internal JsonRpcContractException(string message, string requestId)
             : base(message)
         {
             RequestId = requestId;
         }
 
-        internal JsonRpcContractException(string requestId, string message, Exception inner)
-            : base(message, inner)
+        internal JsonRpcContractException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
+
+        internal JsonRpcContractException(string message, Exception innerException, string requestId)
+            : base(message, innerException)
         {
             RequestId = requestId;
         }

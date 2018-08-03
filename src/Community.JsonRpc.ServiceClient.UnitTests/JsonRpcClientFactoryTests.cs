@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Community.JsonRpc.ServiceClient.UnitTests.Internal;
+using Community.JsonRpc.ServiceClient.UnitTests.TestStubs;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Community.JsonRpc.ServiceClient.UnitTests
@@ -34,7 +33,7 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         [TestMethod]
         public void CreateWhenTypeIsNotInterface()
         {
-            var executor = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
+            var executor = new TestJsonRpcClient();
 
             Assert.ThrowsException<InvalidOperationException>(() =>
                 JsonRpcClientFactory.Create<object>(executor));
@@ -43,7 +42,7 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         [TestMethod]
         public void CreateWhenParameterIsRef()
         {
-            var executor = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
+            var executor = new TestJsonRpcClient();
 
             Assert.ThrowsException<InvalidOperationException>(() =>
                 JsonRpcClientFactory.Create<IServiceParameterRef>(executor));
@@ -52,7 +51,7 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         [TestMethod]
         public void CreateWhenParameterIsOut()
         {
-            var executor = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
+            var executor = new TestJsonRpcClient();
 
             Assert.ThrowsException<InvalidOperationException>(() =>
                 JsonRpcClientFactory.Create<IServiceParameterOut>(executor));
@@ -61,7 +60,7 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         [TestMethod]
         public void CreateWhenParametersNoneAndCountIsInvalid()
         {
-            var executor = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
+            var executor = new TestJsonRpcClient();
 
             Assert.ThrowsException<InvalidOperationException>(() =>
                 JsonRpcClientFactory.Create<IServiceParametersNoneCountInvalid>(executor));
@@ -70,7 +69,7 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         [TestMethod]
         public void CreateWhenParametersByPositionAndCountIsInvalid()
         {
-            var executor = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
+            var executor = new TestJsonRpcClient();
 
             Assert.ThrowsException<InvalidOperationException>(() =>
                 JsonRpcClientFactory.Create<IServiceParametersByPositionCountInvalid>(executor));
@@ -79,7 +78,7 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         [TestMethod]
         public void CreateWhenParametersByNameAndCountIsInvalid()
         {
-            var executor = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
+            var executor = new TestJsonRpcClient();
 
             Assert.ThrowsException<InvalidOperationException>(() =>
                 JsonRpcClientFactory.Create<IServiceParametersByNameCountInvalid>(executor));
@@ -88,7 +87,7 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         [TestMethod]
         public void CreateWhenParametersByPositionAndPositionsAreInvalid()
         {
-            var executor = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
+            var executor = new TestJsonRpcClient();
 
             Assert.ThrowsException<InvalidOperationException>(() =>
                 JsonRpcClientFactory.Create<IServiceParametersByPositionPositionsInvalid>(executor));
@@ -97,7 +96,7 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         [TestMethod]
         public void CreateWhenParametersByNameAndNamesAreInvalid()
         {
-            var executor = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
+            var executor = new TestJsonRpcClient();
 
             Assert.ThrowsException<InvalidOperationException>(() =>
                 JsonRpcClientFactory.Create<IServiceParametersByNameNamesInvalid>(executor));
@@ -106,7 +105,7 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         [TestMethod]
         public void CreateWhenInterfaceDefinesProperty()
         {
-            var executor = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
+            var executor = new TestJsonRpcClient();
 
             Assert.ThrowsException<InvalidOperationException>(() =>
                 JsonRpcClientFactory.Create<IServiceProperty>(executor));
@@ -115,25 +114,16 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         [TestMethod]
         public void CreateWhenInterfaceDefinesEvent()
         {
-            var executor = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
+            var executor = new TestJsonRpcClient();
 
             Assert.ThrowsException<InvalidOperationException>(() =>
                 JsonRpcClientFactory.Create<IServiceEvent>(executor));
         }
 
         [TestMethod]
-        public void CreateWhenParameterIsByRefLikeStruct()
-        {
-            var executor = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
-
-            Assert.ThrowsException<InvalidOperationException>(() =>
-                JsonRpcClientFactory.Create<IServiceByRefLikeStruct>(executor));
-        }
-
-        [TestMethod]
         public void CreateWithSharedMethodName()
         {
-            var executor = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
+            var executor = new TestJsonRpcClient();
             var service = JsonRpcClientFactory.Create<IServiceSharedMethodName>(executor);
 
             Assert.IsNotNull(service);
@@ -142,7 +132,7 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         [TestMethod]
         public void Create()
         {
-            var executor = new JsonRpcClient("https://localhost", new HttpClient(new TestHttpHandler()));
+            var executor = new TestJsonRpcClient();
             var service = JsonRpcClientFactory.Create<IService>(executor);
 
             Assert.IsNotNull(service);
@@ -213,12 +203,6 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
             event EventHandler<EventArgs> Completed;
         }
 
-        public interface IServiceByRefLikeStruct
-        {
-            [JsonRpcMethod("m", 0)]
-            Task InvokeAsync(ByRefLikeStruct parameter);
-        }
-
         public interface IServiceSharedMethodName
         {
             [JsonRpcMethod("m0")]
@@ -286,10 +270,6 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
 
             [JsonRpcMethod("m221", typeof(long), "p")]
             Task<long> InvokeT221Async(long parameter, CancellationToken cancellationToken);
-        }
-
-        public ref struct ByRefLikeStruct
-        {
         }
 
         #endregion

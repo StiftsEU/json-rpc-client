@@ -4,7 +4,7 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Community.JsonRpc.ServiceClient.Benchmarks.Internal
+namespace Community.JsonRpc.ServiceClient.Benchmarks.TestStubs
 {
     internal sealed class JsonRpcClientBenchmarkHandler : HttpMessageHandler
     {

@@ -4,8 +4,8 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
-using Community.JsonRpc.ServiceClient.Benchmarks.Internal;
 using Community.JsonRpc.ServiceClient.Benchmarks.Resources;
+using Community.JsonRpc.ServiceClient.Benchmarks.TestStubs;
 
 namespace Community.JsonRpc.ServiceClient.Benchmarks.TestSuites
 {

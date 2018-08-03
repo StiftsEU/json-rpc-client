@@ -1,12 +1,12 @@
 ## Community.JsonRpc.ServiceClient
 
-A lightweight [JSON-RPC 2.0](http://www.jsonrpc.org/specification) service client based on the [JSON-RPC 2.0 Transport: HTTP](https://www.simple-is-better.org/json-rpc/transport_http.html) specification.
+A universal [JSON-RPC 2.0](http://www.jsonrpc.org/specification) service client based on the [JSON-RPC 2.0 Transport: HTTP](https://www.simple-is-better.org/json-rpc/transport_http.html) specification.
 
 [![NuGet package](https://img.shields.io/nuget/v/Community.JsonRpc.ServiceClient.svg?style=flat-square)](https://www.nuget.org/packages/Community.JsonRpc.ServiceClient)
 
 ### Important Features
 
-- Support for defining a service client by interface only.
+- The client can be created by providing an interface-based service contract.
 - The client supports operation cancellation via cancellation token.
 - The client supports specifying JSON-RPC message identifier.
 - The client supports working with request and response headers.
@@ -16,12 +16,9 @@ A lightweight [JSON-RPC 2.0](http://www.jsonrpc.org/specification) service clien
 
 ### Characteristics
 
+- The client provides only low-level API for batch requests.
 - The client uses an UUID string as a message identifier by default.
 - The client does not verify the `Content-Length` header.
-
-### Limitations
-
-- The client does not support batch requests.
 
 ### Usage Examples
 

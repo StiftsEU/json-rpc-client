@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Community.JsonRpc.ServiceClient.UnitTests.Internal
+namespace Community.JsonRpc.ServiceClient.UnitTests.TestStubs
 {
     internal sealed class TestHttpHandler : HttpMessageHandler
     {
