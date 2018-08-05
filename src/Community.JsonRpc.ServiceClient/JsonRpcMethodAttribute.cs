@@ -2,6 +2,7 @@
 
 using System;
 using System.Data.JsonRpc;
+using Community.JsonRpc.ServiceClient.Resources;
 
 namespace Community.JsonRpc.ServiceClient
 {
@@ -11,12 +12,17 @@ namespace Community.JsonRpc.ServiceClient
     {
         /// <summary>Initializes a new instance of the <see cref="JsonRpcMethodAttribute" /> class.</summary>
         /// <param name="methodName">The name of a JSON-RPC method.</param>
+        /// <exception cref="ArgumentException"><paramref name="methodName" /> is a system extension method.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="methodName" /> is <see langword="null" />.</exception>
         public JsonRpcMethodAttribute(string methodName)
         {
             if (methodName == null)
             {
                 throw new ArgumentNullException(nameof(methodName));
+            }
+            if (JsonRpcSerializer.IsSystemMethod(methodName))
+            {
+                throw new ArgumentException(Strings.GetString("invoke.method.invalid_name"), nameof(methodName));
             }
 
             MethodName = methodName;
@@ -25,6 +31,7 @@ namespace Community.JsonRpc.ServiceClient
         /// <summary>Initializes a new instance of the <see cref="JsonRpcMethodAttribute" /> class.</summary>
         /// <param name="methodName">The name of a JSON-RPC method.</param>
         /// <param name="parameterPositions">The corresponding positions of the JSON-RPC method parameters for the interface method parameters.</param>
+        /// <exception cref="ArgumentException"><paramref name="methodName" /> is a system extension method.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="methodName" /> or <paramref name="parameterPositions" /> is <see langword="null" />.</exception>
         public JsonRpcMethodAttribute(string methodName, params int[] parameterPositions)
             : this(methodName)
@@ -41,6 +48,7 @@ namespace Community.JsonRpc.ServiceClient
         /// <summary>Initializes a new instance of the <see cref="JsonRpcMethodAttribute" /> class.</summary>
         /// <param name="methodName">The name of a JSON-RPC method.</param>
         /// <param name="parameterNames">The corresponding names of the JSON-RPC method parameters for the interface method parameters.</param>
+        /// <exception cref="ArgumentException"><paramref name="methodName" /> is a system extension method.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="methodName" /> or <paramref name="parameterNames" /> is <see langword="null" />.</exception>
         public JsonRpcMethodAttribute(string methodName, params string[] parameterNames)
             : this(methodName)
@@ -57,6 +65,7 @@ namespace Community.JsonRpc.ServiceClient
         /// <summary>Initializes a new instance of the <see cref="JsonRpcMethodAttribute" /> class.</summary>
         /// <param name="methodName">The name of a JSON-RPC method.</param>
         /// <param name="errorDataType">The type of JSON-RPC method error data.</param>
+        /// <exception cref="ArgumentException"><paramref name="methodName" /> is a system extension method.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="methodName" /> or <paramref name="errorDataType" /> is <see langword="null" />.</exception>
         public JsonRpcMethodAttribute(string methodName, Type errorDataType)
             : this(methodName)
@@ -73,6 +82,7 @@ namespace Community.JsonRpc.ServiceClient
         /// <param name="methodName">The name of a JSON-RPC method.</param>
         /// <param name="errorDataType">The type of JSON-RPC method error data.</param>
         /// <param name="parameterPositions">The corresponding positions of the JSON-RPC method parameters for the interface method parameters.</param>
+        /// <exception cref="ArgumentException"><paramref name="methodName" /> is a system extension method.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="methodName" />, <paramref name="methodName" />, or <paramref name="parameterPositions" /> is <see langword="null" />.</exception>
         public JsonRpcMethodAttribute(string methodName, Type errorDataType, params int[] parameterPositions)
             : this(methodName, errorDataType)
@@ -90,6 +100,7 @@ namespace Community.JsonRpc.ServiceClient
         /// <param name="methodName">The name of a JSON-RPC method.</param>
         /// <param name="errorDataType">The type of JSON-RPC method error data.</param>
         /// <param name="parameterNames">The corresponding names of the JSON-RPC method parameters for the interface method parameters.</param>
+        /// <exception cref="ArgumentException"><paramref name="methodName" /> is a system extension method.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="methodName" />, <paramref name="methodName" />, or <paramref name="parameterNames" /> is <see langword="null" />.</exception>
         public JsonRpcMethodAttribute(string methodName, Type errorDataType, params string[] parameterNames)
             : this(methodName, errorDataType)
