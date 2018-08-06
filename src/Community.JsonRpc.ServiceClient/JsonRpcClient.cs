@@ -20,10 +20,10 @@ namespace Community.JsonRpc.ServiceClient
         private static readonly MediaTypeHeaderValue _mediaTypeValue = new MediaTypeHeaderValue("application/json");
         private static readonly MediaTypeWithQualityHeaderValue _mediaTypeWithQualityValue = new MediaTypeWithQualityHeaderValue("application/json");
 
+        private readonly JsonRpcContractResolver _jsonRpcContractResolver = new JsonRpcContractResolver();
+        private readonly JsonRpcSerializer _jsonRpcSerializer;
         private readonly Uri _serviceUri;
         private readonly HttpMessageInvoker _httpInvoker;
-        private readonly JsonRpcContractResolver _jsonRpcContractResolver;
-        private readonly JsonRpcSerializer _jsonRpcSerializer;
 
         /// <summary>Initializes a new instance of the <see cref="JsonRpcClient" /> class.</summary>
         /// <param name="serviceUri">The service URI.</param>
@@ -43,7 +43,6 @@ namespace Community.JsonRpc.ServiceClient
 
             _serviceUri = new Uri(serviceUri, UriKind.Absolute);
             _httpInvoker = httpInvoker;
-            _jsonRpcContractResolver = new JsonRpcContractResolver();
             _jsonRpcSerializer = new JsonRpcSerializer(_jsonRpcContractResolver);
         }
 
@@ -78,7 +77,6 @@ namespace Community.JsonRpc.ServiceClient
 
             _serviceUri = serviceUri;
             _httpInvoker = httpInvoker;
-            _jsonRpcContractResolver = new JsonRpcContractResolver();
             _jsonRpcSerializer = new JsonRpcSerializer(_jsonRpcContractResolver);
         }
 
