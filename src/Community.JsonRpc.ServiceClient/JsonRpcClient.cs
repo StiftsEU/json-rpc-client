@@ -116,6 +116,53 @@ namespace Community.JsonRpc.ServiceClient
             return httpClient;
         }
 
+#if NETCOREAPP2_1
+
+        private static bool CheckHttpContentEncoding(HttpResponseMessage httpResponse, string encoding)
+        {
+            var contentEncodings = httpResponse.Content.Headers.ContentEncoding;
+
+            if (contentEncodings.Count == 0)
+            {
+                return false;
+            }
+
+            var outerContentEncoding = default(string);
+
+            foreach (var contentEncoding in contentEncodings)
+            {
+                outerContentEncoding = contentEncoding;
+            }
+
+            return string.Compare(outerContentEncoding, encoding, StringComparison.OrdinalIgnoreCase) == 0;
+        }
+
+#endif
+
+        private void PrepareHttpRequest(HttpRequestMessage httpRequest)
+        {
+            var httpProtocolVersion = HttpProtocolVersion;
+
+            if (httpProtocolVersion != null)
+            {
+                httpRequest.Version = httpProtocolVersion;
+            }
+
+            VisitHttpRequestHeaders(httpRequest.Headers);
+
+#if NETCOREAPP2_1
+
+            if (!httpRequest.Headers.AcceptEncoding.Contains(_brotliEncodingHeader))
+            {
+                httpRequest.Headers.AcceptEncoding.Add(_brotliEncodingHeader);
+            }
+
+#endif
+
+            httpRequest.Headers.Accept.Clear();
+            httpRequest.Headers.Accept.Add(_mediaTypeWithQualityValue);
+        }
+
         private Task<JsonRpcResponse> InvokeAsync(JsonRpcRequest request, JsonRpcResponseContract contract, CancellationToken cancellationToken)
         {
             _jsonRpcContractResolver.AddResponseContract(request.Id, contract);
@@ -166,26 +213,7 @@ namespace Community.JsonRpc.ServiceClient
 
                 using (var httpRequest = new HttpRequestMessage(HttpMethod.Post, _serviceUri))
                 {
-                    var httpProtocolVersion = HttpProtocolVersion;
-
-                    if (httpProtocolVersion != null)
-                    {
-                        httpRequest.Version = httpProtocolVersion;
-                    }
-
-                    VisitHttpRequestHeaders(httpRequest.Headers);
-
-#if NETCOREAPP2_1
-
-                    if (!httpRequest.Headers.AcceptEncoding.Contains(_brotliEncodingHeader))
-                    {
-                        httpRequest.Headers.AcceptEncoding.Add(_brotliEncodingHeader);
-                    }
-
-#endif
-
-                    httpRequest.Headers.Accept.Clear();
-                    httpRequest.Headers.Accept.Add(_mediaTypeWithQualityValue);
+                    PrepareHttpRequest(httpRequest);
 
                     var requestContent = new StreamContent(requestStream);
 
@@ -221,29 +249,16 @@ namespace Community.JsonRpc.ServiceClient
 
                                     using (responseStream = await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false))
                                     {
+                                        cancellationToken.ThrowIfCancellationRequested();
 
 #if NETCOREAPP2_1
 
-                                        var contentEncodings = httpResponse.Content.Headers.ContentEncoding;
-
-                                        if (contentEncodings.Count != 0)
+                                        if (CheckHttpContentEncoding(httpResponse, _brotliEncodingHeader.Value))
                                         {
-                                            var outerContentEncoding = default(string);
-
-                                            foreach (var contentEncoding in contentEncodings)
-                                            {
-                                                outerContentEncoding = contentEncoding;
-                                            }
-
-                                            if (string.Compare(outerContentEncoding, _brotliEncodingHeader.Value, StringComparison.OrdinalIgnoreCase) == 0)
-                                            {
-                                                responseStream = new BrotliStream(responseStream, CompressionMode.Decompress);
-                                            }
+                                            responseStream = new BrotliStream(responseStream, CompressionMode.Decompress);
                                         }
 
 #endif
-
-                                        cancellationToken.ThrowIfCancellationRequested();
 
                                         try
                                         {
@@ -352,26 +367,7 @@ namespace Community.JsonRpc.ServiceClient
 
                 using (var httpRequest = new HttpRequestMessage(HttpMethod.Post, _serviceUri))
                 {
-                    var httpProtocolVersion = HttpProtocolVersion;
-
-                    if (httpProtocolVersion != null)
-                    {
-                        httpRequest.Version = httpProtocolVersion;
-                    }
-
-                    VisitHttpRequestHeaders(httpRequest.Headers);
-
-#if NETCOREAPP2_1
-
-                    if (!httpRequest.Headers.AcceptEncoding.Contains(_brotliEncodingHeader))
-                    {
-                        httpRequest.Headers.AcceptEncoding.Add(_brotliEncodingHeader);
-                    }
-
-#endif
-
-                    httpRequest.Headers.Accept.Clear();
-                    httpRequest.Headers.Accept.Add(_mediaTypeWithQualityValue);
+                    PrepareHttpRequest(httpRequest);
 
                     var requestContent = new StreamContent(requestStream);
 
@@ -402,29 +398,16 @@ namespace Community.JsonRpc.ServiceClient
 
                                     using (responseStream = await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false))
                                     {
+                                        cancellationToken.ThrowIfCancellationRequested();
 
 #if NETCOREAPP2_1
 
-                                        var contentEncodings = httpResponse.Content.Headers.ContentEncoding;
-
-                                        if (contentEncodings.Count != 0)
+                                        if (CheckHttpContentEncoding(httpResponse, _brotliEncodingHeader.Value))
                                         {
-                                            var outerContentEncoding = default(string);
-
-                                            foreach (var contentEncoding in contentEncodings)
-                                            {
-                                                outerContentEncoding = contentEncoding;
-                                            }
-
-                                            if (string.Compare(outerContentEncoding, _brotliEncodingHeader.Value, StringComparison.OrdinalIgnoreCase) == 0)
-                                            {
-                                                responseStream = new BrotliStream(responseStream, CompressionMode.Decompress);
-                                            }
+                                            responseStream = new BrotliStream(responseStream, CompressionMode.Decompress);
                                         }
 
 #endif
-
-                                        cancellationToken.ThrowIfCancellationRequested();
 
                                         try
                                         {
