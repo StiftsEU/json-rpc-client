@@ -12,6 +12,12 @@ using System.Threading.Tasks;
 using Community.JsonRpc.ServiceClient.Resources;
 using Newtonsoft.Json;
 
+#if NETCOREAPP2_1
+
+using System.IO.Compression;
+
+#endif
+
 namespace Community.JsonRpc.ServiceClient
 {
     /// <summary>Represents a JSON-RPC 2.0 service client.</summary>
@@ -19,6 +25,12 @@ namespace Community.JsonRpc.ServiceClient
     {
         private static readonly MediaTypeHeaderValue _mediaTypeValue = new MediaTypeHeaderValue("application/json");
         private static readonly MediaTypeWithQualityHeaderValue _mediaTypeWithQualityValue = new MediaTypeWithQualityHeaderValue("application/json");
+
+#if NETCOREAPP2_1
+
+        private static readonly StringWithQualityHeaderValue _brotliEncodingHeader = new StringWithQualityHeaderValue("br");
+
+#endif
 
         private readonly JsonRpcContractResolver _jsonRpcContractResolver = new JsonRpcContractResolver();
         private readonly JsonRpcSerializer _jsonRpcSerializer;
@@ -163,6 +175,15 @@ namespace Community.JsonRpc.ServiceClient
 
                     VisitHttpRequestHeaders(httpRequest.Headers);
 
+#if NETCOREAPP2_1
+
+                    if (!httpRequest.Headers.AcceptEncoding.Contains(_brotliEncodingHeader))
+                    {
+                        httpRequest.Headers.AcceptEncoding.Add(_brotliEncodingHeader);
+                    }
+
+#endif
+
                     httpRequest.Headers.Accept.Clear();
                     httpRequest.Headers.Accept.Add(_mediaTypeWithQualityValue);
 
@@ -196,9 +217,32 @@ namespace Community.JsonRpc.ServiceClient
                                     }
 
                                     var responseData = default(JsonRpcData<JsonRpcResponse>);
+                                    var responseStream = default(Stream);
 
-                                    using (var responseStream = await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                                    using (responseStream = await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false))
                                     {
+
+#if NETCOREAPP2_1
+
+                                        var contentEncodings = httpResponse.Content.Headers.ContentEncoding;
+
+                                        if (contentEncodings.Count != 0)
+                                        {
+                                            var outerContentEncoding = default(string);
+
+                                            foreach (var contentEncoding in contentEncodings)
+                                            {
+                                                outerContentEncoding = contentEncoding;
+                                            }
+
+                                            if (string.Compare(outerContentEncoding, _brotliEncodingHeader.Value, StringComparison.OrdinalIgnoreCase) == 0)
+                                            {
+                                                responseStream = new BrotliStream(responseStream, CompressionMode.Decompress);
+                                            }
+                                        }
+
+#endif
+
                                         cancellationToken.ThrowIfCancellationRequested();
 
                                         try
@@ -317,6 +361,15 @@ namespace Community.JsonRpc.ServiceClient
 
                     VisitHttpRequestHeaders(httpRequest.Headers);
 
+#if NETCOREAPP2_1
+
+                    if (!httpRequest.Headers.AcceptEncoding.Contains(_brotliEncodingHeader))
+                    {
+                        httpRequest.Headers.AcceptEncoding.Add(_brotliEncodingHeader);
+                    }
+
+#endif
+
                     httpRequest.Headers.Accept.Clear();
                     httpRequest.Headers.Accept.Add(_mediaTypeWithQualityValue);
 
@@ -345,9 +398,32 @@ namespace Community.JsonRpc.ServiceClient
                                     }
 
                                     var responseData = default(JsonRpcData<JsonRpcResponse>);
+                                    var responseStream = default(Stream);
 
-                                    using (var responseStream = await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                                    using (responseStream = await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false))
                                     {
+
+#if NETCOREAPP2_1
+
+                                        var contentEncodings = httpResponse.Content.Headers.ContentEncoding;
+
+                                        if (contentEncodings.Count != 0)
+                                        {
+                                            var outerContentEncoding = default(string);
+
+                                            foreach (var contentEncoding in contentEncodings)
+                                            {
+                                                outerContentEncoding = contentEncoding;
+                                            }
+
+                                            if (string.Compare(outerContentEncoding, _brotliEncodingHeader.Value, StringComparison.OrdinalIgnoreCase) == 0)
+                                            {
+                                                responseStream = new BrotliStream(responseStream, CompressionMode.Decompress);
+                                            }
+                                        }
+
+#endif
+
                                         cancellationToken.ThrowIfCancellationRequested();
 
                                         try
