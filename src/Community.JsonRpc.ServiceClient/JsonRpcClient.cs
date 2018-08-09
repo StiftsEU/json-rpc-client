@@ -101,7 +101,7 @@ namespace Community.JsonRpc.ServiceClient
 
             _serviceUri = serviceUri;
             _httpInvoker = httpInvoker;
-            _jsonRpcSerializer = new JsonRpcSerializer(_jsonRpcContractResolver, jsonSerializer);
+            _jsonRpcSerializer = new JsonRpcSerializer(_jsonRpcContractResolver, jsonSerializer, compatibilityLevel);
         }
 
         /// <summary>Initializes a new instance of the <see cref="JsonRpcClient" /> class.</summary>
