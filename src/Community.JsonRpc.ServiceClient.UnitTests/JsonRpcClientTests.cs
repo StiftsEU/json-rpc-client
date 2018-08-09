@@ -4,6 +4,7 @@ using System.IO.Compression;
 using System.Net.Http;
 using Community.JsonRpc.ServiceClient.UnitTests.TestStubs;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 
 namespace Community.JsonRpc.ServiceClient.UnitTests
 {
@@ -56,7 +57,7 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         public void ConstructorWithInvokerWhenServiceUriIsStringAndInvokerIsNull()
         {
             Assert.ThrowsException<ArgumentNullException>(() =>
-                new JsonRpcClient("https://localhost", null));
+                new JsonRpcClient("https://localhost", default(HttpMessageInvoker)));
         }
 
         [TestMethod]
@@ -77,7 +78,105 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         public void ConstructorWithInvokerWhenServiceUriIsUriAndInvokerIsNull()
         {
             Assert.ThrowsException<ArgumentNullException>(() =>
-                new JsonRpcClient(new Uri("https://localhost", UriKind.Absolute), null));
+                new JsonRpcClient(new Uri("https://localhost", UriKind.Absolute), default(HttpMessageInvoker)));
+        }
+
+        [TestMethod]
+        public void ConstructorWithSerializerWhenServiceUriIsStringAndIsNull()
+        {
+            Assert.ThrowsException<ArgumentNullException>(() =>
+                new JsonRpcClient((string)null, new JsonSerializer()));
+        }
+
+        [TestMethod]
+        public void ConstructorWithSerializerWhenServiceUriIsStringAndIsRelative()
+        {
+            Assert.ThrowsException<UriFormatException>(() =>
+                new JsonRpcClient("/api", new JsonSerializer()));
+        }
+
+        [TestMethod]
+        public void ConstructorWithSerializerWhenServiceUriIsStringAndInvokerIsNull()
+        {
+            Assert.ThrowsException<ArgumentNullException>(() =>
+                new JsonRpcClient("https://localhost", default(JsonSerializer)));
+        }
+
+        [TestMethod]
+        public void ConstructorWithSerializerWhenServiceUriIsUriAndIsNull()
+        {
+            Assert.ThrowsException<ArgumentNullException>(() =>
+                new JsonRpcClient((Uri)null, new JsonSerializer()));
+        }
+
+        [TestMethod]
+        public void ConstructorWithSerializerWhenServiceUriIsUriAndIsRelative()
+        {
+            Assert.ThrowsException<ArgumentException>(() =>
+                new JsonRpcClient(new Uri("/api", UriKind.Relative), new JsonSerializer()));
+        }
+
+        [TestMethod]
+        public void ConstructorWithSerializerWhenServiceUriIsUriAndInvokerIsNull()
+        {
+            Assert.ThrowsException<ArgumentNullException>(() =>
+                new JsonRpcClient(new Uri("https://localhost", UriKind.Absolute), default(JsonSerializer)));
+        }
+
+        [TestMethod]
+        public void ConstructorWithSerializerAndInvokerWhenServiceUriIsStringAndIsNull()
+        {
+            Assert.ThrowsException<ArgumentNullException>(() =>
+                new JsonRpcClient((string)null, new JsonSerializer(), new HttpClient(new TestHttpHandler())));
+        }
+
+        [TestMethod]
+        public void ConstructorWithSerializerAndInvokerWhenServiceUriIsStringAndIsRelative()
+        {
+            Assert.ThrowsException<UriFormatException>(() =>
+                new JsonRpcClient("/api", new JsonSerializer(), new HttpClient(new TestHttpHandler())));
+        }
+
+        [TestMethod]
+        public void ConstructorWithSerializerAndInvokerWhenServiceUriIsStringAndSerializerIsNull()
+        {
+            Assert.ThrowsException<ArgumentNullException>(() =>
+                new JsonRpcClient("https://localhost", default(JsonSerializer), new HttpClient(new TestHttpHandler())));
+        }
+
+        [TestMethod]
+        public void ConstructorWithSerializerAndInvokerWhenServiceUriIsStringAndInvokerIsNull()
+        {
+            Assert.ThrowsException<ArgumentNullException>(() =>
+                new JsonRpcClient("https://localhost", new JsonSerializer(), default(HttpMessageInvoker)));
+        }
+
+        [TestMethod]
+        public void ConstructorWithSerializerAndInvokerWhenServiceUriIsUriAndIsNull()
+        {
+            Assert.ThrowsException<ArgumentNullException>(() =>
+                new JsonRpcClient((Uri)null, new JsonSerializer(), new HttpClient(new TestHttpHandler())));
+        }
+
+        [TestMethod]
+        public void ConstructorWithSerializerAndInvokerWhenServiceUriIsUriAndIsRelative()
+        {
+            Assert.ThrowsException<ArgumentException>(() =>
+                new JsonRpcClient(new Uri("/api", UriKind.Relative), new JsonSerializer(), new HttpClient(new TestHttpHandler())));
+        }
+
+        [TestMethod]
+        public void ConstructorWithSerializerAndInvokerWhenServiceUriIsUriAndSerializerIsNull()
+        {
+            Assert.ThrowsException<ArgumentNullException>(() =>
+                new JsonRpcClient(new Uri("https://localhost", UriKind.Absolute), default(JsonSerializer), new HttpClient(new TestHttpHandler())));
+        }
+
+        [TestMethod]
+        public void ConstructorWithSerializerAndInvokerWhenServiceUriIsUriAndInvokerIsNull()
+        {
+            Assert.ThrowsException<ArgumentNullException>(() =>
+                new JsonRpcClient(new Uri("https://localhost", UriKind.Absolute), new JsonSerializer(), default(HttpMessageInvoker)));
         }
 
         //###################################################################################################
