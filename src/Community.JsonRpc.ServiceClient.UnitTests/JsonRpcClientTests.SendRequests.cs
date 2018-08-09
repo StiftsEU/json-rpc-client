@@ -409,37 +409,6 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         //###################################################################################################
 
         [TestMethod]
-        public async Task SendJsonRpcRequestsAsyncWithCustomHttpProtocolVersion()
-        {
-            var requests = new[]
-            {
-                new JsonRpcRequest("m"),
-                new JsonRpcRequest("m")
-            };
-
-            var httpProtocolVersion = new Version(2, 0);
-
-            var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
-            {
-                Assert.AreEqual(httpProtocolVersion, request.Version);
-
-                var message = new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.NoContent
-                };
-
-                return Task.FromResult(message);
-            });
-
-            using (var client = new TestJsonRpcClient(handler))
-            {
-                client.PublicHttpProtocolVersion = httpProtocolVersion;
-
-                await client.PublicSendJsonRpcRequestsAsync(requests, default);
-            }
-        }
-
-        [TestMethod]
         public async Task SendJsonRpcRequestsAsyncWithCustomRequestHeader()
         {
             var requests = new[]

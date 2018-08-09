@@ -87,13 +87,6 @@ namespace Community.JsonRpc.ServiceClient
 
         private void PrepareHttpRequest(HttpRequestMessage httpRequest)
         {
-            var httpProtocolVersion = HttpProtocolVersion;
-
-            if (httpProtocolVersion != null)
-            {
-                httpRequest.Version = httpProtocolVersion;
-            }
-
             VisitHttpRequestHeaders(httpRequest.Headers);
 
 #if NETCOREAPP2_1
@@ -460,12 +453,6 @@ namespace Community.JsonRpc.ServiceClient
         protected JsonRpcContractResolver ContractResolver
         {
             get => _jsonRpcContractResolver;
-        }
-
-        /// <summary>Gets the current HTTP protocol version.</summary>
-        protected virtual Version HttpProtocolVersion
-        {
-            get => null;
         }
 
         /// <summary>Gets the current service URI.</summary>

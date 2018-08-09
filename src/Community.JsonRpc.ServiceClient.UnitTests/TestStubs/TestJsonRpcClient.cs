@@ -41,17 +41,6 @@ namespace Community.JsonRpc.ServiceClient.UnitTests.TestStubs
             return SendJsonRpcRequestsAsync(requests, cancellationToken);
         }
 
-        protected override Version HttpProtocolVersion
-        {
-            get => PublicHttpProtocolVersion;
-        }
-
-        public Version PublicHttpProtocolVersion
-        {
-            get;
-            set;
-        }
-
         public JsonRpcContractResolver PublicContractResolver
         {
             get => ContractResolver;
