@@ -20,8 +20,7 @@ using System.IO.Compression;
 
 namespace Community.JsonRpc.ServiceClient
 {
-    /// <summary>Represents a JSON-RPC 2.0 service client.</summary>
-    public partial class JsonRpcClient : IDisposable
+    public partial class JsonRpcClient
     {
         private static readonly MediaTypeHeaderValue _mediaTypeValue = new MediaTypeHeaderValue("application/json");
         private static readonly MediaTypeWithQualityHeaderValue _mediaTypeWithQualityValue = new MediaTypeWithQualityHeaderValue("application/json");

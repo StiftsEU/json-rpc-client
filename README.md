@@ -10,7 +10,7 @@ A universal [JSON-RPC 2.0](http://www.jsonrpc.org/specification) service client 
 - The client supports operation cancellation via cancellation token.
 - The client supports specifying JSON-RPC message identifier.
 - The client supports specifying JSON-RPC compatibility level.
-- The client supports working with request and response headers.
+- The client supports working with request and response HTTP headers.
 - The client supports `gzip`, `DEFLATE`, and `Brotli` response encodings.
 - The client supports usage of a custom HTTP message invoker.
 
