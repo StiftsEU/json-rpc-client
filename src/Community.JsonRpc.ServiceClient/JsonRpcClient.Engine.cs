@@ -117,6 +117,13 @@ namespace Community.JsonRpc.ServiceClient
             }
         }
 
+        /// <summary>Creates a unique JSON-RPC request identifier based on a GUID.</summary>
+        /// <returns>A new instance of the <see cref="JsonRpcId" /> type.</returns>
+        protected static JsonRpcId CreateUniqueRequestIdentifier()
+        {
+            return new JsonRpcId(Guid.NewGuid().ToString());
+        }
+
         /// <summary>Sends the specified JSON-RPC request as an asynchronous operation.</summary>
         /// <param name="request">The JSON-RPC request to send.</param>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>

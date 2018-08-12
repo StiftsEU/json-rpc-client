@@ -260,7 +260,7 @@ namespace Community.JsonRpc.ServiceClient
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            var request = new JsonRpcRequest(method, Guid.NewGuid().ToString("D"));
+            var request = new JsonRpcRequest(method, new JsonRpcId(Guid.NewGuid().ToString()));
             var response = await InvokeAsync(request, JsonRpcResponseContract<TResult>.Instance, cancellationToken).ConfigureAwait(false);
 
             return (TResult)response.Result;
@@ -295,7 +295,7 @@ namespace Community.JsonRpc.ServiceClient
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            var request = new JsonRpcRequest(method, Guid.NewGuid().ToString("D"), parameters);
+            var request = new JsonRpcRequest(method, new JsonRpcId(Guid.NewGuid().ToString()), parameters);
             var response = await InvokeAsync(request, JsonRpcResponseContract<TResult>.Instance, cancellationToken).ConfigureAwait(false);
 
             return (TResult)response.Result;
@@ -330,7 +330,7 @@ namespace Community.JsonRpc.ServiceClient
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            var request = new JsonRpcRequest(method, Guid.NewGuid().ToString("D"), parameters);
+            var request = new JsonRpcRequest(method, new JsonRpcId(Guid.NewGuid().ToString()), parameters);
             var response = await InvokeAsync(request, JsonRpcResponseContract<TResult>.Instance, cancellationToken).ConfigureAwait(false);
 
             return (TResult)response.Result;
@@ -476,7 +476,7 @@ namespace Community.JsonRpc.ServiceClient
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            var request = new JsonRpcRequest(method, Guid.NewGuid().ToString("D"));
+            var request = new JsonRpcRequest(method, new JsonRpcId(Guid.NewGuid().ToString()));
             var response = await InvokeAsync(request, JsonRpcResponseContract<TResult, TErrorData>.Instance, cancellationToken).ConfigureAwait(false);
 
             return (TResult)response.Result;
@@ -512,7 +512,7 @@ namespace Community.JsonRpc.ServiceClient
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            var request = new JsonRpcRequest(method, Guid.NewGuid().ToString("D"), parameters);
+            var request = new JsonRpcRequest(method, new JsonRpcId(Guid.NewGuid().ToString()), parameters);
             var response = await InvokeAsync(request, JsonRpcResponseContract<TResult>.Instance, cancellationToken).ConfigureAwait(false);
 
             return (TResult)response.Result;
@@ -548,7 +548,7 @@ namespace Community.JsonRpc.ServiceClient
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            var request = new JsonRpcRequest(method, Guid.NewGuid().ToString("D"), parameters);
+            var request = new JsonRpcRequest(method, new JsonRpcId(Guid.NewGuid().ToString()), parameters);
             var response = await InvokeAsync(request, JsonRpcResponseContract<TResult, TErrorData>.Instance, cancellationToken).ConfigureAwait(false);
 
             return (TResult)response.Result;
