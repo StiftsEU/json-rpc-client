@@ -281,7 +281,7 @@ namespace Community.JsonRpc.ServiceClient
                 }
                 if (!requestIdentifiers.Add(identifier))
                 {
-                    throw new JsonRpcContractException(Strings.GetString("protocol.service.message.duplicate_identifiers"));
+                    throw new JsonRpcContractException(Strings.GetString("invoke.batch.duplicate_identifiers"));
                 }
             }
 
@@ -377,7 +377,11 @@ namespace Community.JsonRpc.ServiceClient
                                                 var response = responseItem.Message;
 
                                                 responses[i] = response;
-                                                responseIdentifiers.Add(response.Id);
+
+                                                if (!responseIdentifiers.Add(response.Id))
+                                                {
+                                                    throw new JsonRpcContractException(Strings.GetString("protocol.service.message.duplicate_identifiers"));
+                                                }
                                             }
                                             else
                                             {

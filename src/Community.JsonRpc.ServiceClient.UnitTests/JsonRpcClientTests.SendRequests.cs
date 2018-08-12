@@ -186,6 +186,55 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         }
 
         [TestMethod]
+        public async Task SendJsonRpcRequestsAsyncWhenResponsesHaveDuplicateIdentifiers()
+        {
+            var requests = new[]
+            {
+                new JsonRpcRequest("m", 0L),
+                new JsonRpcRequest("m", 1L)
+            };
+
+            var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
+            {
+                var responseObject0 = new JObject();
+
+                responseObject0["jsonrpc"] = "2.0";
+                responseObject0["id"] = 0L;
+                responseObject0["result"] = null;
+
+                var responseObject1 = new JObject();
+
+                responseObject1["jsonrpc"] = "2.0";
+                responseObject1["id"] = 0L;
+                responseObject1["result"] = null;
+
+                var responseBatch = new JArray(responseObject0, responseObject1);
+                var contentBytes = Encoding.UTF8.GetBytes(responseBatch.ToString());
+                var content = new ByteArrayContent(contentBytes);
+
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                var message = new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = content
+                };
+
+                return Task.FromResult(message);
+            });
+
+            using (var client = new TestJsonRpcClient(handler))
+            {
+                client.PublicContractResolver.AddResponseContract("m", new JsonRpcResponseContract(typeof(string)));
+                client.PublicContractResolver.AddResponseBinding(0L, "m");
+                client.PublicContractResolver.AddResponseBinding(1L, "m");
+
+                await Assert.ThrowsExceptionAsync<JsonRpcContractException>(() =>
+                     client.PublicSendJsonRpcRequestsAsync(requests, default));
+            }
+        }
+
+        [TestMethod]
         public async Task SendJsonRpcRequestsAsyncWhenResponseIsNotBatchAndInvalid()
         {
             var requests = new[]

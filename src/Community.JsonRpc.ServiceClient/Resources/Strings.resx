@@ -144,6 +144,9 @@
   <data name="factory.type_is_not_interface" xml:space="preserve">
     <value>The specified type is not an interface</value>
   </data>
+  <data name="invoke.batch.duplicate_identifiers" xml:space="preserve">
+    <value>The batch of requests contains messages with duplicate identifiers</value>
+  </data>
   <data name="invoke.identifier.invalid_value" xml:space="preserve">
     <value>The specified identifier is undefined</value>
   </data>
@@ -169,7 +172,7 @@
     <value>The service response is a batch</value>
   </data>
   <data name="protocol.service.message.duplicate_identifiers" xml:space="preserve">
-    <value>The batch of requests contains messages with duplicate identifiers</value>
+    <value>The batch of responses contains messages with duplicate identifiers</value>
   </data>
   <data name="protocol.service.message.invalid_value" xml:space="preserve">
     <value>The service response is invalid</value>
