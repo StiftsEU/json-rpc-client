@@ -119,7 +119,7 @@ namespace Community.JsonRpc.ServiceClient
 
         /// <summary>Creates a unique JSON-RPC request identifier based on a GUID.</summary>
         /// <returns>A new instance of the <see cref="JsonRpcId" /> type.</returns>
-        protected static JsonRpcId CreateUniqueRequestIdentifier()
+        protected static JsonRpcId GenerateRequestId()
         {
             return new JsonRpcId(Guid.NewGuid().ToString());
         }
@@ -133,7 +133,7 @@ namespace Community.JsonRpc.ServiceClient
         /// <exception cref="JsonRpcRequestException">An error occurred during HTTP request execution.</exception>
         /// <exception cref="JsonRpcServiceException">An error occurred during JSON-RPC method invocation.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
-        protected async Task<JsonRpcResponse> SendJsonRpcRequestAsync(JsonRpcRequest request, CancellationToken cancellationToken)
+        protected async Task<JsonRpcResponse> SendJsonRpcRequestAsync(JsonRpcRequest request, CancellationToken cancellationToken = default)
         {
             if (request == null)
             {
@@ -273,7 +273,7 @@ namespace Community.JsonRpc.ServiceClient
         /// <exception cref="JsonRpcRequestException">An error occurred during HTTP request execution.</exception>
         /// <exception cref="JsonRpcServiceException">An error occurred during JSON-RPC method invocation.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
-        protected async Task<IReadOnlyList<JsonRpcResponse>> SendJsonRpcRequestsAsync(IReadOnlyList<JsonRpcRequest> requests, CancellationToken cancellationToken)
+        protected async Task<IReadOnlyList<JsonRpcResponse>> SendJsonRpcRequestsAsync(IReadOnlyList<JsonRpcRequest> requests, CancellationToken cancellationToken = default)
         {
             if (requests == null)
             {
@@ -439,7 +439,16 @@ namespace Community.JsonRpc.ServiceClient
                                         throw new JsonRpcContractException(Strings.GetString("protocol.service.message.invalid_values"));
                                     }
 
+#if NETSTANDARD1_1
+
                                     return new JsonRpcResponse[] { };
+
+#else
+
+                                    return Array.Empty<JsonRpcResponse>();
+
+#endif
+
                                 }
                             default:
                                 {

@@ -36,6 +36,11 @@ namespace Community.JsonRpc.ServiceClient.UnitTests.TestStubs
             VisitHttpResponseHeadersAction?.Invoke(headers);
         }
 
+        public JsonRpcId PublicGenerateRequestId()
+        {
+            return GenerateRequestId();
+        }
+
         public Task<IReadOnlyList<JsonRpcResponse>> PublicSendJsonRpcRequestsAsync(IReadOnlyList<JsonRpcRequest> requests, CancellationToken cancellationToken)
         {
             return SendJsonRpcRequestsAsync(requests, cancellationToken);

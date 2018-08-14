@@ -1,4 +1,5 @@
 using System;
+using System.Data.JsonRpc;
 using System.IO;
 using System.IO.Compression;
 using System.Net.Http;
@@ -180,6 +181,17 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
         }
 
         //###################################################################################################
+
+        [TestMethod]
+        public void GenerateRequestId()
+        {
+            using (var client = new TestJsonRpcClient())
+            {
+                var requestId = client.PublicGenerateRequestId();
+
+                Assert.AreNotEqual(JsonRpcIdType.None, requestId.Type);
+            }
+        }
 
         [TestMethod]
         public void GetServiceUri()
