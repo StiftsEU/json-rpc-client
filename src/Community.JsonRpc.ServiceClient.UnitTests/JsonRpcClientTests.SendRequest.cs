@@ -660,10 +660,11 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
 
             using (var client = new TestJsonRpcClient(handler))
             {
-                var exception = await Assert.ThrowsExceptionAsync<JsonRpcRequestException>(() =>
+                var exception = await Assert.ThrowsExceptionAsync<JsonRpcProtocolException>(() =>
                     client.InvokeAsync("m"));
 
-                Assert.AreEqual(HttpStatusCode.BadRequest, exception.StatusCode);
+                Assert.AreEqual(HttpStatusCode.BadRequest, exception.HttpStatusCode);
+                Assert.AreEqual(default, exception.RequestId);
             }
         }
 
@@ -687,10 +688,11 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
 
             using (var client = new TestJsonRpcClient(handler))
             {
-                var exception = await Assert.ThrowsExceptionAsync<JsonRpcRequestException>(() =>
+                var exception = await Assert.ThrowsExceptionAsync<JsonRpcProtocolException>(() =>
                     client.InvokeAsync<long>("m"));
 
-                Assert.AreEqual(HttpStatusCode.OK, exception.StatusCode);
+                Assert.AreEqual(HttpStatusCode.OK, exception.HttpStatusCode);
+                Assert.AreEqual(default, exception.RequestId);
             }
         }
 
@@ -714,10 +716,11 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
 
             using (var client = new TestJsonRpcClient(handler))
             {
-                var exception = await Assert.ThrowsExceptionAsync<JsonRpcRequestException>(() =>
+                var exception = await Assert.ThrowsExceptionAsync<JsonRpcProtocolException>(() =>
                     client.InvokeAsync<long>("m"));
 
-                Assert.AreEqual(HttpStatusCode.OK, exception.StatusCode);
+                Assert.AreEqual(HttpStatusCode.OK, exception.HttpStatusCode);
+                Assert.AreEqual(default, exception.RequestId);
             }
         }
 
@@ -755,8 +758,11 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
 
             using (var client = new TestJsonRpcClient(handler))
             {
-                await Assert.ThrowsExceptionAsync<JsonRpcContractException>(() =>
+                var exception = await Assert.ThrowsExceptionAsync<JsonRpcProtocolException>(() =>
                     client.InvokeAsync<long>("m"));
+
+                Assert.AreEqual(HttpStatusCode.OK, exception.HttpStatusCode);
+                Assert.AreNotEqual(default, exception.RequestId);
             }
         }
 
@@ -781,10 +787,10 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
 
             using (var client = new TestJsonRpcClient(handler))
             {
-                var exception = await Assert.ThrowsExceptionAsync<JsonRpcContractException>(() =>
+                var exception = await Assert.ThrowsExceptionAsync<JsonRpcClientException>(() =>
                     client.InvokeAsync<long>("m"));
 
-                Assert.AreNotEqual(string.Empty, exception.RequestId);
+                Assert.AreNotEqual(default, exception.RequestId);
             }
         }
 
@@ -815,10 +821,10 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
 
             using (var client = new TestJsonRpcClient(handler))
             {
-                var exception = await Assert.ThrowsExceptionAsync<JsonRpcContractException>(() =>
+                var exception = await Assert.ThrowsExceptionAsync<JsonRpcClientException>(() =>
                     client.InvokeAsync<long>("m"));
 
-                Assert.AreNotEqual(string.Empty, exception.RequestId);
+                Assert.AreNotEqual(default, exception.RequestId);
             }
         }
 
@@ -849,10 +855,11 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
 
             using (var client = new TestJsonRpcClient(handler))
             {
-                var exception = await Assert.ThrowsExceptionAsync<JsonRpcContractException>(() =>
+                var exception = await Assert.ThrowsExceptionAsync<JsonRpcProtocolException>(() =>
                     client.InvokeAsync("m"));
 
-                Assert.AreEqual(string.Empty, exception.RequestId);
+                Assert.AreEqual(HttpStatusCode.OK, exception.HttpStatusCode);
+                Assert.AreEqual(default, exception.RequestId);
             }
         }
 
@@ -871,10 +878,11 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
 
             using (var client = new TestJsonRpcClient(handler))
             {
-                var exception = await Assert.ThrowsExceptionAsync<JsonRpcContractException>(() =>
+                var exception = await Assert.ThrowsExceptionAsync<JsonRpcProtocolException>(() =>
                     client.InvokeAsync<long>("m"));
 
-                Assert.AreNotEqual(string.Empty, exception.RequestId);
+                Assert.AreEqual(HttpStatusCode.NoContent, exception.HttpStatusCode);
+                Assert.AreNotEqual(default, exception.RequestId);
             }
         }
 

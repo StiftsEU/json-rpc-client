@@ -20,7 +20,7 @@ namespace Community.JsonRpc.ServiceClient
             {
                 throw new ArgumentNullException(nameof(methodName));
             }
-            if (JsonRpcSerializer.IsSystemMethod(methodName))
+            if (JsonRpcProtocol.IsSystemMethod(methodName))
             {
                 throw new ArgumentException(Strings.GetString("invoke.method.invalid_name"), nameof(methodName));
             }

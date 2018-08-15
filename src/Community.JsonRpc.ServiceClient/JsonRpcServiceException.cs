@@ -1,11 +1,11 @@
 ﻿// © Alexander Kozlenko. Licensed under the MIT License.
 
-using System;
+using System.Data.JsonRpc;
 
 namespace Community.JsonRpc.ServiceClient
 {
-    /// <summary>Represents an error that occur during service method invocation.</summary>
-    public sealed class JsonRpcServiceException : Exception
+    /// <summary>Represents an error that occurs during invocation of a JSON-RPC service method.</summary>
+    public sealed class JsonRpcServiceException : JsonRpcException
     {
         internal JsonRpcServiceException(long code, string message, object errorData, bool hasErrorData)
             : base(message)

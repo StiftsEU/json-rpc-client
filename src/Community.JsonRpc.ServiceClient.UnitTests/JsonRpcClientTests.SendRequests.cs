@@ -34,8 +34,10 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
 
             using (var client = new TestJsonRpcClient())
             {
-                await Assert.ThrowsExceptionAsync<JsonRpcContractException>(() =>
+                var exception = await Assert.ThrowsExceptionAsync<JsonRpcClientException>(() =>
                      client.PublicSendJsonRpcRequestsAsync(requests, default));
+
+                Assert.AreEqual(default, exception.RequestId);
             }
         }
 
@@ -69,10 +71,11 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
                 client.PublicContractResolver.AddResponseBinding(0L, "m");
                 client.PublicContractResolver.AddResponseBinding(1L, "m");
 
-                var exception = await Assert.ThrowsExceptionAsync<JsonRpcRequestException>(() =>
+                var exception = await Assert.ThrowsExceptionAsync<JsonRpcProtocolException>(() =>
                      client.PublicSendJsonRpcRequestsAsync(requests, default));
 
-                Assert.AreEqual(HttpStatusCode.BadRequest, exception.StatusCode);
+                Assert.AreEqual(HttpStatusCode.BadRequest, exception.HttpStatusCode);
+                Assert.AreEqual(default, exception.RequestId);
             }
         }
 
@@ -102,10 +105,11 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
 
             using (var client = new TestJsonRpcClient(handler))
             {
-                var exception = await Assert.ThrowsExceptionAsync<JsonRpcRequestException>(() =>
+                var exception = await Assert.ThrowsExceptionAsync<JsonRpcProtocolException>(() =>
                      client.PublicSendJsonRpcRequestsAsync(requests, default));
 
-                Assert.AreEqual(HttpStatusCode.OK, exception.StatusCode);
+                Assert.AreEqual(HttpStatusCode.OK, exception.HttpStatusCode);
+                Assert.AreEqual(default, exception.RequestId);
             }
         }
 
@@ -135,10 +139,11 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
 
             using (var client = new TestJsonRpcClient(handler))
             {
-                var exception = await Assert.ThrowsExceptionAsync<JsonRpcRequestException>(() =>
+                var exception = await Assert.ThrowsExceptionAsync<JsonRpcProtocolException>(() =>
                      client.PublicSendJsonRpcRequestsAsync(requests, default));
 
-                Assert.AreEqual(HttpStatusCode.OK, exception.StatusCode);
+                Assert.AreEqual(HttpStatusCode.OK, exception.HttpStatusCode);
+                Assert.AreEqual(default, exception.RequestId);
             }
         }
 
@@ -180,8 +185,11 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
                 client.PublicContractResolver.AddResponseBinding(0L, "m");
                 client.PublicContractResolver.AddResponseBinding(1L, "m");
 
-                await Assert.ThrowsExceptionAsync<JsonRpcContractException>(() =>
+                var exception = await Assert.ThrowsExceptionAsync<JsonRpcProtocolException>(() =>
                      client.PublicSendJsonRpcRequestsAsync(requests, default));
+
+                Assert.AreEqual(HttpStatusCode.OK, exception.HttpStatusCode);
+                Assert.AreEqual(default, exception.RequestId);
             }
         }
 
@@ -229,8 +237,11 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
                 client.PublicContractResolver.AddResponseBinding(0L, "m");
                 client.PublicContractResolver.AddResponseBinding(1L, "m");
 
-                await Assert.ThrowsExceptionAsync<JsonRpcContractException>(() =>
+                var exception = await Assert.ThrowsExceptionAsync<JsonRpcProtocolException>(() =>
                      client.PublicSendJsonRpcRequestsAsync(requests, default));
+
+                Assert.AreEqual(HttpStatusCode.OK, exception.HttpStatusCode);
+                Assert.AreEqual(default, exception.RequestId);
             }
         }
 
@@ -269,8 +280,10 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
                 client.PublicContractResolver.AddResponseContract("m", new JsonRpcResponseContract(typeof(string)));
                 client.PublicContractResolver.AddResponseBinding(0L, "m");
 
-                await Assert.ThrowsExceptionAsync<JsonRpcContractException>(() =>
+                var exception = await Assert.ThrowsExceptionAsync<JsonRpcClientException>(() =>
                      client.PublicSendJsonRpcRequestsAsync(requests, default));
+
+                Assert.AreEqual(default, exception.RequestId);
             }
         }
 
@@ -309,8 +322,11 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
                 client.PublicContractResolver.AddResponseContract("m", new JsonRpcResponseContract(typeof(string)));
                 client.PublicContractResolver.AddResponseBinding(0L, "m");
 
-                await Assert.ThrowsExceptionAsync<JsonRpcContractException>(() =>
+                var exception = await Assert.ThrowsExceptionAsync<JsonRpcProtocolException>(() =>
                      client.PublicSendJsonRpcRequestsAsync(requests, default));
+
+                Assert.AreEqual(HttpStatusCode.OK, exception.HttpStatusCode);
+                Assert.AreEqual(default, exception.RequestId);
             }
         }
 
@@ -363,7 +379,7 @@ namespace Community.JsonRpc.ServiceClient.UnitTests
                 Assert.IsNotNull(exception);
                 Assert.IsNotNull(exception.InnerExceptions);
                 Assert.AreEqual(1, exception.InnerExceptions.Count);
-                Assert.IsInstanceOfType(exception.InnerExceptions[0], typeof(JsonRpcContractException));
+                Assert.IsInstanceOfType(exception.InnerExceptions[0], typeof(JsonRpcClientException));
             }
         }
 
