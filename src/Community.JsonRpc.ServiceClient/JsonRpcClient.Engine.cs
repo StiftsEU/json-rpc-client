@@ -195,7 +195,7 @@ namespace Community.JsonRpc.ServiceClient
                                         throw new JsonRpcProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
                                     }
 
-                                    var responseDataInfo = default(JsonRpcInfo<JsonRpcResponse>);
+                                    var responseData = default(JsonRpcData<JsonRpcResponse>);
                                     var responseStream = default(Stream);
 
                                     using (responseStream = await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false))
@@ -213,7 +213,7 @@ namespace Community.JsonRpc.ServiceClient
 
                                         try
                                         {
-                                            responseDataInfo = await _jsonRpcSerializer.DeserializeResponseDataAsync(responseStream, cancellationToken).ConfigureAwait(false);
+                                            responseData = await _jsonRpcSerializer.DeserializeResponseDataAsync(responseStream, cancellationToken).ConfigureAwait(false);
                                         }
                                         catch (JsonException e)
                                         {
@@ -225,19 +225,19 @@ namespace Community.JsonRpc.ServiceClient
                                         }
                                     }
 
-                                    if (responseDataInfo.IsBatch)
+                                    if (responseData.IsBatch)
                                     {
                                         throw new JsonRpcProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.service.message.batch_value"), requestId);
                                     }
 
-                                    var responseInfo = responseDataInfo.Message;
+                                    var responseItem = responseData.Item;
 
-                                    if (!responseInfo.IsValid)
+                                    if (!responseItem.IsValid)
                                     {
-                                        throw new JsonRpcClientException(Strings.GetString("protocol.service.message.invalid_value"), requestId, responseInfo.Exception);
+                                        throw new JsonRpcClientException(Strings.GetString("protocol.service.message.invalid_value"), requestId, responseItem.Exception);
                                     }
 
-                                    var response = responseInfo.Message;
+                                    var response = responseItem.Message;
 
                                     if (!response.Success)
                                     {
@@ -344,7 +344,7 @@ namespace Community.JsonRpc.ServiceClient
                                         throw new JsonRpcProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
                                     }
 
-                                    var responseDataInfo = default(JsonRpcInfo<JsonRpcResponse>);
+                                    var responseData = default(JsonRpcData<JsonRpcResponse>);
                                     var responseStream = default(Stream);
 
                                     using (responseStream = await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false))
@@ -362,7 +362,7 @@ namespace Community.JsonRpc.ServiceClient
 
                                         try
                                         {
-                                            responseDataInfo = await _jsonRpcSerializer.DeserializeResponseDataAsync(responseStream, cancellationToken).ConfigureAwait(false);
+                                            responseData = await _jsonRpcSerializer.DeserializeResponseDataAsync(responseStream, cancellationToken).ConfigureAwait(false);
                                         }
                                         catch (JsonException e)
                                         {
@@ -374,9 +374,9 @@ namespace Community.JsonRpc.ServiceClient
                                         }
                                     }
 
-                                    if (responseDataInfo.IsBatch)
+                                    if (responseData.IsBatch)
                                     {
-                                        var responseInfos = responseDataInfo.Messages;
+                                        var responseInfos = responseData.Items;
                                         var responseIdentifiers = new HashSet<JsonRpcId>();
                                         var responses = new JsonRpcResponse[responseInfos.Count];
                                         var exceptions = new HashSet<JsonRpcException>();
@@ -415,14 +415,14 @@ namespace Community.JsonRpc.ServiceClient
                                     }
                                     else
                                     {
-                                        var responseInfo = responseDataInfo.Message;
+                                        var responseItem = responseData.Item;
 
-                                        if (!responseInfo.IsValid)
+                                        if (!responseItem.IsValid)
                                         {
-                                            throw new JsonRpcClientException(Strings.GetString("protocol.service.message.invalid_value"), default, responseInfo.Exception);
+                                            throw new JsonRpcClientException(Strings.GetString("protocol.service.message.invalid_value"), default, responseItem.Exception);
                                         }
 
-                                        var response = responseInfo.Message;
+                                        var response = responseItem.Message;
 
                                         if (!response.Success)
                                         {
