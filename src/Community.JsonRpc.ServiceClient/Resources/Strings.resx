@@ -121,7 +121,7 @@
     <value>The specified URI is relative</value>
   </data>
   <data name="factory.interface_has_unsupported_members" xml:space="preserve">
-    <value>The interface "{0}" from the assembly "{1}" defines unsupported type memebers</value>
+    <value>The interface "{0}" from the assembly "{1}" defines unsupported type members</value>
   </data>
   <data name="factory.method.attribute_not_found" xml:space="preserve">
     <value>The method "{0}" in the type "{1}" from the assembly "{2}" does not have a JSON-RPC method contract attribute</value>
