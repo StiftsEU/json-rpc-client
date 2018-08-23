@@ -21,7 +21,7 @@ namespace Community.JsonRpc.ServiceClient
         /// <param name="compatibilityLevel">The JSON-RPC protocol compatibility level.</param>
         /// <exception cref="ArgumentNullException"><paramref name="serviceUri" />, <paramref name="jsonSerializer" />, or <paramref name="httpInvoker" /> is <see langword="null" />.</exception>
         /// <exception cref="FormatException"><paramref name="serviceUri" /> is a relative URI or is not correctly formed.</exception>
-        public JsonRpcClient(string serviceUri, JsonSerializer jsonSerializer, HttpMessageInvoker httpInvoker, JsonRpcCompatibilityLevel compatibilityLevel = JsonRpcCompatibilityLevel.Level2)
+        public JsonRpcClient(string serviceUri, JsonSerializer jsonSerializer, HttpMessageInvoker httpInvoker, JsonRpcCompatibilityLevel compatibilityLevel = default)
         {
             if (serviceUri == null)
             {
@@ -47,7 +47,7 @@ namespace Community.JsonRpc.ServiceClient
         /// <param name="compatibilityLevel">The JSON-RPC protocol compatibility level.</param>
         /// <exception cref="ArgumentNullException"><paramref name="serviceUri" /> or <paramref name="jsonSerializer" /> is <see langword="null" />.</exception>
         /// <exception cref="FormatException"><paramref name="serviceUri" /> is a relative URI or is not correctly formed.</exception>
-        public JsonRpcClient(string serviceUri, JsonSerializer jsonSerializer, JsonRpcCompatibilityLevel compatibilityLevel = JsonRpcCompatibilityLevel.Level2)
+        public JsonRpcClient(string serviceUri, JsonSerializer jsonSerializer, JsonRpcCompatibilityLevel compatibilityLevel = default)
             : this(serviceUri, jsonSerializer, CreateHttpInvoker(), compatibilityLevel)
         {
         }
@@ -58,7 +58,7 @@ namespace Community.JsonRpc.ServiceClient
         /// <param name="compatibilityLevel">The JSON-RPC protocol compatibility level.</param>
         /// <exception cref="ArgumentNullException"><paramref name="serviceUri" /> or <paramref name="httpInvoker" /> is <see langword="null" />.</exception>
         /// <exception cref="FormatException"><paramref name="serviceUri" /> is a relative URI or is not correctly formed.</exception>
-        public JsonRpcClient(string serviceUri, HttpMessageInvoker httpInvoker, JsonRpcCompatibilityLevel compatibilityLevel = JsonRpcCompatibilityLevel.Level2)
+        public JsonRpcClient(string serviceUri, HttpMessageInvoker httpInvoker, JsonRpcCompatibilityLevel compatibilityLevel = default)
             : this(serviceUri, CreateJsonSerializer(), httpInvoker, compatibilityLevel)
         {
         }
@@ -68,7 +68,7 @@ namespace Community.JsonRpc.ServiceClient
         /// <param name="compatibilityLevel">The JSON-RPC protocol compatibility level.</param>
         /// <exception cref="ArgumentNullException"><paramref name="serviceUri" /> is <see langword="null" />.</exception>
         /// <exception cref="FormatException"><paramref name="serviceUri" /> is a relative URI or is not correctly formed.</exception>
-        public JsonRpcClient(string serviceUri, JsonRpcCompatibilityLevel compatibilityLevel = JsonRpcCompatibilityLevel.Level2)
+        public JsonRpcClient(string serviceUri, JsonRpcCompatibilityLevel compatibilityLevel = default)
             : this(serviceUri, CreateJsonSerializer(), CreateHttpInvoker(), compatibilityLevel)
         {
         }
@@ -80,7 +80,7 @@ namespace Community.JsonRpc.ServiceClient
         /// <param name="compatibilityLevel">The JSON-RPC protocol compatibility level.</param>
         /// <exception cref="ArgumentException"><paramref name="serviceUri" /> is a relative URI.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="serviceUri" />, <paramref name="jsonSerializer" />, or <paramref name="httpInvoker" /> is <see langword="null" />.</exception>
-        public JsonRpcClient(Uri serviceUri, JsonSerializer jsonSerializer, HttpMessageInvoker httpInvoker, JsonRpcCompatibilityLevel compatibilityLevel = JsonRpcCompatibilityLevel.Level2)
+        public JsonRpcClient(Uri serviceUri, JsonSerializer jsonSerializer, HttpMessageInvoker httpInvoker, JsonRpcCompatibilityLevel compatibilityLevel = default)
         {
             if (serviceUri == null)
             {
@@ -110,7 +110,7 @@ namespace Community.JsonRpc.ServiceClient
         /// <param name="compatibilityLevel">The JSON-RPC protocol compatibility level.</param>
         /// <exception cref="ArgumentNullException"><paramref name="serviceUri" /> or <paramref name="jsonSerializer" /> is <see langword="null" />.</exception>
         /// <exception cref="FormatException"><paramref name="serviceUri" /> is a relative URI or is not correctly formed.</exception>
-        public JsonRpcClient(Uri serviceUri, JsonSerializer jsonSerializer, JsonRpcCompatibilityLevel compatibilityLevel = JsonRpcCompatibilityLevel.Level2)
+        public JsonRpcClient(Uri serviceUri, JsonSerializer jsonSerializer, JsonRpcCompatibilityLevel compatibilityLevel = default)
             : this(serviceUri, jsonSerializer, CreateHttpInvoker(), compatibilityLevel)
         {
         }
@@ -121,7 +121,7 @@ namespace Community.JsonRpc.ServiceClient
         /// <param name="compatibilityLevel">The JSON-RPC protocol compatibility level.</param>
         /// <exception cref="ArgumentNullException"><paramref name="serviceUri" /> or <paramref name="httpInvoker" /> is <see langword="null" />.</exception>
         /// <exception cref="FormatException"><paramref name="serviceUri" /> is a relative URI or is not correctly formed.</exception>
-        public JsonRpcClient(Uri serviceUri, HttpMessageInvoker httpInvoker, JsonRpcCompatibilityLevel compatibilityLevel = JsonRpcCompatibilityLevel.Level2)
+        public JsonRpcClient(Uri serviceUri, HttpMessageInvoker httpInvoker, JsonRpcCompatibilityLevel compatibilityLevel = default)
             : this(serviceUri, CreateJsonSerializer(), httpInvoker, compatibilityLevel)
         {
         }
@@ -131,7 +131,7 @@ namespace Community.JsonRpc.ServiceClient
         /// <param name="compatibilityLevel">The JSON-RPC protocol compatibility level.</param>
         /// <exception cref="ArgumentException"><paramref name="serviceUri" /> is a relative URI.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="serviceUri" /> is <see langword="null" />.</exception>
-        public JsonRpcClient(Uri serviceUri, JsonRpcCompatibilityLevel compatibilityLevel = JsonRpcCompatibilityLevel.Level2)
+        public JsonRpcClient(Uri serviceUri, JsonRpcCompatibilityLevel compatibilityLevel = default)
             : this(serviceUri, CreateJsonSerializer(), CreateHttpInvoker(), compatibilityLevel)
         {
         }
