@@ -1,6 +1,7 @@
 ## Community.JsonRpc.ServiceClient
 
-A universal [JSON-RPC 2.0](http://www.jsonrpc.org/specification) service client based on the [JSON-RPC 2.0 Transport: HTTP](https://www.simple-is-better.org/json-rpc/transport_http.html) specification.
+A universal [JSON-RPC 2.0](http://www.jsonrpc.org/specification) service client based on the [JSON-RPC 2.0 Transport: HTTP](https://www.simple-is-better.org/json-rpc/transport_http.html) specification and the [System.Data.JsonRpc](https://www.nuget.org/packages/System.Data.JsonRpc)
+ serializer.
 
 [![NuGet package](https://img.shields.io/nuget/v/Community.JsonRpc.ServiceClient.svg?style=flat-square)](https://www.nuget.org/packages/Community.JsonRpc.ServiceClient)
 
