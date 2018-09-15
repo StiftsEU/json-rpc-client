@@ -117,8 +117,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="client.uri.relative" xml:space="preserve">
-    <value>The specified URI is relative</value>
+  <data name="client.uri.invalid_format" xml:space="preserve">
+    <value>The specified URI has invalid format</value>
   </data>
   <data name="factory.interface_has_unsupported_members" xml:space="preserve">
     <value>The interface "{0}" from the assembly "{1}" defines unsupported type members</value>

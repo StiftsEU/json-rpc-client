@@ -21,8 +21,15 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         [TestMethod]
         public void ConstructorWhenServiceUriIsStringAndIsRelative()
         {
-            Assert.ThrowsException<UriFormatException>(() =>
-                new JsonRpcClient("/api"));
+            Assert.ThrowsException<FormatException>(() =>
+                new JsonRpcClient("/localhost"));
+        }
+
+        [TestMethod]
+        public void ConstructorWhenServiceUriIsStringAndHasInvalidScheme()
+        {
+            Assert.ThrowsException<FormatException>(() =>
+                new JsonRpcClient("ftp://localhost"));
         }
 
         [TestMethod]
@@ -35,8 +42,15 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         [TestMethod]
         public void ConstructorWhenServiceUriIsUriAndIsRelative()
         {
-            Assert.ThrowsException<ArgumentException>(() =>
-                new JsonRpcClient(new Uri("/api", UriKind.Relative)));
+            Assert.ThrowsException<FormatException>(() =>
+                new JsonRpcClient(new Uri("/localhost", UriKind.Relative)));
+        }
+
+        [TestMethod]
+        public void ConstructorWhenServiceUriIsUriAndHasInvalidScheme()
+        {
+            Assert.ThrowsException<FormatException>(() =>
+                new JsonRpcClient(new Uri("ftp://localhost")));
         }
 
         [TestMethod]
@@ -49,8 +63,15 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         [TestMethod]
         public void ConstructorWithInvokerWhenServiceUriIsStringAndIsRelative()
         {
-            Assert.ThrowsException<UriFormatException>(() =>
-                new JsonRpcClient("/api", new HttpClient(new TestHttpHandler())));
+            Assert.ThrowsException<FormatException>(() =>
+                new JsonRpcClient("/localhost", new HttpClient(new TestHttpHandler())));
+        }
+
+        [TestMethod]
+        public void ConstructorWithInvokerWhenServiceUriIsStringAndHasInvalidScheme()
+        {
+            Assert.ThrowsException<FormatException>(() =>
+                new JsonRpcClient("ftp://localhost", new HttpClient(new TestHttpHandler())));
         }
 
         [TestMethod]
@@ -70,15 +91,22 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         [TestMethod]
         public void ConstructorWithInvokerWhenServiceUriIsUriAndIsRelative()
         {
-            Assert.ThrowsException<ArgumentException>(() =>
-                new JsonRpcClient(new Uri("/api", UriKind.Relative), new HttpClient(new TestHttpHandler())));
+            Assert.ThrowsException<FormatException>(() =>
+                new JsonRpcClient(new Uri("/localhost", UriKind.Relative), new HttpClient(new TestHttpHandler())));
+        }
+
+        [TestMethod]
+        public void ConstructorWithInvokerWhenServiceUriIsUriAndHasInvalidScheme()
+        {
+            Assert.ThrowsException<FormatException>(() =>
+                new JsonRpcClient(new Uri("ftp://localhost"), new HttpClient(new TestHttpHandler())));
         }
 
         [TestMethod]
         public void ConstructorWithInvokerWhenServiceUriIsUriAndInvokerIsNull()
         {
             Assert.ThrowsException<ArgumentNullException>(() =>
-                new JsonRpcClient(new Uri("https://localhost", UriKind.Absolute), default(HttpMessageInvoker)));
+                new JsonRpcClient(new Uri("https://localhost"), default(HttpMessageInvoker)));
         }
 
         [TestMethod]
@@ -91,8 +119,15 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         [TestMethod]
         public void ConstructorWithSerializerWhenServiceUriIsStringAndIsRelative()
         {
-            Assert.ThrowsException<UriFormatException>(() =>
-                new JsonRpcClient("/api", new JsonSerializer()));
+            Assert.ThrowsException<FormatException>(() =>
+                new JsonRpcClient("/localhost", new JsonSerializer()));
+        }
+
+        [TestMethod]
+        public void ConstructorWithSerializerWhenServiceUriIsStringAndHasInvalidScheme()
+        {
+            Assert.ThrowsException<FormatException>(() =>
+                new JsonRpcClient("ftp://localhost", new JsonSerializer()));
         }
 
         [TestMethod]
@@ -112,15 +147,22 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         [TestMethod]
         public void ConstructorWithSerializerWhenServiceUriIsUriAndIsRelative()
         {
-            Assert.ThrowsException<ArgumentException>(() =>
-                new JsonRpcClient(new Uri("/api", UriKind.Relative), new JsonSerializer()));
+            Assert.ThrowsException<FormatException>(() =>
+                new JsonRpcClient(new Uri("/localhost", UriKind.Relative), new JsonSerializer()));
+        }
+
+        [TestMethod]
+        public void ConstructorWithSerializerWhenServiceUriIsUriAndHasInvalidScheme()
+        {
+            Assert.ThrowsException<FormatException>(() =>
+                new JsonRpcClient(new Uri("ftp://localhost"), new JsonSerializer()));
         }
 
         [TestMethod]
         public void ConstructorWithSerializerWhenServiceUriIsUriAndInvokerIsNull()
         {
             Assert.ThrowsException<ArgumentNullException>(() =>
-                new JsonRpcClient(new Uri("https://localhost", UriKind.Absolute), default(JsonSerializer)));
+                new JsonRpcClient(new Uri("https://localhost"), default(JsonSerializer)));
         }
 
         [TestMethod]
@@ -133,8 +175,15 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         [TestMethod]
         public void ConstructorWithSerializerAndInvokerWhenServiceUriIsStringAndIsRelative()
         {
-            Assert.ThrowsException<UriFormatException>(() =>
-                new JsonRpcClient("/api", new JsonSerializer(), new HttpClient(new TestHttpHandler())));
+            Assert.ThrowsException<FormatException>(() =>
+                new JsonRpcClient("/localhost", new JsonSerializer(), new HttpClient(new TestHttpHandler())));
+        }
+
+        [TestMethod]
+        public void ConstructorWithSerializerAndInvokerWhenServiceUriIsStringAndHasInvalidScheme()
+        {
+            Assert.ThrowsException<FormatException>(() =>
+                new JsonRpcClient("ftp://localhost", new JsonSerializer(), new HttpClient(new TestHttpHandler())));
         }
 
         [TestMethod]
@@ -161,22 +210,29 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         [TestMethod]
         public void ConstructorWithSerializerAndInvokerWhenServiceUriIsUriAndIsRelative()
         {
-            Assert.ThrowsException<ArgumentException>(() =>
-                new JsonRpcClient(new Uri("/api", UriKind.Relative), new JsonSerializer(), new HttpClient(new TestHttpHandler())));
+            Assert.ThrowsException<FormatException>(() =>
+                new JsonRpcClient(new Uri("/localhost", UriKind.Relative), new JsonSerializer(), new HttpClient(new TestHttpHandler())));
+        }
+
+        [TestMethod]
+        public void ConstructorWithSerializerAndInvokerWhenServiceUriIsUriAndHasInvalidScheme()
+        {
+            Assert.ThrowsException<FormatException>(() =>
+                new JsonRpcClient(new Uri("ftp://localhost"), new JsonSerializer(), new HttpClient(new TestHttpHandler())));
         }
 
         [TestMethod]
         public void ConstructorWithSerializerAndInvokerWhenServiceUriIsUriAndSerializerIsNull()
         {
             Assert.ThrowsException<ArgumentNullException>(() =>
-                new JsonRpcClient(new Uri("https://localhost", UriKind.Absolute), default(JsonSerializer), new HttpClient(new TestHttpHandler())));
+                new JsonRpcClient(new Uri("https://localhost"), default(JsonSerializer), new HttpClient(new TestHttpHandler())));
         }
 
         [TestMethod]
         public void ConstructorWithSerializerAndInvokerWhenServiceUriIsUriAndInvokerIsNull()
         {
             Assert.ThrowsException<ArgumentNullException>(() =>
-                new JsonRpcClient(new Uri("https://localhost", UriKind.Absolute), new JsonSerializer(), default(HttpMessageInvoker)));
+                new JsonRpcClient(new Uri("https://localhost"), new JsonSerializer(), default(HttpMessageInvoker)));
         }
 
         //###################################################################################################

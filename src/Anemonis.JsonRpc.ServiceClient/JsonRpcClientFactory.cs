@@ -44,7 +44,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         /// <param name="serviceUri">The service URI.</param>
         /// <returns>A new instance of JSON-RPC client defined by the specified interface.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="serviceUri" /> is <see langword="null" />.</exception>
-        /// <exception cref="FormatException"><paramref name="serviceUri" /> is a relative URI or is not correctly formed.</exception>
+        /// <exception cref="FormatException"><paramref name="serviceUri" /> is relative, or has invalid scheme, or is not correctly formed.</exception>
         /// <exception cref="InvalidOperationException">An error occurred while building a type for the specified interface.</exception>
         public static T Create<T>(string serviceUri)
             where T : class
@@ -57,7 +57,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         /// <param name="serviceUri">The service URI.</param>
         /// <returns>A new instance of JSON-RPC client defined by the specified interface.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="serviceUri" /> is <see langword="null" />.</exception>
-        /// <exception cref="FormatException"><paramref name="serviceUri" /> is a relative URI or is not correctly formed.</exception>
+        /// <exception cref="FormatException"><paramref name="serviceUri" /> is relative, or has invalid scheme, or is not correctly formed.</exception>
         /// <exception cref="InvalidOperationException">An error occurred while building a type for the specified interface.</exception>
         public static T Create<T>(Uri serviceUri)
             where T : class

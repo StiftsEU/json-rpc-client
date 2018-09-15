@@ -19,7 +19,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         /// <param name="httpInvoker">The component for HTTP/HTTPS communication.</param>
         /// <param name="compatibilityLevel">The JSON-RPC protocol compatibility level.</param>
         /// <exception cref="ArgumentNullException"><paramref name="serviceUri" />, <paramref name="jsonSerializer" />, or <paramref name="httpInvoker" /> is <see langword="null" />.</exception>
-        /// <exception cref="FormatException"><paramref name="serviceUri" /> is a relative URI or is not correctly formed.</exception>
+        /// <exception cref="FormatException"><paramref name="serviceUri" /> is relative, or has invalid scheme, or is not correctly formed.</exception>
         public JsonRpcClient(string serviceUri, JsonSerializer jsonSerializer, HttpMessageInvoker httpInvoker, JsonRpcCompatibilityLevel compatibilityLevel = default)
         {
             if (serviceUri == null)
@@ -34,10 +34,16 @@ namespace Anemonis.JsonRpc.ServiceClient
             {
                 throw new ArgumentNullException(nameof(httpInvoker));
             }
+            if (!Uri.IsWellFormedUriString(serviceUri, UriKind.Absolute))
+            {
+                throw new FormatException(Strings.GetString("client.uri.invalid_format"));
+            }
 
             _serviceUri = new Uri(serviceUri, UriKind.Absolute);
             _httpInvoker = httpInvoker;
             _jsonRpcSerializer = new JsonRpcSerializer(_jsonRpcContractResolver, jsonSerializer, compatibilityLevel);
+
+            ValidateUriScheme(_serviceUri.Scheme);
         }
 
         /// <summary>Initializes a new instance of the <see cref="JsonRpcClient" /> class.</summary>
@@ -45,7 +51,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         /// <param name="jsonSerializer">The component for serializing to and deserializing from JSON.</param>
         /// <param name="compatibilityLevel">The JSON-RPC protocol compatibility level.</param>
         /// <exception cref="ArgumentNullException"><paramref name="serviceUri" /> or <paramref name="jsonSerializer" /> is <see langword="null" />.</exception>
-        /// <exception cref="FormatException"><paramref name="serviceUri" /> is a relative URI or is not correctly formed.</exception>
+        /// <exception cref="FormatException"><paramref name="serviceUri" /> is relative, or has invalid scheme, or is not correctly formed.</exception>
         public JsonRpcClient(string serviceUri, JsonSerializer jsonSerializer, JsonRpcCompatibilityLevel compatibilityLevel = default)
             : this(serviceUri, jsonSerializer, CreateHttpInvoker(), compatibilityLevel)
         {
@@ -56,7 +62,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         /// <param name="httpInvoker">The component for HTTP/HTTPS communication.</param>
         /// <param name="compatibilityLevel">The JSON-RPC protocol compatibility level.</param>
         /// <exception cref="ArgumentNullException"><paramref name="serviceUri" /> or <paramref name="httpInvoker" /> is <see langword="null" />.</exception>
-        /// <exception cref="FormatException"><paramref name="serviceUri" /> is a relative URI or is not correctly formed.</exception>
+        /// <exception cref="FormatException"><paramref name="serviceUri" /> is relative, or has invalid scheme, or is not correctly formed.</exception>
         public JsonRpcClient(string serviceUri, HttpMessageInvoker httpInvoker, JsonRpcCompatibilityLevel compatibilityLevel = default)
             : this(serviceUri, CreateJsonSerializer(), httpInvoker, compatibilityLevel)
         {
@@ -66,7 +72,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         /// <param name="serviceUri">The service URI.</param>
         /// <param name="compatibilityLevel">The JSON-RPC protocol compatibility level.</param>
         /// <exception cref="ArgumentNullException"><paramref name="serviceUri" /> is <see langword="null" />.</exception>
-        /// <exception cref="FormatException"><paramref name="serviceUri" /> is a relative URI or is not correctly formed.</exception>
+        /// <exception cref="FormatException"><paramref name="serviceUri" /> is relative, or has invalid scheme, or is not correctly formed.</exception>
         public JsonRpcClient(string serviceUri, JsonRpcCompatibilityLevel compatibilityLevel = default)
             : this(serviceUri, CreateJsonSerializer(), CreateHttpInvoker(), compatibilityLevel)
         {
@@ -85,10 +91,6 @@ namespace Anemonis.JsonRpc.ServiceClient
             {
                 throw new ArgumentNullException(nameof(serviceUri));
             }
-            if (!serviceUri.IsAbsoluteUri)
-            {
-                throw new ArgumentException(Strings.GetString("client.uri.relative"), nameof(serviceUri));
-            }
             if (jsonSerializer == null)
             {
                 throw new ArgumentNullException(nameof(jsonSerializer));
@@ -97,10 +99,16 @@ namespace Anemonis.JsonRpc.ServiceClient
             {
                 throw new ArgumentNullException(nameof(httpInvoker));
             }
+            if (!serviceUri.IsAbsoluteUri)
+            {
+                throw new FormatException(Strings.GetString("client.uri.invalid_format"));
+            }
 
             _serviceUri = serviceUri;
             _httpInvoker = httpInvoker;
             _jsonRpcSerializer = new JsonRpcSerializer(_jsonRpcContractResolver, jsonSerializer, compatibilityLevel);
+
+            ValidateUriScheme(_serviceUri.Scheme);
         }
 
         /// <summary>Initializes a new instance of the <see cref="JsonRpcClient" /> class.</summary>
@@ -108,7 +116,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         /// <param name="jsonSerializer">The component for serializing to and deserializing from JSON.</param>
         /// <param name="compatibilityLevel">The JSON-RPC protocol compatibility level.</param>
         /// <exception cref="ArgumentNullException"><paramref name="serviceUri" /> or <paramref name="jsonSerializer" /> is <see langword="null" />.</exception>
-        /// <exception cref="FormatException"><paramref name="serviceUri" /> is a relative URI or is not correctly formed.</exception>
+        /// <exception cref="FormatException"><paramref name="serviceUri" /> is relative, or has invalid scheme, or is not correctly formed.</exception>
         public JsonRpcClient(Uri serviceUri, JsonSerializer jsonSerializer, JsonRpcCompatibilityLevel compatibilityLevel = default)
             : this(serviceUri, jsonSerializer, CreateHttpInvoker(), compatibilityLevel)
         {
@@ -119,7 +127,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         /// <param name="httpInvoker">The component for HTTP/HTTPS communication.</param>
         /// <param name="compatibilityLevel">The JSON-RPC protocol compatibility level.</param>
         /// <exception cref="ArgumentNullException"><paramref name="serviceUri" /> or <paramref name="httpInvoker" /> is <see langword="null" />.</exception>
-        /// <exception cref="FormatException"><paramref name="serviceUri" /> is a relative URI or is not correctly formed.</exception>
+        /// <exception cref="FormatException"><paramref name="serviceUri" /> is relative, or has invalid scheme, or is not correctly formed.</exception>
         public JsonRpcClient(Uri serviceUri, HttpMessageInvoker httpInvoker, JsonRpcCompatibilityLevel compatibilityLevel = default)
             : this(serviceUri, CreateJsonSerializer(), httpInvoker, compatibilityLevel)
         {

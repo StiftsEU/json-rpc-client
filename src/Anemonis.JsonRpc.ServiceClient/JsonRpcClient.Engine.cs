@@ -62,6 +62,15 @@ namespace Anemonis.JsonRpc.ServiceClient
             return httpClient;
         }
 
+        private static void ValidateUriScheme(string scheme)
+        {
+            if ((string.Compare(scheme, "HTTP", StringComparison.OrdinalIgnoreCase) != 0) &&
+                (string.Compare(scheme, "HTTPS", StringComparison.OrdinalIgnoreCase) != 0))
+            {
+                throw new FormatException(Strings.GetString("client.uri.invalid_format"));
+            }
+        }
+
 #if NETCOREAPP2_1
 
         private static bool CheckHttpContentEncoding(HttpResponseMessage httpResponse, string encoding)

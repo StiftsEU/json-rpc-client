@@ -10,7 +10,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests.TestStubs
     internal sealed class TestJsonRpcClient : JsonRpcClient
     {
         public TestJsonRpcClient(Func<HttpRequestMessage, Task<HttpResponseMessage>> handler = null)
-            : base(new Uri("https://localhost", UriKind.Absolute), CreateHttpInvoker(new TestHttpHandler(handler)))
+            : base(new Uri("https://localhost"), CreateHttpInvoker(new TestHttpHandler(handler)))
         {
         }
 
