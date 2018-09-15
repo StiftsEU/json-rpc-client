@@ -1,4 +1,6 @@
 ﻿using System.Linq;
+using Anemonis.JsonRpc.ServiceClient.Benchmarks.Framework;
+using Anemonis.JsonRpc.ServiceClient.Benchmarks.TestSuites;
 using BenchmarkDotNet.Columns;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Diagnosers;
@@ -8,8 +10,6 @@ using BenchmarkDotNet.Loggers;
 using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
 using BenchmarkDotNet.Toolchains.InProcess;
-using Anemonis.JsonRpc.ServiceClient.Benchmarks.Framework;
-using Anemonis.JsonRpc.ServiceClient.Benchmarks.TestSuites;
 
 namespace Anemonis.JsonRpc.ServiceClient.Benchmarks
 {
