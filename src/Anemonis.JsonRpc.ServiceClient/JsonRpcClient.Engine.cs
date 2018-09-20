@@ -111,15 +111,15 @@ namespace Anemonis.JsonRpc.ServiceClient
             httpRequest.Headers.Accept.Add(_mediaTypeWithQualityValue);
         }
 
-        private Task<JsonRpcResponse> SendJsonRpcRequestAsync(JsonRpcRequest request, JsonRpcResponseContract contract, CancellationToken cancellationToken)
+        private async Task<JsonRpcResponse> SendJsonRpcRequestAsync(JsonRpcRequest request, JsonRpcResponseContract contract, CancellationToken cancellationToken)
         {
-            ref readonly var requestId = ref request.Id;
+            var requestId = request.Id;
 
             _jsonRpcContractResolver.AddResponseContract(requestId, contract);
 
             try
             {
-                return SendJsonRpcRequestAsync(request, cancellationToken);
+                return await SendJsonRpcRequestAsync(request, cancellationToken).ConfigureAwait(false);
             }
             finally
             {
