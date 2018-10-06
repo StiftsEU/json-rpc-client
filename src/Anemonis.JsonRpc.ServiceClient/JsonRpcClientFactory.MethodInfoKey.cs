@@ -8,39 +8,32 @@ namespace Anemonis.JsonRpc.ServiceClient
     {
         private readonly struct MethodInfoKey
         {
-            private readonly int _hashCode;
             private readonly string _methodName;
+            private readonly ParameterInfo[] _methodParameters;
 
-            public MethodInfoKey(MethodInfo method)
+            public MethodInfoKey(string methodName, ParameterInfo[] methodParameters)
             {
-                _hashCode = CreateHashCode(method);
-                _methodName = method.Name;
+                _methodName = methodName;
+                _methodParameters = methodParameters;
             }
 
-            private static int CreateHashCode(MethodInfo method)
+            public override int GetHashCode()
             {
-                var parameters = method.GetParameters();
-
                 unchecked
                 {
                     var hashCode = (int)2166136261;
 
-                    hashCode ^= method.Name.GetHashCode();
+                    hashCode ^= _methodName.GetHashCode();
                     hashCode *= 16777619;
 
-                    for (var i = 0; i < parameters.Length; i++)
+                    for (var i = 0; i < _methodParameters.Length; i++)
                     {
-                        hashCode ^= parameters[i].ParameterType.GetHashCode();
+                        hashCode ^= _methodParameters[i].ParameterType.GetHashCode();
                         hashCode *= 16777619;
                     }
 
                     return hashCode;
                 }
-            }
-
-            public override int GetHashCode()
-            {
-                return _hashCode;
             }
 
             public string MethodName

@@ -211,7 +211,8 @@ namespace Anemonis.JsonRpc.ServiceClient
 
             foreach (var method in interfaceTypeInfo.DeclaredMethods)
             {
-                var methodKey = new MethodInfoKey(method);
+                var methodParameters = method.GetParameters();
+                var methodKey = new MethodInfoKey(method.Name, methodParameters);
 
                 if (contracts.ContainsKey(methodKey))
                 {
@@ -252,8 +253,6 @@ namespace Anemonis.JsonRpc.ServiceClient
 
                     resultType = method.ReturnType.GenericTypeArguments[0];
                 }
-
-                var methodParameters = method.GetParameters();
 
                 for (var i = 0; i < methodParameters.Length; i++)
                 {
