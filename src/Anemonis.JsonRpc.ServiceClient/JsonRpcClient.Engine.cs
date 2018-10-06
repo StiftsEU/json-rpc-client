@@ -206,8 +206,9 @@ namespace Anemonis.JsonRpc.ServiceClient
                                     var responseData = default(JsonRpcData<JsonRpcResponse>);
                                     var responseStream = default(Stream);
 
-                                    using (responseStream = await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                                    try
                                     {
+                                        responseStream = await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false);
                                         cancellationToken.ThrowIfCancellationRequested();
 
 #if NETCOREAPP2_1
@@ -231,6 +232,10 @@ namespace Anemonis.JsonRpc.ServiceClient
                                         {
                                             throw new JsonRpcClientException(Strings.GetString("protocol.rpc.message.invalid_value"), requestId, e);
                                         }
+                                    }
+                                    finally
+                                    {
+                                        responseStream?.Dispose();
                                     }
 
                                     if (responseData.IsBatch)
@@ -355,8 +360,9 @@ namespace Anemonis.JsonRpc.ServiceClient
                                     var responseData = default(JsonRpcData<JsonRpcResponse>);
                                     var responseStream = default(Stream);
 
-                                    using (responseStream = await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                                    try
                                     {
+                                        responseStream = await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false);
                                         cancellationToken.ThrowIfCancellationRequested();
 
 #if NETCOREAPP2_1
@@ -380,6 +386,10 @@ namespace Anemonis.JsonRpc.ServiceClient
                                         {
                                             throw new JsonRpcClientException(Strings.GetString("protocol.rpc.message.invalid_value"), default, e);
                                         }
+                                    }
+                                    finally
+                                    {
+                                        responseStream?.Dispose();
                                     }
 
                                     if (responseData.IsBatch)
