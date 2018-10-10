@@ -51,11 +51,6 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
 
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
             {
-                var contentBytes = Encoding.UTF8.GetBytes(string.Empty);
-                var content = new ByteArrayContent(contentBytes);
-
-                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-
                 var message = new HttpResponseMessage
                 {
                     StatusCode = HttpStatusCode.BadRequest
@@ -393,11 +388,6 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
 
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
             {
-                var contentBytes = Encoding.UTF8.GetBytes(string.Empty);
-                var content = new ByteArrayContent(contentBytes);
-
-                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-
                 var message = new HttpResponseMessage
                 {
                     StatusCode = HttpStatusCode.NoContent
