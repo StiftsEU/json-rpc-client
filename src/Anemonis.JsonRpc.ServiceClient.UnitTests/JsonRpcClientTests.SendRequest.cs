@@ -462,6 +462,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
 
             await Assert.ThrowsExceptionAsync<OperationCanceledException>(() =>
                 client.InvokeAsync("m", cancellationTokenSource.Token));
+
+            cancellationTokenSource.Dispose();
         }
 
         [TestMethod]
@@ -475,6 +477,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
 
             await Assert.ThrowsExceptionAsync<OperationCanceledException>(() =>
                 client.InvokeAsync("m", parameters, cancellationTokenSource.Token));
+
+            cancellationTokenSource.Dispose();
         }
 
         [TestMethod]
@@ -488,6 +492,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
 
             await Assert.ThrowsExceptionAsync<OperationCanceledException>(() =>
                 client.InvokeAsync("m", parameters, cancellationTokenSource.Token));
+
+            cancellationTokenSource.Dispose();
         }
 
         [TestMethod]
@@ -500,6 +506,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
 
             await Assert.ThrowsExceptionAsync<OperationCanceledException>(() =>
                 client.InvokeAsync<long>("m", cancellationTokenSource.Token));
+
+            cancellationTokenSource.Dispose();
         }
 
         [TestMethod]
@@ -513,6 +521,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
 
             await Assert.ThrowsExceptionAsync<OperationCanceledException>(() =>
                 client.InvokeAsync<long>("m", parameters, cancellationTokenSource.Token));
+
+            cancellationTokenSource.Dispose();
         }
 
         [TestMethod]
@@ -526,6 +536,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
 
             await Assert.ThrowsExceptionAsync<OperationCanceledException>(() =>
                 client.InvokeAsync<long>("m", parameters, cancellationTokenSource.Token));
+
+            cancellationTokenSource.Dispose();
         }
 
         [TestMethod]
@@ -538,6 +550,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
 
             await Assert.ThrowsExceptionAsync<OperationCanceledException>(() =>
                 client.InvokeAsync<long>("m", 0L, cancellationTokenSource.Token));
+
+            cancellationTokenSource.Dispose();
         }
 
         [TestMethod]
@@ -551,6 +565,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
 
             await Assert.ThrowsExceptionAsync<OperationCanceledException>(() =>
                 client.InvokeAsync<long>("m", 0L, parameters, cancellationTokenSource.Token));
+
+            cancellationTokenSource.Dispose();
         }
 
         [TestMethod]
@@ -564,6 +580,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
 
             await Assert.ThrowsExceptionAsync<OperationCanceledException>(() =>
                 client.InvokeAsync<long>("m", 0L, parameters, cancellationTokenSource.Token));
+
+            cancellationTokenSource.Dispose();
         }
 
         [TestMethod]
@@ -576,6 +594,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
 
             await Assert.ThrowsExceptionAsync<OperationCanceledException>(() =>
                 client.InvokeAsync<long, long>("m", cancellationTokenSource.Token));
+
+            cancellationTokenSource.Dispose();
         }
 
         [TestMethod]
@@ -589,6 +609,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
 
             await Assert.ThrowsExceptionAsync<OperationCanceledException>(() =>
                 client.InvokeAsync<long, long>("m", parameters, cancellationTokenSource.Token));
+
+            cancellationTokenSource.Dispose();
         }
 
         [TestMethod]
@@ -602,6 +624,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
 
             await Assert.ThrowsExceptionAsync<OperationCanceledException>(() =>
                 client.InvokeAsync<long, long>("m", parameters, cancellationTokenSource.Token));
+
+            cancellationTokenSource.Dispose();
         }
 
         [TestMethod]
@@ -614,6 +638,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
 
             await Assert.ThrowsExceptionAsync<OperationCanceledException>(() =>
                 client.InvokeAsync<long, long>("m", 0L, cancellationTokenSource.Token));
+
+            cancellationTokenSource.Dispose();
         }
 
         [TestMethod]
@@ -627,6 +653,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
 
             await Assert.ThrowsExceptionAsync<OperationCanceledException>(() =>
                 client.InvokeAsync<long, long>("m", 0L, parameters, cancellationTokenSource.Token));
+
+            cancellationTokenSource.Dispose();
         }
 
         [TestMethod]
@@ -640,6 +668,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
 
             await Assert.ThrowsExceptionAsync<OperationCanceledException>(() =>
                 client.InvokeAsync<long, long>("m", 0L, parameters, cancellationTokenSource.Token));
+
+            cancellationTokenSource.Dispose();
         }
 
         //###################################################################################################
