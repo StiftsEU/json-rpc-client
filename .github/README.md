@@ -1,11 +1,11 @@
-## Anemonis.JsonRpc.ServiceClient
+# Anemonis.JsonRpc.ServiceClient
 
 A universal [JSON-RPC 2.0](http://www.jsonrpc.org/specification) service client based on the [JSON-RPC 2.0 Transport: HTTP](https://www.simple-is-better.org/json-rpc/transport_http.html) specification and the [Anemonis.JsonRpc](https://www.nuget.org/packages/Anemonis.JsonRpc)
  serializer.
 
 [![NuGet package](https://img.shields.io/nuget/v/Anemonis.JsonRpc.ServiceClient.svg?style=flat-square)](https://www.nuget.org/packages/Anemonis.JsonRpc.ServiceClient)
 
-### Important Features
+## Project Details
 
 - The client can be created by providing an interface-based service contract.
 - The client supports operation cancellation via cancellation token.
@@ -14,15 +14,12 @@ A universal [JSON-RPC 2.0](http://www.jsonrpc.org/specification) service client 
 - The client supports working with request and response HTTP headers.
 - The client supports `gzip`, `DEFLATE`, and `Brotli` response encodings.
 - The client supports usage of a custom HTTP message invoker.
-
-### Characteristics
-
-- The client provides only low-level API for batch requests.
+- The client provides low-level API for batch requests.
 - The client uses an UUID string as a message identifier by default.
 - The client does not verify the `Content-Length` header.
-- The `Brotli` response encoding support is available only for .NET Core 2.1 and higher.
 
-### Usage Examples
+## Code Examples
+
 
 Retrieving API key usage information for the [RANDOM.ORG](https://api.random.org/json-rpc/2) service:
 ```cs
@@ -87,3 +84,8 @@ The corresponding JSON-RPC messages:
     "id": "89999193-0e46-4a14-b471-69191baf2c2b"
 }
 ```
+
+## Quicklinks
+
+- [Contributing Guidelines](./CONTRIBUTING.md)
+- [Code of Conduct](./CODE_OF_CONDUCT.md)
