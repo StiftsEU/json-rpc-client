@@ -4,6 +4,7 @@ A universal [JSON-RPC 2.0](http://www.jsonrpc.org/specification) service client 
  serializer.
 
 [![NuGet package](https://img.shields.io/nuget/v/Anemonis.JsonRpc.ServiceClient.svg?style=flat-square)](https://www.nuget.org/packages/Anemonis.JsonRpc.ServiceClient)
+[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg?style=flat-square)](https://gitter.im/anemonis/json-rpc-client)
 
 ## Project Details
 
