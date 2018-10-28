@@ -41,7 +41,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         {
             var settings = new JsonSerializerSettings
             {
-                MetadataPropertyHandling = MetadataPropertyHandling.Ignore,
+                MetadataPropertyHandling = MetadataPropertyHandling.Ignore
             };
 
             return JsonSerializer.CreateDefault(settings);
@@ -127,9 +127,21 @@ namespace Anemonis.JsonRpc.ServiceClient
             }
         }
 
-        /// <summary>Creates a unique JSON-RPC request identifier based on a GUID.</summary>
+        private JsonRpcId GetVerifiedRequestId()
+        {
+            var requestId = GetUniquesRequestId();
+
+            if (requestId.Type == JsonRpcIdType.None)
+            {
+                throw new ArgumentException(Strings.GetString("invoke.identifier.invalid_value"), nameof(requestId));
+            }
+
+            return requestId;
+        }
+
+        /// <summary>Gets a unique JSON-RPC request identifier.</summary>
         /// <returns>A new instance of the <see cref="JsonRpcId" /> type.</returns>
-        protected static JsonRpcId GenerateRequestId()
+        protected virtual JsonRpcId GetUniquesRequestId()
         {
             return new JsonRpcId(Guid.NewGuid().ToString());
         }

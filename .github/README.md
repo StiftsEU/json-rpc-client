@@ -16,7 +16,7 @@ A universal [JSON-RPC 2.0](http://www.jsonrpc.org/specification) service client 
 - The client supports `gzip`, `DEFLATE`, and `Brotli` response encodings.
 - The client supports usage of a custom HTTP message invoker.
 - The client provides low-level API for batch requests.
-- The client uses an UUID string as a message identifier by default.
+- The client uses a UUID string as a message identifier by default.
 - The client does not verify the `Content-Length` header.
 
 ## Code Examples

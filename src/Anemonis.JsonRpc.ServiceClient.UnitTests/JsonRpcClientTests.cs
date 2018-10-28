@@ -238,11 +238,11 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         //###################################################################################################
 
         [TestMethod]
-        public void GenerateRequestId()
+        public void GetUniquesRequestId()
         {
             using (var client = new TestJsonRpcClient())
             {
-                var requestId = client.PublicGenerateRequestId();
+                var requestId = client.PublicGetUniquesRequestId();
 
                 Assert.AreNotEqual(JsonRpcIdType.None, requestId.Type);
             }
