@@ -35,9 +35,9 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests.TestStubs
             VisitHttpResponseHeadersAction?.Invoke(headers);
         }
 
-        public JsonRpcId PublicGetUniquesRequestId()
+        public JsonRpcId PublicGetUniqueRequestId()
         {
-            return GetUniquesRequestId();
+            return GetUniqueRequestId();
         }
 
         public Task<IReadOnlyList<JsonRpcResponse>> PublicSendJsonRpcRequestsAsync(IReadOnlyList<JsonRpcRequest> requests, CancellationToken cancellationToken)

@@ -129,7 +129,7 @@ namespace Anemonis.JsonRpc.ServiceClient
 
         private JsonRpcId GetVerifiedRequestId()
         {
-            var requestId = GetUniquesRequestId();
+            var requestId = GetUniqueRequestId();
 
             if (requestId.Type == JsonRpcIdType.None)
             {
@@ -141,7 +141,7 @@ namespace Anemonis.JsonRpc.ServiceClient
 
         /// <summary>Gets a unique JSON-RPC request identifier.</summary>
         /// <returns>A new instance of the <see cref="JsonRpcId" /> type.</returns>
-        protected virtual JsonRpcId GetUniquesRequestId()
+        protected virtual JsonRpcId GetUniqueRequestId()
         {
             return new JsonRpcId(Guid.NewGuid().ToString());
         }
