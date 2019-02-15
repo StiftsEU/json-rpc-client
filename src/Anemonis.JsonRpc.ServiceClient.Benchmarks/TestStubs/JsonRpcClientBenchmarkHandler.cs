@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Anemonis.JsonRpc.ServiceClient.Benchmarks.TestStubs
 {
-    internal sealed class JsonRpcClientBenchmarkHandler : HttpMessageHandler
+    internal class JsonRpcClientBenchmarkHandler : HttpMessageHandler
     {
         private static readonly MediaTypeHeaderValue _mediaTypeHeaderValue = new MediaTypeHeaderValue("application/json");
 
