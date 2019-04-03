@@ -159,9 +159,6 @@
   <data name="protocol.http.headers.content_type.invalid_value" xml:space="preserve">
     <value>The HTTP response has invalid Content-Type header value</value>
   </data>
-  <data name="protocol.http.headers.content_type.missing_value" xml:space="preserve">
-    <value>The HTTP response does not have the Content-Type header</value>
-  </data>
   <data name="protocol.http.status_code.invalid_value" xml:space="preserve">
     <value>The HTTP response status code does not indicate a successful service response</value>
   </data>

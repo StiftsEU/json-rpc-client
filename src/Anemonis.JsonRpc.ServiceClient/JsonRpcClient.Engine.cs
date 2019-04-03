@@ -6,6 +6,7 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Anemonis.JsonRpc.ServiceClient.Resources;
@@ -21,14 +22,15 @@ namespace Anemonis.JsonRpc.ServiceClient
 {
     public partial class JsonRpcClient
     {
+        private const int _streamBufferSize = 1024;
         private const int _messageBufferSize = 64;
 
-        private static readonly MediaTypeHeaderValue _mediaTypeValue = new MediaTypeHeaderValue("application/json");
-        private static readonly MediaTypeWithQualityHeaderValue _mediaTypeWithQualityValue = new MediaTypeWithQualityHeaderValue("application/json");
+        private static readonly MediaTypeHeaderValue _mediaTypeHeaderValue = MediaTypeWithQualityHeaderValue.Parse("application/json; charset=utf-8");
+        private static readonly MediaTypeWithQualityHeaderValue _mediaTypeWithQualityHeaderValue = MediaTypeWithQualityHeaderValue.Parse("application/json; charset=utf-8");
 
 #if NETCOREAPP2_1
 
-        private static readonly StringWithQualityHeaderValue _brotliEncodingHeader = new StringWithQualityHeaderValue("br");
+        private static readonly StringWithQualityHeaderValue _brotliEncodingHeaderValue = new StringWithQualityHeaderValue("br");
 
 #endif
 
@@ -71,6 +73,22 @@ namespace Anemonis.JsonRpc.ServiceClient
             }
         }
 
+        private static bool TryGetEncoding(string name, out Encoding encoding)
+        {
+            try
+            {
+                encoding = Encoding.GetEncoding(name);
+
+                return true;
+            }
+            catch (ArgumentException)
+            {
+                encoding = null;
+
+                return false;
+            }
+        }
+
 #if NETCOREAPP2_1
 
         private static bool CheckHttpContentEncoding(HttpResponseMessage httpResponse, string encoding)
@@ -100,15 +118,15 @@ namespace Anemonis.JsonRpc.ServiceClient
 
 #if NETCOREAPP2_1
 
-            if (!httpRequest.Headers.AcceptEncoding.Contains(_brotliEncodingHeader))
+            if (!httpRequest.Headers.AcceptEncoding.Contains(_brotliEncodingHeaderValue))
             {
-                httpRequest.Headers.AcceptEncoding.Add(_brotliEncodingHeader);
+                httpRequest.Headers.AcceptEncoding.Add(_brotliEncodingHeaderValue);
             }
 
 #endif
 
             httpRequest.Headers.Accept.Clear();
-            httpRequest.Headers.Accept.Add(_mediaTypeWithQualityValue);
+            httpRequest.Headers.Accept.Add(_mediaTypeWithQualityHeaderValue);
         }
 
         private async Task<JsonRpcResponse> SendJsonRpcRequestAsync(JsonRpcRequest request, JsonRpcResponseContract contract, CancellationToken cancellationToken)
@@ -188,7 +206,7 @@ namespace Anemonis.JsonRpc.ServiceClient
 
                     var requestContent = new StreamContent(requestStream);
 
-                    requestContent.Headers.ContentType = _mediaTypeValue;
+                    requestContent.Headers.ContentType = _mediaTypeHeaderValue;
                     httpRequest.Content = requestContent;
 
                     using (var httpResponse = await _httpInvoker.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false))
@@ -204,13 +222,17 @@ namespace Anemonis.JsonRpc.ServiceClient
                                         throw new JsonRpcProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.service.message.unexpected_content"), requestId);
                                     }
 
-                                    var contentType = httpResponse.Content.Headers.ContentType;
+                                    var contentTypeHeaderValue = httpResponse.Content.Headers.ContentType;
 
-                                    if (contentType == null)
+                                    if (contentTypeHeaderValue == null)
                                     {
-                                        throw new JsonRpcProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.content_type.missing_value"));
+                                        throw new JsonRpcProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
                                     }
-                                    if (string.Compare(contentType.MediaType, _mediaTypeValue.MediaType, StringComparison.OrdinalIgnoreCase) != 0)
+                                    if (!contentTypeHeaderValue.MediaType.Equals(_mediaTypeHeaderValue.MediaType, StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        throw new JsonRpcProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
+                                    }
+                                    if (!TryGetEncoding(contentTypeHeaderValue.CharSet ?? "utf-8", out var streamEncoding))
                                     {
                                         throw new JsonRpcProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
                                     }
@@ -225,7 +247,7 @@ namespace Anemonis.JsonRpc.ServiceClient
 
 #if NETCOREAPP2_1
 
-                                        if (CheckHttpContentEncoding(httpResponse, _brotliEncodingHeader.Value))
+                                        if (CheckHttpContentEncoding(httpResponse, _brotliEncodingHeaderValue.Value))
                                         {
                                             responseStream = new BrotliStream(responseStream, CompressionMode.Decompress);
                                         }
@@ -234,7 +256,10 @@ namespace Anemonis.JsonRpc.ServiceClient
 
                                         try
                                         {
-                                            responseData = await _jsonRpcSerializer.DeserializeResponseDataAsync(responseStream, cancellationToken).ConfigureAwait(false);
+                                            using (var streamReader = new StreamReader(responseStream, streamEncoding, false, _streamBufferSize, true))
+                                            {
+                                                responseData = await _jsonRpcSerializer.DeserializeResponseDataAsync(responseStream, cancellationToken).ConfigureAwait(false);
+                                            }
                                         }
                                         catch (JsonException e)
                                         {
@@ -347,7 +372,7 @@ namespace Anemonis.JsonRpc.ServiceClient
 
                     var requestContent = new StreamContent(requestStream);
 
-                    requestContent.Headers.ContentType = _mediaTypeValue;
+                    requestContent.Headers.ContentType = _mediaTypeHeaderValue;
                     httpRequest.Content = requestContent;
 
                     using (var httpResponse = await _httpInvoker.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false))
@@ -358,13 +383,17 @@ namespace Anemonis.JsonRpc.ServiceClient
                         {
                             case HttpStatusCode.OK:
                                 {
-                                    var contentType = httpResponse.Content.Headers.ContentType;
+                                    var contentTypeHeaderValue = httpResponse.Content.Headers.ContentType;
 
-                                    if (contentType == null)
+                                    if (contentTypeHeaderValue == null)
                                     {
-                                        throw new JsonRpcProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.content_type.missing_value"));
+                                        throw new JsonRpcProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
                                     }
-                                    if (string.Compare(contentType.MediaType, _mediaTypeValue.MediaType, StringComparison.OrdinalIgnoreCase) != 0)
+                                    if (!contentTypeHeaderValue.MediaType.Equals(_mediaTypeHeaderValue.MediaType, StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        throw new JsonRpcProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
+                                    }
+                                    if (!TryGetEncoding(contentTypeHeaderValue.CharSet ?? "utf-8", out var streamEncoding))
                                     {
                                         throw new JsonRpcProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
                                     }
@@ -379,7 +408,7 @@ namespace Anemonis.JsonRpc.ServiceClient
 
 #if NETCOREAPP2_1
 
-                                        if (CheckHttpContentEncoding(httpResponse, _brotliEncodingHeader.Value))
+                                        if (CheckHttpContentEncoding(httpResponse, _brotliEncodingHeaderValue.Value))
                                         {
                                             responseStream = new BrotliStream(responseStream, CompressionMode.Decompress);
                                         }
@@ -388,7 +417,10 @@ namespace Anemonis.JsonRpc.ServiceClient
 
                                         try
                                         {
-                                            responseData = await _jsonRpcSerializer.DeserializeResponseDataAsync(responseStream, cancellationToken).ConfigureAwait(false);
+                                            using (var streamReader = new StreamReader(responseStream, streamEncoding, false, _streamBufferSize, true))
+                                            {
+                                                responseData = await _jsonRpcSerializer.DeserializeResponseDataAsync(responseStream, cancellationToken).ConfigureAwait(false);
+                                            }
                                         }
                                         catch (JsonException e)
                                         {

@@ -27,8 +27,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         {
             var requests = new[]
             {
-                new JsonRpcRequest("m", 0L),
-                new JsonRpcRequest("m", 0L)
+                new JsonRpcRequest(0L, "m"),
+                new JsonRpcRequest(0L, "m")
             };
 
             using (var client = new TestJsonRpcClient())
@@ -45,8 +45,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         {
             var requests = new[]
             {
-                new JsonRpcRequest("m", 0L),
-                new JsonRpcRequest("m", 1L)
+                new JsonRpcRequest(0L, "m"),
+                new JsonRpcRequest(1L, "m")
             };
 
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
@@ -78,8 +78,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         {
             var requests = new[]
             {
-                new JsonRpcRequest("m", 0L),
-                new JsonRpcRequest("m", 1L)
+                new JsonRpcRequest(0L, "m"),
+                new JsonRpcRequest(1L, "m")
             };
 
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
@@ -112,15 +112,15 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         {
             var requests = new[]
             {
-                new JsonRpcRequest("m", 0L),
-                new JsonRpcRequest("m", 1L)
+                new JsonRpcRequest(0L, "m"),
+                new JsonRpcRequest(1L, "m")
             };
 
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
             {
                 var content = new ByteArrayContent(Array.Empty<byte>());
 
-                content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+                content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/octet-stream");
 
                 var message = new HttpResponseMessage
                 {
@@ -146,8 +146,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         {
             var requests = new[]
             {
-                new JsonRpcRequest("m", 0L),
-                new JsonRpcRequest("m", 1L)
+                new JsonRpcRequest(0L, "m"),
+                new JsonRpcRequest(1L, "m")
             };
 
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
@@ -162,7 +162,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
                 var contentBytes = Encoding.UTF8.GetBytes(responseBatch.ToString());
                 var content = new ByteArrayContent(contentBytes);
 
-                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
 
                 var message = new HttpResponseMessage
                 {
@@ -192,8 +192,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         {
             var requests = new[]
             {
-                new JsonRpcRequest("m", 0L),
-                new JsonRpcRequest("m", 1L)
+                new JsonRpcRequest(0L, "m"),
+                new JsonRpcRequest(1L, "m")
             };
 
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
@@ -214,7 +214,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
                 var contentBytes = Encoding.UTF8.GetBytes(responseBatch.ToString());
                 var content = new ByteArrayContent(contentBytes);
 
-                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
 
                 var message = new HttpResponseMessage
                 {
@@ -244,7 +244,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         {
             var requests = new[]
             {
-                new JsonRpcRequest("m", 0L)
+                new JsonRpcRequest(0L, "m")
             };
 
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
@@ -258,7 +258,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
                 var contentBytes = Encoding.UTF8.GetBytes(responseObject.ToString());
                 var content = new ByteArrayContent(contentBytes);
 
-                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
 
                 var message = new HttpResponseMessage
                 {
@@ -286,7 +286,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         {
             var requests = new[]
             {
-                new JsonRpcRequest("m", 0L)
+                new JsonRpcRequest(0L, "m")
             };
 
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
@@ -300,7 +300,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
                 var contentBytes = Encoding.UTF8.GetBytes(responseObject.ToString());
                 var content = new ByteArrayContent(contentBytes);
 
-                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
 
                 var message = new HttpResponseMessage
                 {
@@ -329,8 +329,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         {
             var requests = new[]
             {
-                new JsonRpcRequest("m", 0L),
-                new JsonRpcRequest("m", 1L)
+                new JsonRpcRequest(0L, "m"),
+                new JsonRpcRequest(1L, "m")
             };
 
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
@@ -350,7 +350,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
                 var contentBytes = Encoding.UTF8.GetBytes(responseBatch.ToString());
                 var content = new ByteArrayContent(contentBytes);
 
-                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
 
                 var message = new HttpResponseMessage
                 {
@@ -382,8 +382,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         {
             var requests = new[]
             {
-                new JsonRpcRequest("m"),
-                new JsonRpcRequest("m")
+                new JsonRpcRequest(default, "m"),
+                new JsonRpcRequest(default, "m")
             };
 
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
@@ -414,8 +414,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         {
             var requests = new[]
             {
-                new JsonRpcRequest("m", 0L),
-                new JsonRpcRequest("m", 1L)
+                new JsonRpcRequest(0L, "m"),
+                new JsonRpcRequest(1L, "m")
             };
 
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
@@ -436,7 +436,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
                 var contentBytes = Encoding.UTF8.GetBytes(responseBatch.ToString());
                 var content = new ByteArrayContent(contentBytes);
 
-                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
 
                 var message = new HttpResponseMessage
                 {
@@ -460,15 +460,13 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             }
         }
 
-        //###################################################################################################
-
         [TestMethod]
         public async Task SendJsonRpcRequestsAsyncWithCustomRequestHeader()
         {
             var requests = new[]
             {
-                new JsonRpcRequest("m"),
-                new JsonRpcRequest("m")
+                new JsonRpcRequest(default, "m"),
+                new JsonRpcRequest(default, "m")
             };
 
             var authorizationHeader = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.UTF8.GetBytes("PASSWORD")));
@@ -500,8 +498,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         {
             var requests = new[]
             {
-                new JsonRpcRequest("m", 0L),
-                new JsonRpcRequest("m", 1L)
+                new JsonRpcRequest(0L, "m"),
+                new JsonRpcRequest(1L, "m")
             };
 
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
@@ -522,7 +520,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
                 var contentBytes = Encoding.UTF8.GetBytes(responseBatch.ToString());
                 var content = new ByteArrayContent(CompressWithBrotli(contentBytes));
 
-                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
                 content.Headers.ContentEncoding.Add("br");
 
                 var message = new HttpResponseMessage
