@@ -8,7 +8,7 @@ namespace Anemonis.JsonRpc.ServiceClient.Benchmarks.TestStubs
 {
     internal class JsonRpcClientBenchmarkHandler : HttpMessageHandler
     {
-        private static readonly MediaTypeHeaderValue _mediaTypeHeaderValue = new MediaTypeHeaderValue("application/json");
+        private static readonly MediaTypeHeaderValue _mediaTypeHeaderValue = MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
 
         private readonly byte[] _content;
 
