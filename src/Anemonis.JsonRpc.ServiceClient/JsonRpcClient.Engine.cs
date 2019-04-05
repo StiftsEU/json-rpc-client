@@ -25,6 +25,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         private const int _streamBufferSize = 1024;
         private const int _messageBufferSize = 64;
 
+        private static readonly IReadOnlyDictionary<string, Encoding> _supportedEncodings = CreateSupportedEncodings();
         private static readonly MediaTypeHeaderValue _mediaTypeHeaderValue = MediaTypeWithQualityHeaderValue.Parse("application/json; charset=utf-8");
         private static readonly MediaTypeWithQualityHeaderValue _mediaTypeWithQualityHeaderValue = MediaTypeWithQualityHeaderValue.Parse("application/json; charset=utf-8");
 
@@ -73,20 +74,24 @@ namespace Anemonis.JsonRpc.ServiceClient
             }
         }
 
-        private static bool TryGetEncoding(string name, out Encoding encoding)
+        private static IReadOnlyDictionary<string, Encoding> CreateSupportedEncodings()
         {
-            try
+            return new Dictionary<string, Encoding>(StringComparer.OrdinalIgnoreCase)
             {
-                encoding = Encoding.GetEncoding(name);
 
-                return true;
-            }
-            catch (ArgumentException)
-            {
-                encoding = null;
+#if NETSTANDARD1_1
 
-                return false;
-            }
+                [Encoding.UTF8.WebName] = new UTF8Encoding(false, true),
+                [Encoding.Unicode.WebName] = new UnicodeEncoding(false, false, true)
+
+#else
+
+                [Encoding.UTF8.WebName] = new UTF8Encoding(false, true),
+                [Encoding.Unicode.WebName] = new UnicodeEncoding(false, false, true),
+                [Encoding.UTF32.WebName] = new UTF32Encoding(false, false, true)
+
+#endif
+            };
         }
 
 #if NETCOREAPP2_1
@@ -232,7 +237,7 @@ namespace Anemonis.JsonRpc.ServiceClient
                                     {
                                         throw new JsonRpcProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
                                     }
-                                    if (!TryGetEncoding(contentTypeHeaderValue.CharSet ?? "utf-8", out var streamEncoding))
+                                    if (!_supportedEncodings.TryGetValue(contentTypeHeaderValue.CharSet ?? Encoding.UTF8.WebName, out var responseEncoding))
                                     {
                                         throw new JsonRpcProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
                                     }
@@ -256,7 +261,7 @@ namespace Anemonis.JsonRpc.ServiceClient
 
                                         try
                                         {
-                                            using (var streamReader = new StreamReader(responseStream, streamEncoding, false, _streamBufferSize, true))
+                                            using (var streamReader = new StreamReader(responseStream, responseEncoding, false, _streamBufferSize, true))
                                             {
                                                 responseData = await _jsonRpcSerializer.DeserializeResponseDataAsync(responseStream, cancellationToken).ConfigureAwait(false);
                                             }
@@ -393,7 +398,7 @@ namespace Anemonis.JsonRpc.ServiceClient
                                     {
                                         throw new JsonRpcProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
                                     }
-                                    if (!TryGetEncoding(contentTypeHeaderValue.CharSet ?? "utf-8", out var streamEncoding))
+                                    if (!_supportedEncodings.TryGetValue(contentTypeHeaderValue.CharSet ?? Encoding.UTF8.WebName, out var responseEncoding))
                                     {
                                         throw new JsonRpcProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
                                     }
@@ -417,7 +422,7 @@ namespace Anemonis.JsonRpc.ServiceClient
 
                                         try
                                         {
-                                            using (var streamReader = new StreamReader(responseStream, streamEncoding, false, _streamBufferSize, true))
+                                            using (var streamReader = new StreamReader(responseStream, responseEncoding, false, _streamBufferSize, true))
                                             {
                                                 responseData = await _jsonRpcSerializer.DeserializeResponseDataAsync(responseStream, cancellationToken).ConfigureAwait(false);
                                             }
