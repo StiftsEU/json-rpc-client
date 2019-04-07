@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Anemonis.JsonRpc.ServiceClient.UnitTests.Resources;
 using Anemonis.JsonRpc.ServiceClient.UnitTests.TestStubs;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
@@ -27,8 +28,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         {
             var requests = new[]
             {
-                new JsonRpcRequest(0L, "m"),
-                new JsonRpcRequest(0L, "m")
+                new JsonRpcRequest(1L, "m"),
+                new JsonRpcRequest(1L, "m")
             };
 
             using (var client = new TestJsonRpcClient())
@@ -45,8 +46,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         {
             var requests = new[]
             {
-                new JsonRpcRequest(0L, "m"),
-                new JsonRpcRequest(1L, "m")
+                new JsonRpcRequest(1L, "m"),
+                new JsonRpcRequest(2L, "m")
             };
 
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
@@ -62,8 +63,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             using (var client = new TestJsonRpcClient(handler))
             {
                 client.PublicContractResolver.AddResponseContract("m", new JsonRpcResponseContract(typeof(string)));
-                client.PublicContractResolver.AddResponseBinding(0L, "m");
                 client.PublicContractResolver.AddResponseBinding(1L, "m");
+                client.PublicContractResolver.AddResponseBinding(2L, "m");
 
                 var exception = await Assert.ThrowsExceptionAsync<JsonRpcProtocolException>(() =>
                      client.PublicSendJsonRpcRequestsAsync(requests, default));
@@ -78,8 +79,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         {
             var requests = new[]
             {
-                new JsonRpcRequest(0L, "m"),
-                new JsonRpcRequest(1L, "m")
+                new JsonRpcRequest(1L, "m"),
+                new JsonRpcRequest(2L, "m")
             };
 
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
@@ -112,8 +113,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         {
             var requests = new[]
             {
-                new JsonRpcRequest(0L, "m"),
-                new JsonRpcRequest(1L, "m")
+                new JsonRpcRequest(1L, "m"),
+                new JsonRpcRequest(2L, "m")
             };
 
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
@@ -146,8 +147,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         {
             var requests = new[]
             {
-                new JsonRpcRequest(0L, "m"),
-                new JsonRpcRequest(1L, "m")
+                new JsonRpcRequest(1L, "m"),
+                new JsonRpcRequest(2L, "m")
             };
 
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
@@ -155,7 +156,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
                 var responseObject = new JObject();
 
                 responseObject["jsonrpc"] = "2.0";
-                responseObject["id"] = 0L;
+                responseObject["id"] = 1L;
                 responseObject["result"] = null;
 
                 var responseBatch = new JArray(responseObject);
@@ -176,8 +177,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             using (var client = new TestJsonRpcClient(handler))
             {
                 client.PublicContractResolver.AddResponseContract("m", new JsonRpcResponseContract(typeof(string)));
-                client.PublicContractResolver.AddResponseBinding(0L, "m");
                 client.PublicContractResolver.AddResponseBinding(1L, "m");
+                client.PublicContractResolver.AddResponseBinding(2L, "m");
 
                 var exception = await Assert.ThrowsExceptionAsync<JsonRpcProtocolException>(() =>
                      client.PublicSendJsonRpcRequestsAsync(requests, default));
@@ -192,8 +193,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         {
             var requests = new[]
             {
-                new JsonRpcRequest(0L, "m"),
-                new JsonRpcRequest(1L, "m")
+                new JsonRpcRequest(1L, "m"),
+                new JsonRpcRequest(2L, "m")
             };
 
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
@@ -201,13 +202,13 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
                 var responseObject0 = new JObject();
 
                 responseObject0["jsonrpc"] = "2.0";
-                responseObject0["id"] = 0L;
+                responseObject0["id"] = 1L;
                 responseObject0["result"] = null;
 
                 var responseObject1 = new JObject();
 
                 responseObject1["jsonrpc"] = "2.0";
-                responseObject1["id"] = 0L;
+                responseObject1["id"] = 1L;
                 responseObject1["result"] = null;
 
                 var responseBatch = new JArray(responseObject0, responseObject1);
@@ -228,8 +229,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             using (var client = new TestJsonRpcClient(handler))
             {
                 client.PublicContractResolver.AddResponseContract("m", new JsonRpcResponseContract(typeof(string)));
-                client.PublicContractResolver.AddResponseBinding(0L, "m");
                 client.PublicContractResolver.AddResponseBinding(1L, "m");
+                client.PublicContractResolver.AddResponseBinding(2L, "m");
 
                 var exception = await Assert.ThrowsExceptionAsync<JsonRpcProtocolException>(() =>
                      client.PublicSendJsonRpcRequestsAsync(requests, default));
@@ -244,7 +245,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         {
             var requests = new[]
             {
-                new JsonRpcRequest(0L, "m")
+                new JsonRpcRequest(1L, "m")
             };
 
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
@@ -252,7 +253,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
                 var responseObject = new JObject();
 
                 responseObject["jsonrpc"] = "0.0";
-                responseObject["id"] = 0L;
+                responseObject["id"] = 1L;
                 responseObject["result"] = null;
 
                 var contentBytes = Encoding.UTF8.GetBytes(responseObject.ToString());
@@ -272,7 +273,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             using (var client = new TestJsonRpcClient(handler))
             {
                 client.PublicContractResolver.AddResponseContract("m", new JsonRpcResponseContract(typeof(string)));
-                client.PublicContractResolver.AddResponseBinding(0L, "m");
+                client.PublicContractResolver.AddResponseBinding(1L, "m");
 
                 var exception = await Assert.ThrowsExceptionAsync<JsonRpcClientException>(() =>
                      client.PublicSendJsonRpcRequestsAsync(requests, default));
@@ -286,7 +287,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         {
             var requests = new[]
             {
-                new JsonRpcRequest(0L, "m")
+                new JsonRpcRequest(1L, "m")
             };
 
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
@@ -294,7 +295,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
                 var responseObject = new JObject();
 
                 responseObject["jsonrpc"] = "2.0";
-                responseObject["id"] = 0L;
+                responseObject["id"] = 1L;
                 responseObject["result"] = null;
 
                 var contentBytes = Encoding.UTF8.GetBytes(responseObject.ToString());
@@ -314,7 +315,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             using (var client = new TestJsonRpcClient(handler))
             {
                 client.PublicContractResolver.AddResponseContract("m", new JsonRpcResponseContract(typeof(string)));
-                client.PublicContractResolver.AddResponseBinding(0L, "m");
+                client.PublicContractResolver.AddResponseBinding(1L, "m");
 
                 var exception = await Assert.ThrowsExceptionAsync<JsonRpcProtocolException>(() =>
                      client.PublicSendJsonRpcRequestsAsync(requests, default));
@@ -329,8 +330,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         {
             var requests = new[]
             {
-                new JsonRpcRequest(0L, "m"),
-                new JsonRpcRequest(1L, "m")
+                new JsonRpcRequest(1L, "m"),
+                new JsonRpcRequest(2L, "m")
             };
 
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
@@ -338,13 +339,13 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
                 var responseObject0 = new JObject();
 
                 responseObject0["jsonrpc"] = "2.0";
-                responseObject0["id"] = 0L;
+                responseObject0["id"] = 1L;
                 responseObject0["result"] = null;
 
                 var responseObject1 = new JObject();
 
                 responseObject1["jsonrpc"] = "2.0";
-                responseObject1["id"] = 1L;
+                responseObject1["id"] = 2L;
 
                 var responseBatch = new JArray(responseObject0, responseObject1);
                 var contentBytes = Encoding.UTF8.GetBytes(responseBatch.ToString());
@@ -364,8 +365,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             using (var client = new TestJsonRpcClient(handler))
             {
                 client.PublicContractResolver.AddResponseContract("m", new JsonRpcResponseContract(typeof(string)));
-                client.PublicContractResolver.AddResponseBinding(0L, "m");
                 client.PublicContractResolver.AddResponseBinding(1L, "m");
+                client.PublicContractResolver.AddResponseBinding(2L, "m");
 
                 var exception = await Assert.ThrowsExceptionAsync<AggregateException>(() =>
                      client.PublicSendJsonRpcRequestsAsync(requests, default));
@@ -399,8 +400,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             using (var client = new TestJsonRpcClient(handler))
             {
                 client.PublicContractResolver.AddResponseContract("m", new JsonRpcResponseContract(typeof(string)));
-                client.PublicContractResolver.AddResponseBinding(0L, "m");
                 client.PublicContractResolver.AddResponseBinding(1L, "m");
+                client.PublicContractResolver.AddResponseBinding(2L, "m");
 
                 var responses = await client.PublicSendJsonRpcRequestsAsync(requests, default);
 
@@ -414,26 +415,13 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         {
             var requests = new[]
             {
-                new JsonRpcRequest(0L, "m"),
-                new JsonRpcRequest(1L, "m")
+                new JsonRpcRequest(1L, "m"),
+                new JsonRpcRequest(2L, "m")
             };
 
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
             {
-                var responseObject0 = new JObject();
-
-                responseObject0["jsonrpc"] = "2.0";
-                responseObject0["id"] = 0L;
-                responseObject0["result"] = null;
-
-                var responseObject1 = new JObject();
-
-                responseObject1["jsonrpc"] = "2.0";
-                responseObject1["id"] = 1L;
-                responseObject1["result"] = null;
-
-                var responseBatch = new JArray(responseObject0, responseObject1);
-                var contentBytes = Encoding.UTF8.GetBytes(responseBatch.ToString());
+                var contentBytes = Encoding.UTF8.GetBytes(EmbeddedResourceManager.GetString("Assets.res_b1i1e0d0.json"));
                 var content = new ByteArrayContent(contentBytes);
 
                 content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
@@ -450,8 +438,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             using (var client = new TestJsonRpcClient(handler))
             {
                 client.PublicContractResolver.AddResponseContract("m", new JsonRpcResponseContract(typeof(string)));
-                client.PublicContractResolver.AddResponseBinding(0L, "m");
                 client.PublicContractResolver.AddResponseBinding(1L, "m");
+                client.PublicContractResolver.AddResponseBinding(2L, "m");
 
                 var responses = await client.PublicSendJsonRpcRequestsAsync(requests, default);
 
@@ -498,27 +486,14 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         {
             var requests = new[]
             {
-                new JsonRpcRequest(0L, "m"),
-                new JsonRpcRequest(1L, "m")
+                new JsonRpcRequest(1L, "m"),
+                new JsonRpcRequest(2L, "m")
             };
 
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
             {
-                var responseObject0 = new JObject();
-
-                responseObject0["jsonrpc"] = "2.0";
-                responseObject0["id"] = 0L;
-                responseObject0["result"] = null;
-
-                var responseObject1 = new JObject();
-
-                responseObject1["jsonrpc"] = "2.0";
-                responseObject1["id"] = 1L;
-                responseObject1["result"] = null;
-
-                var responseBatch = new JArray(responseObject0, responseObject1);
-                var contentBytes = Encoding.UTF8.GetBytes(responseBatch.ToString());
-                var content = new ByteArrayContent(CompressWithBrotli(contentBytes));
+                var contentBytes = Encoding.UTF8.GetBytes(EmbeddedResourceManager.GetString("Assets.res_b1i1e0d0.json"));
+                var content = new ByteArrayContent(CompressionEncoder.Encode(contentBytes, "br"));
 
                 content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
                 content.Headers.ContentEncoding.Add("br");
@@ -535,8 +510,8 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             using (var client = new TestJsonRpcClient(handler))
             {
                 client.PublicContractResolver.AddResponseContract("m", new JsonRpcResponseContract(typeof(string)));
-                client.PublicContractResolver.AddResponseBinding(0L, "m");
                 client.PublicContractResolver.AddResponseBinding(1L, "m");
+                client.PublicContractResolver.AddResponseBinding(2L, "m");
 
                 var responses = await client.PublicSendJsonRpcRequestsAsync(requests, default);
 

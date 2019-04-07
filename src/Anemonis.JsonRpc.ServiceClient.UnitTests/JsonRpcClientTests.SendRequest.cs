@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using Anemonis.JsonRpc.ServiceClient.UnitTests.Resources;
 using Anemonis.JsonRpc.ServiceClient.UnitTests.TestStubs;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json.Linq;
 
 namespace Anemonis.JsonRpc.ServiceClient.UnitTests
 {
@@ -353,7 +352,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             var parameters = (object[])null;
 
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(() =>
-                client.InvokeAsync<long>("m", 0L, parameters));
+                client.InvokeAsync<long>("m", 1L, parameters));
         }
 
         [TestMethod]
@@ -363,7 +362,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             var parameters = (Dictionary<string, object>)null;
 
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(() =>
-                client.InvokeAsync<long>("m", 0L, parameters));
+                client.InvokeAsync<long>("m", 1L, parameters));
         }
 
         [TestMethod]
@@ -373,7 +372,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             var parameters = (object[])null;
 
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(() =>
-                client.InvokeAsync<long, long>("m", 0L, parameters));
+                client.InvokeAsync<long, long>("m", 1L, parameters));
         }
 
         [TestMethod]
@@ -383,7 +382,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             var parameters = (Dictionary<string, object>)null;
 
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(() =>
-                client.InvokeAsync<long, long>("m", 0L, parameters));
+                client.InvokeAsync<long, long>("m", 1L, parameters));
         }
 
         [TestMethod]
@@ -541,7 +540,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             cancellationTokenSource.Cancel();
 
             await Assert.ThrowsExceptionAsync<OperationCanceledException>(() =>
-                client.InvokeAsync<long>("m", 0L, cancellationTokenSource.Token));
+                client.InvokeAsync<long>("m", 1L, cancellationTokenSource.Token));
 
             cancellationTokenSource.Dispose();
         }
@@ -556,7 +555,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             cancellationTokenSource.Cancel();
 
             await Assert.ThrowsExceptionAsync<OperationCanceledException>(() =>
-                client.InvokeAsync<long>("m", 0L, parameters, cancellationTokenSource.Token));
+                client.InvokeAsync<long>("m", 1L, parameters, cancellationTokenSource.Token));
 
             cancellationTokenSource.Dispose();
         }
@@ -571,7 +570,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             cancellationTokenSource.Cancel();
 
             await Assert.ThrowsExceptionAsync<OperationCanceledException>(() =>
-                client.InvokeAsync<long>("m", 0L, parameters, cancellationTokenSource.Token));
+                client.InvokeAsync<long>("m", 1L, parameters, cancellationTokenSource.Token));
 
             cancellationTokenSource.Dispose();
         }
@@ -629,7 +628,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             cancellationTokenSource.Cancel();
 
             await Assert.ThrowsExceptionAsync<OperationCanceledException>(() =>
-                client.InvokeAsync<long, long>("m", 0L, cancellationTokenSource.Token));
+                client.InvokeAsync<long, long>("m", 1L, cancellationTokenSource.Token));
 
             cancellationTokenSource.Dispose();
         }
@@ -644,7 +643,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             cancellationTokenSource.Cancel();
 
             await Assert.ThrowsExceptionAsync<OperationCanceledException>(() =>
-                client.InvokeAsync<long, long>("m", 0L, parameters, cancellationTokenSource.Token));
+                client.InvokeAsync<long, long>("m", 1L, parameters, cancellationTokenSource.Token));
 
             cancellationTokenSource.Dispose();
         }
@@ -659,7 +658,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             cancellationTokenSource.Cancel();
 
             await Assert.ThrowsExceptionAsync<OperationCanceledException>(() =>
-                client.InvokeAsync<long, long>("m", 0L, parameters, cancellationTokenSource.Token));
+                client.InvokeAsync<long, long>("m", 1L, parameters, cancellationTokenSource.Token));
 
             cancellationTokenSource.Dispose();
         }
@@ -708,7 +707,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             using (var client = new TestJsonRpcClient(handler))
             {
                 var exception = await Assert.ThrowsExceptionAsync<JsonRpcProtocolException>(() =>
-                    client.InvokeAsync<long>("m"));
+                    client.InvokeAsync<long>("m", 1L));
 
                 Assert.AreEqual(HttpStatusCode.OK, exception.HttpStatusCode);
                 Assert.AreEqual(default, exception.RequestId);
@@ -736,7 +735,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             using (var client = new TestJsonRpcClient(handler))
             {
                 var exception = await Assert.ThrowsExceptionAsync<JsonRpcProtocolException>(() =>
-                    client.InvokeAsync<long>("m"));
+                    client.InvokeAsync<long>("m", 1L));
 
                 Assert.AreEqual(HttpStatusCode.OK, exception.HttpStatusCode);
                 Assert.AreEqual(default, exception.RequestId);
@@ -748,20 +747,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         {
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
             {
-                var responseObject0 = new JObject();
-
-                responseObject0["jsonrpc"] = "2.0";
-                responseObject0["id"] = 0L;
-                responseObject0["result"] = null;
-
-                var responseObject1 = new JObject();
-
-                responseObject1["jsonrpc"] = "2.0";
-                responseObject1["id"] = 1L;
-                responseObject1["result"] = null;
-
-                var responseBatch = new JArray(responseObject0, responseObject1);
-                var contentBytes = Encoding.UTF8.GetBytes(responseBatch.ToString());
+                var contentBytes = Encoding.UTF8.GetBytes(EmbeddedResourceManager.GetString("Assets.res_b1i1e0d0.json"));
                 var content = new ByteArrayContent(contentBytes);
 
                 content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
@@ -778,7 +764,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             using (var client = new TestJsonRpcClient(handler))
             {
                 var exception = await Assert.ThrowsExceptionAsync<JsonRpcProtocolException>(() =>
-                    client.InvokeAsync<long>("m"));
+                    client.InvokeAsync<long>("m", 1L));
 
                 Assert.AreEqual(HttpStatusCode.OK, exception.HttpStatusCode);
                 Assert.AreNotEqual(default, exception.RequestId);
@@ -790,7 +776,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         {
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
             {
-                var contentBytes = Encoding.UTF8.GetBytes(EmbeddedResourceManager.GetString("Assets.result_true_id_invalid.json"));
+                var contentBytes = Encoding.UTF8.GetBytes(EmbeddedResourceManager.GetString("Assets.res_b0i1e0d0.json"));
                 var content = new ByteArrayContent(contentBytes);
 
                 content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
@@ -807,7 +793,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             using (var client = new TestJsonRpcClient(handler))
             {
                 var exception = await Assert.ThrowsExceptionAsync<JsonRpcClientException>(() =>
-                    client.InvokeAsync<long>("m"));
+                    client.InvokeAsync<long>("m", 0L));
 
                 Assert.AreNotEqual(default, exception.RequestId);
             }
@@ -816,15 +802,9 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         [TestMethod]
         public async Task InvokeAsyncWhenResultTypeIsInvalid()
         {
-            var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)(async (request) =>
+            var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
             {
-                var requestString = await request.Content.ReadAsStringAsync();
-                var requestObject = JObject.Parse(requestString);
-                var responseObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.result_type_invalid.json"));
-
-                responseObject["id"] = requestObject["id"];
-
-                var contentBytes = Encoding.UTF8.GetBytes(responseObject.ToString());
+                var contentBytes = Encoding.UTF8.GetBytes(EmbeddedResourceManager.GetString("Assets.res_b0i1e0d0.json"));
                 var content = new ByteArrayContent(contentBytes);
 
                 content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
@@ -835,13 +815,13 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
                     Content = content
                 };
 
-                return message;
+                return Task.FromResult(message);
             });
 
             using (var client = new TestJsonRpcClient(handler))
             {
                 var exception = await Assert.ThrowsExceptionAsync<JsonRpcClientException>(() =>
-                    client.InvokeAsync<long>("m"));
+                    client.InvokeAsync<DateTime>("m", 1L));
 
                 Assert.AreNotEqual(default, exception.RequestId);
             }
@@ -850,15 +830,9 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         [TestMethod]
         public async Task InvokeAsyncWhenResponseContractIsInvalidAndResponseIsNotExpected()
         {
-            var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)(async (request) =>
+            var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
             {
-                var requestString = await request.Content.ReadAsStringAsync();
-                var requestObject = JObject.Parse(requestString);
-                var responseObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.result_true_unexpected.json"));
-
-                responseObject["id"] = requestObject["id"];
-
-                var contentBytes = Encoding.UTF8.GetBytes(responseObject.ToString());
+                var contentBytes = Encoding.UTF8.GetBytes(EmbeddedResourceManager.GetString("Assets.res_b0i1e0d0.json"));
                 var content = new ByteArrayContent(contentBytes);
 
                 content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
@@ -869,7 +843,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
                     Content = content
                 };
 
-                return message;
+                return Task.FromResult(message);
             });
 
             using (var client = new TestJsonRpcClient(handler))
@@ -898,7 +872,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             using (var client = new TestJsonRpcClient(handler))
             {
                 var exception = await Assert.ThrowsExceptionAsync<JsonRpcProtocolException>(() =>
-                    client.InvokeAsync<long>("m"));
+                    client.InvokeAsync<long>("m", 1L));
 
                 Assert.AreEqual(HttpStatusCode.NoContent, exception.HttpStatusCode);
                 Assert.AreNotEqual(default, exception.RequestId);
@@ -937,17 +911,11 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         {
             var requestAcceptHeader = default(HttpHeaderValueCollection<MediaTypeWithQualityHeaderValue>);
 
-            var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)(async (request) =>
+            var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
             {
                 requestAcceptHeader = request.Headers.Accept;
 
-                var requestString = await request.Content.ReadAsStringAsync();
-                var requestObject = JObject.Parse(requestString);
-                var responseObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.result_true_success_true.json"));
-
-                responseObject["id"] = requestObject["id"];
-
-                var contentBytes = Encoding.UTF8.GetBytes(responseObject.ToString());
+                var contentBytes = Encoding.UTF8.GetBytes(EmbeddedResourceManager.GetString("Assets.res_b0i1e0d0.json"));
                 var content = new ByteArrayContent(contentBytes);
 
                 content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
@@ -958,17 +926,15 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
                     Content = content
                 };
 
-                return message;
+                return Task.FromResult(message);
             });
 
             using (var client = new TestJsonRpcClient(handler))
             {
-                var result = await client.InvokeAsync<long>("m");
+                var result = await client.InvokeAsync<long>("m", 1L);
 
                 Assert.IsNotNull(requestAcceptHeader);
-
                 CollectionAssert.Contains(requestAcceptHeader.ToArray(), MediaTypeWithQualityHeaderValue.Parse("application/json; charset=utf-8"));
-
                 Assert.AreEqual(1L, result);
             }
         }
@@ -978,17 +944,11 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         {
             var requestAcceptHeader = default(HttpHeaderValueCollection<MediaTypeWithQualityHeaderValue>);
 
-            var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)(async (request) =>
+            var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
             {
                 requestAcceptHeader = request.Headers.Accept;
 
-                var requestString = await request.Content.ReadAsStringAsync();
-                var requestObject = JObject.Parse(requestString);
-                var responseObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.result_true_success_false.json"));
-
-                responseObject["id"] = requestObject["id"];
-
-                var contentBytes = Encoding.UTF8.GetBytes(responseObject.ToString());
+                var contentBytes = Encoding.UTF8.GetBytes(EmbeddedResourceManager.GetString("Assets.res_b0i1e1d1.json"));
                 var content = new ByteArrayContent(contentBytes);
 
                 content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
@@ -999,20 +959,18 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
                     Content = content
                 };
 
-                return message;
+                return Task.FromResult(message);
             });
 
             using (var client = new TestJsonRpcClient(handler))
             {
                 var exception = await Assert.ThrowsExceptionAsync<JsonRpcServiceException>(() =>
-                    client.InvokeAsync<long, long>("m"));
+                    client.InvokeAsync<long, long>("m", 1L));
 
                 Assert.IsNotNull(requestAcceptHeader);
-
                 CollectionAssert.Contains(requestAcceptHeader.ToArray(), MediaTypeWithQualityHeaderValue.Parse("application/json; charset=utf-8"));
-
                 Assert.AreEqual(1L, exception.Code);
-                Assert.AreEqual("e", exception.Message);
+                Assert.AreEqual("m", exception.Message);
                 Assert.IsTrue(exception.HasErrorData);
                 Assert.AreEqual(exception.ErrorData, 1L);
             }
@@ -1048,16 +1006,10 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         [TestMethod]
         public async Task InvokeAsyncWithBrotliEncodedResponse()
         {
-            var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)(async (request) =>
+            var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
             {
-                var requestString = await request.Content.ReadAsStringAsync();
-                var requestObject = JObject.Parse(requestString);
-                var responseObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.result_true_success_true.json"));
-
-                responseObject["id"] = requestObject["id"];
-
-                var contentBytes = Encoding.UTF8.GetBytes(responseObject.ToString());
-                var content = new ByteArrayContent(CompressWithBrotli(contentBytes));
+                var contentBytes = Encoding.UTF8.GetBytes(EmbeddedResourceManager.GetString("Assets.res_b0i1e0d0.json"));
+                var content = new ByteArrayContent(CompressionEncoder.Encode(contentBytes, "br"));
 
                 content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
                 content.Headers.ContentEncoding.Add("br");
@@ -1068,12 +1020,12 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
                     Content = content
                 };
 
-                return message;
+                return Task.FromResult(message);
             });
 
             using (var client = new TestJsonRpcClient(handler))
             {
-                var result = await client.InvokeAsync<long>("m");
+                var result = await client.InvokeAsync<long>("m", 1L);
 
                 Assert.AreEqual(1L, result);
             }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,15 +21,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests.TestStubs
                 throw new InvalidOperationException("Request processing is not available");
             }
 
-            TraceRequest(request);
-
             return _handler.Invoke(request);
-        }
-
-        [Conditional("DEBUG")]
-        private static void TraceRequest(HttpRequestMessage request)
-        {
-            Trace.WriteLine(request.ToString());
         }
     }
 }

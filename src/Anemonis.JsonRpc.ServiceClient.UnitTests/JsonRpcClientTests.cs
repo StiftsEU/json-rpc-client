@@ -235,8 +235,6 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
                 new JsonRpcClient(new Uri("https://localhost"), new JsonSerializer(), default(HttpMessageInvoker)));
         }
 
-        //###################################################################################################
-
         [TestMethod]
         public void GetUniqueRequestId()
         {
@@ -267,18 +265,29 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             }
         }
 
-        //###################################################################################################
-
-        private static byte[] CompressWithBrotli(byte[] content)
+        private static class CompressionEncoder
         {
-            using (var outputStream = new MemoryStream())
+            public static byte[] Encode(byte[] content, string algorithm)
             {
-                using (var compressionStream = new BrotliStream(outputStream, CompressionLevel.Optimal))
+                switch (algorithm)
                 {
-                    compressionStream.Write(content, 0, content.Length);
-                }
+                    case "br":
+                        {
+                            using (var contentStream = new MemoryStream())
+                            {
+                                using (var compressionStream = new BrotliStream(contentStream, CompressionLevel.Optimal))
+                                {
+                                    compressionStream.Write(content, 0, content.Length);
+                                }
 
-                return outputStream.ToArray();
+                                return contentStream.ToArray();
+                            }
+                        }
+                    default:
+                        {
+                            throw new NotSupportedException();
+                        }
+                }
             }
         }
     }

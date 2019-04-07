@@ -24,14 +24,11 @@ namespace Anemonis.JsonRpc.ServiceClient.Benchmarks.TestSuites
 
         private static IReadOnlyDictionary<string, byte[]> CreateResourceDictionary()
         {
-            var resources = new Dictionary<string, byte[]>(StringComparer.Ordinal);
-
-            foreach (var code in GetResponseCodes())
+            return new Dictionary<string, byte[]>(StringComparer.Ordinal)
             {
-                resources[code] = Encoding.UTF8.GetBytes(EmbeddedResourceManager.GetString($"Assets.{code}.json"));
-            }
-
-            return resources;
+                ["res_b0i1e1d0"] = Encoding.UTF8.GetBytes(EmbeddedResourceManager.GetString($"Assets.res_b0i1e1d0.json")),
+                ["res_b0i1e0d0"] = Encoding.UTF8.GetBytes(EmbeddedResourceManager.GetString($"Assets.res_b0i1e0d0.json")),
+            };
         }
 
         private static IReadOnlyList<object> CreateParametersByPosition()
@@ -50,53 +47,44 @@ namespace Anemonis.JsonRpc.ServiceClient.Benchmarks.TestSuites
             };
         }
 
-        private static IEnumerable<string> GetResponseCodes()
-        {
-            return new[]
-            {
-                "res_b0i1e1d0",
-                "res_b0i1e0d0"
-            };
-        }
-
         [Benchmark(Description = "InvokeAsync-ID=N-PARAMS=U-ERROR=N")]
-        public async Task InvokeAsyncWithNotificationAndNoParams()
+        public async Task InvokeAsyncB0I0P0E0D0()
         {
             await _clientB0I0E0D0.InvokeAsync("m").ConfigureAwait(false);
         }
 
         [Benchmark(Description = "InvokeAsync-ID=N-PARAMS=P-ERROR=N")]
-        public async Task InvokeAsyncWithNotificationAndParamsByPosition()
+        public async Task InvokeAsyncB0I0P1E0D0()
         {
             await _clientB0I0E0D0.InvokeAsync("m", _params0).ConfigureAwait(false);
         }
 
         [Benchmark(Description = "InvokeAsync-ID=N-PARAMS=N-ERROR=N")]
-        public async Task InvokeAsyncWithNotificationAndParamsByName()
+        public async Task InvokeAsyncB0I0P2E0D0()
         {
             await _clientB0I0E0D0.InvokeAsync("m", _params1).ConfigureAwait(false);
         }
 
         [Benchmark(Description = "InvokeAsync-ID=Y-PARAMS=U-ERROR=N")]
-        public async Task<long> InvokeAsyncWithResponseResultAndNoParams()
+        public async Task<long> InvokeAsyncB0I1P0E0D0()
         {
             return await _clientB0I1E0D0.InvokeAsync<long>("m", 0L).ConfigureAwait(false);
         }
 
         [Benchmark(Description = "InvokeAsync-ID=Y-PARAMS=P-ERROR=N")]
-        public async Task<long> InvokeAsyncWithResponseResultAndParamsByPosition()
+        public async Task<long> InvokeAsyncB0I1P1E0D0()
         {
             return await _clientB0I1E0D0.InvokeAsync<long>("m", 0L, _params0).ConfigureAwait(false);
         }
 
         [Benchmark(Description = "InvokeAsync-ID=Y-PARAMS=N-ERROR=N")]
-        public async Task<long> InvokeAsyncWithResponseResultAndParamsByName()
+        public async Task<long> InvokeAsyncB0I1P2E0D0()
         {
             return await _clientB0I1E0D0.InvokeAsync<long>("m", 0L, _params1).ConfigureAwait(false);
         }
 
         [Benchmark(Description = "InvokeAsync-ID=Y-PARAMS=U-ERROR=Y")]
-        public async Task<long> InvokeAsyncWithResponseErrorAndNoParams()
+        public async Task<long> InvokeAsyncB0I1P0E1D0()
         {
             try
             {
@@ -109,7 +97,7 @@ namespace Anemonis.JsonRpc.ServiceClient.Benchmarks.TestSuites
         }
 
         [Benchmark(Description = "InvokeAsync-ID=Y-PARAMS=P-ERROR=Y")]
-        public async Task<long> InvokeAsyncWithResponseErrorAndParamsByPosition()
+        public async Task<long> InvokeAsyncB0I1P1E1D0()
         {
             try
             {
@@ -122,7 +110,7 @@ namespace Anemonis.JsonRpc.ServiceClient.Benchmarks.TestSuites
         }
 
         [Benchmark(Description = "InvokeAsync-ID=Y-PARAMS=N-ERROR=Y")]
-        public async Task<long> InvokeAsyncWithResponseErrorAndParamsByName()
+        public async Task<long> InvokeAsyncB0I1P2E1D0()
         {
             try
             {

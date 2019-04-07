@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+﻿using Anemonis.JsonRpc.ServiceClient.Benchmarks.TestStubs;
 using BenchmarkDotNet.Attributes;
 
 namespace Anemonis.JsonRpc.ServiceClient.Benchmarks.TestSuites
@@ -8,79 +8,39 @@ namespace Anemonis.JsonRpc.ServiceClient.Benchmarks.TestSuites
         private static readonly JsonRpcClient _executor = new JsonRpcClient("https://localhost");
 
         [Benchmark(Description = "Create-PARAMS=U-ERROR=N")]
-        public object CreateWithParametersNone()
+        public object CreateP0E0D0()
         {
-            return JsonRpcClientFactory.Create<IServiceParametersNone>(_executor);
+            return JsonRpcClientFactory.Create<IJsonRpcServiceP0E0D0>(_executor);
         }
 
         [Benchmark(Description = "Create-PARAMS=P-ERROR=N")]
-        public object CreateWithParametersByPosition()
+        public object CreateP1E0D0()
         {
-            return JsonRpcClientFactory.Create<IServiceParametersByPosition>(_executor);
+            return JsonRpcClientFactory.Create<IJsonRpcServiceP1E0D0>(_executor);
         }
 
         [Benchmark(Description = "Create-PARAMS=N-ERROR=N")]
-        public object CreateWithParametersByName()
+        public object CreateP2E0D0()
         {
-            return JsonRpcClientFactory.Create<IServiceParametersNone>(_executor);
+            return JsonRpcClientFactory.Create<IJsonRpcServiceP0E0D0>(_executor);
         }
 
         [Benchmark(Description = "Create-PARAMS=U-ERROR=Y")]
-        public object CreateWithErrorDataAndParametersNone()
+        public object CreateP0E1D1()
         {
-            return JsonRpcClientFactory.Create<IServiceErrorDataParametersNone>(_executor);
+            return JsonRpcClientFactory.Create<IJsonRpcServiceP0E1D1>(_executor);
         }
 
         [Benchmark(Description = "Create-PARAMS=P-ERROR=Y")]
-        public object CreateWithErrorDataAndParametersByPosition()
+        public object CreateP1E1D1()
         {
-            return JsonRpcClientFactory.Create<IServiceErrorDataParametersByPosition>(_executor);
+            return JsonRpcClientFactory.Create<IJsonRpcServiceP1E1D1>(_executor);
         }
 
         [Benchmark(Description = "Create-PARAMS=N-ERROR=Y")]
-        public object CreateWithErrorDataAndParametersByName()
+        public object CreateP2E1D1()
         {
-            return JsonRpcClientFactory.Create<IServiceErrorDataParametersByName>(_executor);
+            return JsonRpcClientFactory.Create<IJsonRpcServiceP2E1D1>(_executor);
         }
-
-        #region Types
-
-        public interface IServiceParametersNone
-        {
-            [JsonRpcMethod("m")]
-            Task InvokeAsync();
-        }
-
-        public interface IServiceParametersByPosition
-        {
-            [JsonRpcMethod("m", 0)]
-            Task InvokeAsync(long parameter);
-        }
-
-        public interface IServiceParametersByName
-        {
-            [JsonRpcMethod("m", "p")]
-            Task InvokeAsync(long parameter);
-        }
-
-        public interface IServiceErrorDataParametersNone
-        {
-            [JsonRpcMethod("m", typeof(long))]
-            Task InvokeAsync();
-        }
-
-        public interface IServiceErrorDataParametersByPosition
-        {
-            [JsonRpcMethod("m", typeof(long), 0)]
-            Task InvokeAsync(long parameter);
-        }
-
-        public interface IServiceErrorDataParametersByName
-        {
-            [JsonRpcMethod("m", typeof(long), "p")]
-            Task InvokeAsync(long parameter);
-        }
-
-        #endregion
     }
 }
