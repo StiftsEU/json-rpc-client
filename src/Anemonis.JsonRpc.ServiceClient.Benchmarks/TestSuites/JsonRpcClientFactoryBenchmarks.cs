@@ -3,7 +3,7 @@ using BenchmarkDotNet.Attributes;
 
 namespace Anemonis.JsonRpc.ServiceClient.Benchmarks.TestSuites
 {
-    public sealed class JsonRpcClientFactoryBenchmarks
+    public class JsonRpcClientFactoryBenchmarks
     {
         private static readonly JsonRpcClient _executor = new JsonRpcClient("https://localhost");
 

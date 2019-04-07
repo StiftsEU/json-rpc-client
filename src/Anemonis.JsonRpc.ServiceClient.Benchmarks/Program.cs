@@ -9,7 +9,7 @@ using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Loggers;
 using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
-using BenchmarkDotNet.Toolchains.InProcess;
+using BenchmarkDotNet.Toolchains.InProcess.Emit;
 
 namespace Anemonis.JsonRpc.ServiceClient.Benchmarks
 {
@@ -24,7 +24,7 @@ namespace Anemonis.JsonRpc.ServiceClient.Benchmarks
                 .WithIterationTime(TimeInterval.FromMilliseconds(250))
                 .WithMinIterationCount(15)
                 .WithMaxIterationCount(20)
-                .With(InProcessToolchain.Instance));
+                .With(InProcessEmitToolchain.Instance));
             configuration.Add(MemoryDiagnoser.Default);
             configuration.Add(DefaultConfig.Instance.GetColumnProviders().ToArray());
             configuration.Add(ConsoleLogger.Default);

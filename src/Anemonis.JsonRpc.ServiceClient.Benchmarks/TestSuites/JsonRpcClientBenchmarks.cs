@@ -9,11 +9,11 @@ using BenchmarkDotNet.Attributes;
 
 namespace Anemonis.JsonRpc.ServiceClient.Benchmarks.TestSuites
 {
-    public sealed class JsonRpcClientBenchmarks
+    public class JsonRpcClientBenchmarks
     {
         private static readonly IReadOnlyDictionary<string, byte[]> _resources = CreateResourceDictionary();
-        private static readonly IReadOnlyList<object> params0 = CreateParametersByPosition();
-        private static readonly IReadOnlyDictionary<string, object> params1 = CreateParametersByName();
+        private static readonly IReadOnlyList<object> _params0 = CreateParametersByPosition();
+        private static readonly IReadOnlyDictionary<string, object> _params1 = CreateParametersByName();
 
         private readonly JsonRpcClient _clientB0I0E0D0 =
             new JsonRpcClient("https://localhost", new HttpClient(new JsonRpcClientBenchmarkHandler()));
@@ -36,12 +36,18 @@ namespace Anemonis.JsonRpc.ServiceClient.Benchmarks.TestSuites
 
         private static IReadOnlyList<object> CreateParametersByPosition()
         {
-            return new object[] { 1L, 2L };
+            return new object[]
+            {
+                1L
+            };
         }
 
         private static IReadOnlyDictionary<string, object> CreateParametersByName()
         {
-            return new Dictionary<string, object>(2, StringComparer.Ordinal) { ["p1"] = 1L, ["p2"] = 2L };
+            return new Dictionary<string, object>(2, StringComparer.Ordinal)
+            {
+                ["p"] = 1L
+            };
         }
 
         private static IEnumerable<string> GetResponseCodes()
@@ -62,13 +68,13 @@ namespace Anemonis.JsonRpc.ServiceClient.Benchmarks.TestSuites
         [Benchmark(Description = "InvokeAsync-ID=N-PARAMS=P-ERROR=N")]
         public async Task InvokeAsyncWithNotificationAndParamsByPosition()
         {
-            await _clientB0I0E0D0.InvokeAsync("m", params0).ConfigureAwait(false);
+            await _clientB0I0E0D0.InvokeAsync("m", _params0).ConfigureAwait(false);
         }
 
         [Benchmark(Description = "InvokeAsync-ID=N-PARAMS=N-ERROR=N")]
         public async Task InvokeAsyncWithNotificationAndParamsByName()
         {
-            await _clientB0I0E0D0.InvokeAsync("m", params1).ConfigureAwait(false);
+            await _clientB0I0E0D0.InvokeAsync("m", _params1).ConfigureAwait(false);
         }
 
         [Benchmark(Description = "InvokeAsync-ID=Y-PARAMS=U-ERROR=N")]
@@ -80,13 +86,13 @@ namespace Anemonis.JsonRpc.ServiceClient.Benchmarks.TestSuites
         [Benchmark(Description = "InvokeAsync-ID=Y-PARAMS=P-ERROR=N")]
         public async Task<long> InvokeAsyncWithResponseResultAndParamsByPosition()
         {
-            return await _clientB0I1E0D0.InvokeAsync<long>("m", 0L, params0).ConfigureAwait(false);
+            return await _clientB0I1E0D0.InvokeAsync<long>("m", 0L, _params0).ConfigureAwait(false);
         }
 
         [Benchmark(Description = "InvokeAsync-ID=Y-PARAMS=N-ERROR=N")]
         public async Task<long> InvokeAsyncWithResponseResultAndParamsByName()
         {
-            return await _clientB0I1E0D0.InvokeAsync<long>("m", 0L, params1).ConfigureAwait(false);
+            return await _clientB0I1E0D0.InvokeAsync<long>("m", 0L, _params1).ConfigureAwait(false);
         }
 
         [Benchmark(Description = "InvokeAsync-ID=Y-PARAMS=U-ERROR=Y")]
@@ -107,7 +113,7 @@ namespace Anemonis.JsonRpc.ServiceClient.Benchmarks.TestSuites
         {
             try
             {
-                return await _clientB0I1E1D0.InvokeAsync<long>("m", 0L, params0).ConfigureAwait(false);
+                return await _clientB0I1E1D0.InvokeAsync<long>("m", 0L, _params0).ConfigureAwait(false);
             }
             catch (JsonRpcServiceException)
             {
@@ -120,7 +126,7 @@ namespace Anemonis.JsonRpc.ServiceClient.Benchmarks.TestSuites
         {
             try
             {
-                return await _clientB0I1E1D0.InvokeAsync<long>("m", 0L, params1).ConfigureAwait(false);
+                return await _clientB0I1E1D0.InvokeAsync<long>("m", 0L, _params1).ConfigureAwait(false);
             }
             catch (JsonRpcServiceException)
             {
