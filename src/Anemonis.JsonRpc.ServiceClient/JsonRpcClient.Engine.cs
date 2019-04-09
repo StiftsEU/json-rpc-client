@@ -263,7 +263,7 @@ namespace Anemonis.JsonRpc.ServiceClient
                                         {
                                             using (var streamReader = new StreamReader(responseStream, responseEncoding, false, _streamBufferSize, true))
                                             {
-                                                responseData = await _jsonRpcSerializer.DeserializeResponseDataAsync(responseStream, cancellationToken).ConfigureAwait(false);
+                                                responseData = await _jsonRpcSerializer.DeserializeResponseDataAsync(streamReader, cancellationToken).ConfigureAwait(false);
                                             }
                                         }
                                         catch (JsonException e)
@@ -424,7 +424,7 @@ namespace Anemonis.JsonRpc.ServiceClient
                                         {
                                             using (var streamReader = new StreamReader(responseStream, responseEncoding, false, _streamBufferSize, true))
                                             {
-                                                responseData = await _jsonRpcSerializer.DeserializeResponseDataAsync(responseStream, cancellationToken).ConfigureAwait(false);
+                                                responseData = await _jsonRpcSerializer.DeserializeResponseDataAsync(streamReader, cancellationToken).ConfigureAwait(false);
                                             }
                                         }
                                         catch (JsonException e)
