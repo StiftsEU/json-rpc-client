@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Anemonis.JsonRpc.ServiceClient.Resources;
+
 using Newtonsoft.Json;
 
 namespace Anemonis.JsonRpc.ServiceClient

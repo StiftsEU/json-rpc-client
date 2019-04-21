@@ -1,4 +1,5 @@
 ﻿using Anemonis.JsonRpc.ServiceClient.Benchmarks.TestStubs;
+
 using BenchmarkDotNet.Attributes;
 
 namespace Anemonis.JsonRpc.ServiceClient.Benchmarks.TestSuites

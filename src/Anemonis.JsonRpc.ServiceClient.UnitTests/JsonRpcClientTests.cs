@@ -1,7 +1,10 @@
 using System;
 using System.Net.Http;
+
 using Anemonis.JsonRpc.ServiceClient.UnitTests.TestStubs;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 using Newtonsoft.Json;
 
 namespace Anemonis.JsonRpc.ServiceClient.UnitTests
@@ -188,7 +191,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         public void ConstructorWithSerializerAndInvokerWhenServiceUriIsStringAndSerializerIsNull()
         {
             Assert.ThrowsException<ArgumentNullException>(() =>
-                new JsonRpcClient("https://localhost", default(JsonSerializer), new HttpClient(new TestHttpHandler())));
+                new JsonRpcClient("https://localhost", null, new HttpClient(new TestHttpHandler())));
         }
 
         [TestMethod]
@@ -223,7 +226,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         public void ConstructorWithSerializerAndInvokerWhenServiceUriIsUriAndSerializerIsNull()
         {
             Assert.ThrowsException<ArgumentNullException>(() =>
-                new JsonRpcClient(new Uri("https://localhost"), default(JsonSerializer), new HttpClient(new TestHttpHandler())));
+                new JsonRpcClient(new Uri("https://localhost"), null, new HttpClient(new TestHttpHandler())));
         }
 
         [TestMethod]

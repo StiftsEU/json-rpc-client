@@ -4,10 +4,15 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+
 using Anemonis.JsonRpc.ServiceClient.UnitTests.Resources;
 using Anemonis.JsonRpc.ServiceClient.UnitTests.TestStubs;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 using Newtonsoft.Json.Linq;
+
+#pragma warning disable IDE0039
 
 namespace Anemonis.JsonRpc.ServiceClient.UnitTests
 {
@@ -153,11 +158,12 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
 
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
             {
-                var responseObject = new JObject();
-
-                responseObject["jsonrpc"] = "2.0";
-                responseObject["id"] = 1L;
-                responseObject["result"] = null;
+                var responseObject = new JObject
+                {
+                    ["jsonrpc"] = "2.0",
+                    ["id"] = 1L,
+                    ["result"] = null
+                };
 
                 var responseBatch = new JArray(responseObject);
                 var contentBytes = Encoding.UTF8.GetBytes(responseBatch.ToString());
@@ -199,17 +205,19 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
 
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
             {
-                var responseObject0 = new JObject();
+                var responseObject0 = new JObject
+                {
+                    ["jsonrpc"] = "2.0",
+                    ["id"] = 1L,
+                    ["result"] = null
+                };
 
-                responseObject0["jsonrpc"] = "2.0";
-                responseObject0["id"] = 1L;
-                responseObject0["result"] = null;
-
-                var responseObject1 = new JObject();
-
-                responseObject1["jsonrpc"] = "2.0";
-                responseObject1["id"] = 1L;
-                responseObject1["result"] = null;
+                var responseObject1 = new JObject
+                {
+                    ["jsonrpc"] = "2.0",
+                    ["id"] = 1L,
+                    ["result"] = null
+                };
 
                 var responseBatch = new JArray(responseObject0, responseObject1);
                 var contentBytes = Encoding.UTF8.GetBytes(responseBatch.ToString());
@@ -250,11 +258,12 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
 
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
             {
-                var responseObject = new JObject();
-
-                responseObject["jsonrpc"] = "0.0";
-                responseObject["id"] = 1L;
-                responseObject["result"] = null;
+                var responseObject = new JObject
+                {
+                    ["jsonrpc"] = "0.0",
+                    ["id"] = 1L,
+                    ["result"] = null
+                };
 
                 var contentBytes = Encoding.UTF8.GetBytes(responseObject.ToString());
                 var content = new ByteArrayContent(contentBytes);
@@ -292,11 +301,12 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
 
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
             {
-                var responseObject = new JObject();
-
-                responseObject["jsonrpc"] = "2.0";
-                responseObject["id"] = 1L;
-                responseObject["result"] = null;
+                var responseObject = new JObject
+                {
+                    ["jsonrpc"] = "2.0",
+                    ["id"] = 1L,
+                    ["result"] = null
+                };
 
                 var contentBytes = Encoding.UTF8.GetBytes(responseObject.ToString());
                 var content = new ByteArrayContent(contentBytes);
@@ -336,16 +346,18 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
 
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
             {
-                var responseObject0 = new JObject();
+                var responseObject0 = new JObject
+                {
+                    ["jsonrpc"] = "2.0",
+                    ["id"] = 1L,
+                    ["result"] = null
+                };
 
-                responseObject0["jsonrpc"] = "2.0";
-                responseObject0["id"] = 1L;
-                responseObject0["result"] = null;
-
-                var responseObject1 = new JObject();
-
-                responseObject1["jsonrpc"] = "2.0";
-                responseObject1["id"] = 2L;
+                var responseObject1 = new JObject
+                {
+                    ["jsonrpc"] = "2.0",
+                    ["id"] = 2L
+                };
 
                 var responseBatch = new JArray(responseObject0, responseObject1);
                 var contentBytes = Encoding.UTF8.GetBytes(responseBatch.ToString());
@@ -521,3 +533,5 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         }
     }
 }
+
+#pragma warning restore IDE0034, IDE0039

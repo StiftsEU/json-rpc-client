@@ -7,9 +7,13 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Anemonis.JsonRpc.ServiceClient.UnitTests.Resources;
 using Anemonis.JsonRpc.ServiceClient.UnitTests.TestStubs;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+#pragma warning disable IDE0034, IDE0039
 
 namespace Anemonis.JsonRpc.ServiceClient.UnitTests
 {
@@ -21,7 +25,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             var client = new TestJsonRpcClient();
 
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(() =>
-                client.InvokeAsync((string)null));
+                client.InvokeAsync(null));
         }
 
         [TestMethod]
@@ -31,7 +35,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             var parameters = new object[] { 1L, 2L };
 
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(() =>
-                client.InvokeAsync((string)null, parameters));
+                client.InvokeAsync(null, parameters));
         }
 
         [TestMethod]
@@ -41,7 +45,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             var parameters = new Dictionary<string, object> { ["a"] = 1L, ["b"] = 2L };
 
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(() =>
-                client.InvokeAsync((string)null, parameters));
+                client.InvokeAsync(null, parameters));
         }
 
         [TestMethod]
@@ -50,7 +54,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             var client = new TestJsonRpcClient();
 
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(() =>
-                client.InvokeAsync<long>((string)null));
+                client.InvokeAsync<long>(null));
         }
 
         [TestMethod]
@@ -60,7 +64,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             var parameters = new object[] { 1L, 2L };
 
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(() =>
-                client.InvokeAsync<long>((string)null, parameters));
+                client.InvokeAsync<long>(null, parameters));
         }
 
         [TestMethod]
@@ -70,7 +74,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             var parameters = new Dictionary<string, object> { ["a"] = 1L, ["b"] = 2L };
 
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(() =>
-                client.InvokeAsync<long>((string)null, parameters));
+                client.InvokeAsync<long>(null, parameters));
         }
 
         [TestMethod]
@@ -79,7 +83,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             var client = new TestJsonRpcClient();
 
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(() =>
-                client.InvokeAsync<long>((string)null, default(JsonRpcId)));
+                client.InvokeAsync<long>(null, default(JsonRpcId)));
         }
 
         [TestMethod]
@@ -89,7 +93,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             var parameters = new object[] { 1L, 2L };
 
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(() =>
-                client.InvokeAsync<long>((string)null, default(JsonRpcId), parameters));
+                client.InvokeAsync<long>(null, default(JsonRpcId), parameters));
         }
 
         [TestMethod]
@@ -99,7 +103,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             var parameters = new Dictionary<string, object> { ["a"] = 1L, ["b"] = 2L };
 
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(() =>
-                client.InvokeAsync<long>((string)null, default(JsonRpcId), parameters));
+                client.InvokeAsync<long>(null, default(JsonRpcId), parameters));
         }
 
         [TestMethod]
@@ -108,7 +112,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             var client = new TestJsonRpcClient();
 
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(() =>
-                client.InvokeAsync<long, long>((string)null));
+                client.InvokeAsync<long, long>(null));
         }
 
         [TestMethod]
@@ -118,7 +122,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             var parameters = new object[] { 1L, 2L };
 
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(() =>
-                client.InvokeAsync<long, long>((string)null, parameters));
+                client.InvokeAsync<long, long>(null, parameters));
         }
 
         [TestMethod]
@@ -128,7 +132,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             var parameters = new Dictionary<string, object> { ["a"] = 1L, ["b"] = 2L };
 
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(() =>
-                client.InvokeAsync<long, long>((string)null, parameters));
+                client.InvokeAsync<long, long>(null, parameters));
         }
 
         [TestMethod]
@@ -137,7 +141,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             var client = new TestJsonRpcClient();
 
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(() =>
-                client.InvokeAsync<long, long>((string)null, default(JsonRpcId)));
+                client.InvokeAsync<long, long>(null, default(JsonRpcId)));
         }
 
         [TestMethod]
@@ -147,7 +151,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             var parameters = new object[] { 1L, 2L };
 
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(() =>
-                client.InvokeAsync<long, long>((string)null, default(JsonRpcId), parameters));
+                client.InvokeAsync<long, long>(null, default(JsonRpcId), parameters));
         }
 
         [TestMethod]
@@ -157,7 +161,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
             var parameters = new Dictionary<string, object> { ["a"] = 1L, ["b"] = 2L };
 
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(() =>
-                client.InvokeAsync<long, long>((string)null, default(JsonRpcId), parameters));
+                client.InvokeAsync<long, long>(null, default(JsonRpcId), parameters));
         }
 
         [TestMethod]
@@ -1032,3 +1036,5 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         }
     }
 }
+
+#pragma warning restore IDE0034, IDE0039

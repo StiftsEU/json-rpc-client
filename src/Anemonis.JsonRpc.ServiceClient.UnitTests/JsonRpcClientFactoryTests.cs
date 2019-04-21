@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Anemonis.JsonRpc.ServiceClient.UnitTests.TestStubs;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Anemonis.JsonRpc.ServiceClient.UnitTests

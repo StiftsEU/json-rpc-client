@@ -1,4 +1,5 @@
 ﻿using System;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Anemonis.JsonRpc.ServiceClient.UnitTests
@@ -129,14 +130,14 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         public void ConstructorWithErrorDataTypeAndParametersByPositionWhenErrorDataTypeIsNull()
         {
             Assert.ThrowsException<ArgumentNullException>(() =>
-                new JsonRpcMethodAttribute("m", (Type)null, new[] { 0 }));
+                new JsonRpcMethodAttribute("m", null, new[] { 0 }));
         }
 
         [TestMethod]
         public void ConstructorWithErrorDataTypeAndParametersByNameWhenErrorDataTypeIsNull()
         {
             Assert.ThrowsException<ArgumentNullException>(() =>
-                new JsonRpcMethodAttribute("m", (Type)null, new[] { "a" }));
+                new JsonRpcMethodAttribute("m", null, new[] { "a" }));
         }
     }
 }

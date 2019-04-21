@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+
 using Anemonis.JsonRpc.ServiceClient.Benchmarks.Resources;
 using Anemonis.JsonRpc.ServiceClient.Benchmarks.TestStubs;
+
 using BenchmarkDotNet.Attributes;
 
 namespace Anemonis.JsonRpc.ServiceClient.Benchmarks.TestSuites
