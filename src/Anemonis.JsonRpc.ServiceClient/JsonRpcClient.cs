@@ -145,10 +145,27 @@ namespace Anemonis.JsonRpc.ServiceClient
         {
         }
 
+        /// <summary />
+        ~JsonRpcClient()
+        {
+            Dispose(false);
+        }
+
         /// <summary>Releases all resources used by the current instance of the <see cref="JsonRpcClient" />.</summary>
         public void Dispose()
         {
-            _httpInvoker.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>Releases all resources used by the current instance of the <see cref="JsonRpcClient" />.</summary>
+        /// <param name="disposing">The value that indicates whether the method call comes from a dispose method (its value is <see langword="true" />) or from a finalizer (its value is <see langword="false" />).</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _httpInvoker.Dispose();
+            }
         }
 
         /// <summary>Invokes the specified service method as an asynchronous operation.</summary>
@@ -255,6 +272,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         /// <exception cref="JsonRpcClientException">An error occurred during processing JSON-RPC method parameters, result, or error data.</exception>
         /// <exception cref="JsonRpcProtocolException">An error occurred during communication with a JSON-RPC service.</exception>
         /// <exception cref="JsonRpcServiceException">An error occurred during invocation of a JSON-RPC service method.</exception>
+        /// <exception cref="InvalidOperationException">A message identifier is undefined.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<TResult> InvokeAsync<TResult>(string method, CancellationToken cancellationToken = default)
         {
@@ -286,6 +304,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         /// <exception cref="JsonRpcClientException">An error occurred during processing JSON-RPC method parameters, result, or error data.</exception>
         /// <exception cref="JsonRpcProtocolException">An error occurred during communication with a JSON-RPC service.</exception>
         /// <exception cref="JsonRpcServiceException">An error occurred during invocation of a JSON-RPC service method.</exception>
+        /// <exception cref="InvalidOperationException">A message identifier is undefined.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<TResult> InvokeAsync<TResult>(string method, IReadOnlyList<object> parameters, CancellationToken cancellationToken = default)
         {
@@ -321,6 +340,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         /// <exception cref="JsonRpcClientException">An error occurred during processing JSON-RPC method parameters, result, or error data.</exception>
         /// <exception cref="JsonRpcProtocolException">An error occurred during communication with a JSON-RPC service.</exception>
         /// <exception cref="JsonRpcServiceException">An error occurred during invocation of a JSON-RPC service method.</exception>
+        /// <exception cref="InvalidOperationException">A message identifier is undefined.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<TResult> InvokeAsync<TResult>(string method, IReadOnlyDictionary<string, object> parameters, CancellationToken cancellationToken = default)
         {
@@ -471,6 +491,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         /// <exception cref="JsonRpcClientException">An error occurred during processing JSON-RPC method parameters, result, or error data.</exception>
         /// <exception cref="JsonRpcProtocolException">An error occurred during communication with a JSON-RPC service.</exception>
         /// <exception cref="JsonRpcServiceException">An error occurred during invocation of a JSON-RPC service method.</exception>
+        /// <exception cref="InvalidOperationException">A message identifier is undefined.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<TResult> InvokeAsync<TResult, TErrorData>(string method, CancellationToken cancellationToken = default)
         {
@@ -503,6 +524,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         /// <exception cref="JsonRpcClientException">An error occurred during processing JSON-RPC method parameters, result, or error data.</exception>
         /// <exception cref="JsonRpcProtocolException">An error occurred during communication with a JSON-RPC service.</exception>
         /// <exception cref="JsonRpcServiceException">An error occurred during invocation of a JSON-RPC service method.</exception>
+        /// <exception cref="InvalidOperationException">A message identifier is undefined.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<TResult> InvokeAsync<TResult, TErrorData>(string method, IReadOnlyList<object> parameters, CancellationToken cancellationToken = default)
         {
@@ -539,6 +561,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         /// <exception cref="JsonRpcClientException">An error occurred during processing JSON-RPC method parameters, result, or error data.</exception>
         /// <exception cref="JsonRpcProtocolException">An error occurred during communication with a JSON-RPC service.</exception>
         /// <exception cref="JsonRpcServiceException">An error occurred during invocation of a JSON-RPC service method.</exception>
+        /// <exception cref="InvalidOperationException">A message identifier is undefined.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<TResult> InvokeAsync<TResult, TErrorData>(string method, IReadOnlyDictionary<string, object> parameters, CancellationToken cancellationToken = default)
         {

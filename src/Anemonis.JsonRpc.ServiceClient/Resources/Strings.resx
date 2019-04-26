@@ -148,7 +148,7 @@
     <value>The batch of requests contains messages with duplicate identifiers</value>
   </data>
   <data name="invoke.identifier.invalid_value" xml:space="preserve">
-    <value>The specified identifier is undefined</value>
+    <value>The message identifier is undefined</value>
   </data>
   <data name="invoke.method.invalid_name" xml:space="preserve">
     <value>The specified method is a system extension method</value>

@@ -9,8 +9,18 @@ namespace Anemonis.JsonRpc.ServiceClient
     {
         private readonly JsonRpcId _requestId;
 
+        internal JsonRpcClientException()
+            : base()
+        {
+        }
+
         internal JsonRpcClientException(string message)
             : base(message)
+        {
+        }
+
+        internal JsonRpcClientException(string message, Exception innerException)
+            : base(message, innerException)
         {
         }
 

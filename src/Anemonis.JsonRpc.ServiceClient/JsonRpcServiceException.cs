@@ -1,10 +1,27 @@
 ﻿// © Alexander Kozlenko. Licensed under the MIT License.
 
+using System;
+
 namespace Anemonis.JsonRpc.ServiceClient
 {
     /// <summary>Represents an error that occurs during invocation of a JSON-RPC service method.</summary>
     public sealed class JsonRpcServiceException : JsonRpcException
     {
+        internal JsonRpcServiceException()
+            : base()
+        {
+        }
+
+        internal JsonRpcServiceException(string message)
+            : base(message)
+        {
+        }
+
+        internal JsonRpcServiceException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
+
         internal JsonRpcServiceException(long code, string message, object errorData, bool hasErrorData)
             : base(message)
         {

@@ -11,6 +11,21 @@ namespace Anemonis.JsonRpc.ServiceClient
         private readonly HttpStatusCode _httpStatusCode;
         private readonly JsonRpcId _requestId;
 
+        internal JsonRpcProtocolException()
+            : base()
+        {
+        }
+
+        internal JsonRpcProtocolException(string message)
+            : base(message)
+        {
+        }
+
+        internal JsonRpcProtocolException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
+
         internal JsonRpcProtocolException(HttpStatusCode httpStatusCode, string message)
             : base(message)
         {

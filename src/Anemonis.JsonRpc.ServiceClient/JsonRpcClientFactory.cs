@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -204,7 +205,7 @@ namespace Anemonis.JsonRpc.ServiceClient
             if ((interfaceTypeInfo.DeclaredProperties.Count() != 0) ||
                 (interfaceTypeInfo.DeclaredEvents.Count() != 0))
             {
-                var exceptionMessage = string.Format(Strings.GetString("factory.interface_has_unsupported_members"),
+                var exceptionMessage = string.Format(CultureInfo.CurrentCulture, Strings.GetString("factory.interface_has_unsupported_members"),
                     interfaceType.FullName, interfaceTypeInfo.Assembly.FullName);
 
                 throw new InvalidOperationException(exceptionMessage);
@@ -224,7 +225,7 @@ namespace Anemonis.JsonRpc.ServiceClient
 
                 if (attribute == null)
                 {
-                    var exceptionMessage = string.Format(Strings.GetString("factory.method.attribute_not_found"),
+                    var exceptionMessage = string.Format(CultureInfo.CurrentCulture, Strings.GetString("factory.method.attribute_not_found"),
                         method.Name, interfaceType.FullName, interfaceTypeInfo.Assembly.FullName);
 
                     throw new InvalidOperationException(exceptionMessage);
@@ -236,7 +237,7 @@ namespace Anemonis.JsonRpc.ServiceClient
                 {
                     if (method.ReturnType != typeof(Task))
                     {
-                        var exceptionMessage = string.Format(Strings.GetString("factory.method.invalid_return_type"),
+                        var exceptionMessage = string.Format(CultureInfo.CurrentCulture, Strings.GetString("factory.method.invalid_return_type"),
                             method.Name, interfaceType.FullName, interfaceTypeInfo.Assembly.FullName);
 
                         throw new InvalidOperationException(exceptionMessage);
@@ -246,7 +247,7 @@ namespace Anemonis.JsonRpc.ServiceClient
                 {
                     if (method.ReturnType.GetGenericTypeDefinition() != typeof(Task<>))
                     {
-                        var exceptionMessage = string.Format(Strings.GetString("factory.method.invalid_return_type"),
+                        var exceptionMessage = string.Format(CultureInfo.CurrentCulture, Strings.GetString("factory.method.invalid_return_type"),
                             method.Name, interfaceType.FullName, interfaceTypeInfo.Assembly.FullName);
 
                         throw new InvalidOperationException(exceptionMessage);
@@ -259,7 +260,7 @@ namespace Anemonis.JsonRpc.ServiceClient
                 {
                     if (methodParameters[i].ParameterType.IsByRef)
                     {
-                        var exceptionMessage = string.Format(Strings.GetString("factory.method.invalid_parameter_modifier"),
+                        var exceptionMessage = string.Format(CultureInfo.CurrentCulture, Strings.GetString("factory.method.invalid_parameter_modifier"),
                             methodParameters[i].Name, method.Name, interfaceType.FullName, interfaceTypeInfo.Assembly.FullName);
 
                         throw new InvalidOperationException(exceptionMessage);
@@ -283,7 +284,7 @@ namespace Anemonis.JsonRpc.ServiceClient
 
                             if (parameterPositions.Length != contractParametersCount)
                             {
-                                var exceptionMessage = string.Format(Strings.GetString("factory.method.invalid_parameters_count"),
+                                var exceptionMessage = string.Format(CultureInfo.CurrentCulture, Strings.GetString("factory.method.invalid_parameters_count"),
                                     method.Name, interfaceType.FullName, interfaceTypeInfo.Assembly.FullName);
 
                                 throw new InvalidOperationException(exceptionMessage);
@@ -293,7 +294,7 @@ namespace Anemonis.JsonRpc.ServiceClient
                             {
                                 if (!parameterPositions.Contains(i))
                                 {
-                                    var exceptionMessage = string.Format(Strings.GetString("factory.method.invalid_parameter_positions"),
+                                    var exceptionMessage = string.Format(CultureInfo.CurrentCulture, Strings.GetString("factory.method.invalid_parameter_positions"),
                                         method.Name, interfaceType.FullName, interfaceTypeInfo.Assembly.FullName);
 
                                     throw new InvalidOperationException(exceptionMessage);
@@ -307,14 +308,14 @@ namespace Anemonis.JsonRpc.ServiceClient
 
                             if (parameterNames.Length != contractParametersCount)
                             {
-                                var exceptionMessage = string.Format(Strings.GetString("factory.method.invalid_parameters_count"),
+                                var exceptionMessage = string.Format(CultureInfo.CurrentCulture, Strings.GetString("factory.method.invalid_parameters_count"),
                                     method.Name, interfaceType.FullName, interfaceTypeInfo.Assembly.FullName);
 
                                 throw new InvalidOperationException(exceptionMessage);
                             }
                             if (parameterNames.Length != parameterNames.Distinct(StringComparer.Ordinal).Count())
                             {
-                                var exceptionMessage = string.Format(Strings.GetString("factory.method.invalid_parameter_names"),
+                                var exceptionMessage = string.Format(CultureInfo.CurrentCulture, Strings.GetString("factory.method.invalid_parameter_names"),
                                     method.Name, interfaceType.FullName, interfaceTypeInfo.Assembly.FullName);
 
                                 throw new InvalidOperationException(exceptionMessage);
@@ -325,7 +326,7 @@ namespace Anemonis.JsonRpc.ServiceClient
                         {
                             if (contractParametersCount != 0)
                             {
-                                var exceptionMessage = string.Format(Strings.GetString("factory.method.invalid_parameters_count"),
+                                var exceptionMessage = string.Format(CultureInfo.CurrentCulture, Strings.GetString("factory.method.invalid_parameters_count"),
                                     method.Name, interfaceType.FullName, interfaceTypeInfo.Assembly.FullName);
 
                                 throw new InvalidOperationException(exceptionMessage);
