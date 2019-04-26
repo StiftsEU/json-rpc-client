@@ -158,14 +158,14 @@ namespace Anemonis.JsonRpc.ServiceClient
 
             if (requestId.Type == JsonRpcIdType.None)
             {
-                throw new ArgumentException(Strings.GetString("invoke.identifier.invalid_value"), nameof(requestId));
+                throw new InvalidOperationException(Strings.GetString("invoke.identifier.invalid_value"));
             }
 
             return requestId;
         }
 
-        /// <summary>Gets a unique JSON-RPC request identifier.</summary>
-        /// <returns>A new instance of the <see cref="JsonRpcId" /> type.</returns>
+        /// <summary>Gets a new unique JSON-RPC request identifier.</summary>
+        /// <returns>An instance of the <see cref="JsonRpcId" /> type.</returns>
         protected virtual JsonRpcId GetUniqueRequestId()
         {
             return new JsonRpcId(Guid.NewGuid().ToString());
