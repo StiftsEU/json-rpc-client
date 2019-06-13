@@ -20,6 +20,8 @@ using System.IO.Compression;
 
 #endif
 
+#pragma warning disable CA2000
+
 namespace Anemonis.JsonRpc.ServiceClient
 {
     public partial class JsonRpcClient
@@ -556,3 +558,5 @@ namespace Anemonis.JsonRpc.ServiceClient
         }
     }
 }
+
+#pragma warning restore CA2000
