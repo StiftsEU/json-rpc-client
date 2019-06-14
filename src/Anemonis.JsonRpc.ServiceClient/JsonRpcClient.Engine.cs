@@ -121,21 +121,54 @@ namespace Anemonis.JsonRpc.ServiceClient
 
 #endif
 
-        private void PrepareHttpRequest(HttpRequestMessage httpRequest)
+        private void InternalVisitHttpRequestMessage(HttpRequestMessage message)
         {
-            VisitHttpRequestHeaders(httpRequest.Headers);
+            VisitHttpRequestMessage(message);
+
+            if (message.Content == null)
+            {
+                throw new InvalidOperationException(Strings.GetString("client.http_request_content.invalid_value"));
+            }
 
 #if NETCOREAPP2_1
 
-            if (!httpRequest.Headers.AcceptEncoding.Contains(_brotliEncodingHeaderValue))
+            if (!message.Headers.AcceptEncoding.Contains(_brotliEncodingHeaderValue))
             {
-                httpRequest.Headers.AcceptEncoding.Add(_brotliEncodingHeaderValue);
+                message.Headers.AcceptEncoding.Add(_brotliEncodingHeaderValue);
             }
 
 #endif
 
-            httpRequest.Headers.Accept.Clear();
-            httpRequest.Headers.Accept.Add(_mediaTypeWithQualityHeaderValue);
+            message.Headers.Accept.Clear();
+            message.Headers.Accept.Add(_mediaTypeWithQualityHeaderValue);
+            message.Content.Headers.ContentType = _mediaTypeHeaderValue;
+        }
+
+        private void InternalVisitHttpResponseMessage(HttpResponseMessage message, out Encoding encoding)
+        {
+            if (message.Content != null)
+            {
+                var contentTypeHeaderValue = message.Content.Headers.ContentType;
+
+                if (contentTypeHeaderValue == null)
+                {
+                    throw new JsonRpcProtocolException(message.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
+                }
+                if (!contentTypeHeaderValue.MediaType.Equals(_mediaTypeHeaderValue.MediaType, StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new JsonRpcProtocolException(message.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
+                }
+                if (!_supportedEncodings.TryGetValue(contentTypeHeaderValue.CharSet ?? Encoding.UTF8.WebName, out encoding))
+                {
+                    throw new JsonRpcProtocolException(message.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
+                }
+            }
+            else
+            {
+                encoding = null;
+            }
+
+            VisitHttpResponseMessage(message);
         }
 
         private async Task<JsonRpcResponse> SendJsonRpcRequestAsync(JsonRpcRequest request, JsonRpcResponseContract contract, CancellationToken cancellationToken)
@@ -207,43 +240,27 @@ namespace Anemonis.JsonRpc.ServiceClient
                 }
 
                 cancellationToken.ThrowIfCancellationRequested();
-                requestStream.Position = 0;
+                requestStream.Position = 0L;
 
                 using (var httpRequest = new HttpRequestMessage(HttpMethod.Post, _serviceUri))
                 {
-                    PrepareHttpRequest(httpRequest);
+                    httpRequest.Content = new StreamContent(requestStream);
 
-                    var requestContent = new StreamContent(requestStream);
+                    InternalVisitHttpRequestMessage(httpRequest);
 
-                    requestContent.Headers.ContentType = _mediaTypeHeaderValue;
-                    httpRequest.Content = requestContent;
+                    requestStream.Position = 0L;
 
                     using (var httpResponse = await _httpInvoker.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false))
                     {
-                        VisitHttpResponseHeaders(httpResponse.Headers);
-
                         switch (httpResponse.StatusCode)
                         {
                             case HttpStatusCode.OK:
                                 {
+                                    InternalVisitHttpResponseMessage(httpResponse, out var responseEncoding);
+
                                     if (requestId.Type == JsonRpcIdType.None)
                                     {
                                         throw new JsonRpcProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.service.message.unexpected_content"), requestId);
-                                    }
-
-                                    var contentTypeHeaderValue = httpResponse.Content.Headers.ContentType;
-
-                                    if (contentTypeHeaderValue == null)
-                                    {
-                                        throw new JsonRpcProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
-                                    }
-                                    if (!contentTypeHeaderValue.MediaType.Equals(_mediaTypeHeaderValue.MediaType, StringComparison.OrdinalIgnoreCase))
-                                    {
-                                        throw new JsonRpcProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
-                                    }
-                                    if (!_supportedEncodings.TryGetValue(contentTypeHeaderValue.CharSet ?? Encoding.UTF8.WebName, out var responseEncoding))
-                                    {
-                                        throw new JsonRpcProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
                                     }
 
                                     var responseData = default(JsonRpcData<JsonRpcResponse>);
@@ -307,6 +324,8 @@ namespace Anemonis.JsonRpc.ServiceClient
                                 }
                             case HttpStatusCode.NoContent:
                                 {
+                                    InternalVisitHttpResponseMessage(httpResponse, out _);
+
                                     if (requestId.Type != JsonRpcIdType.None)
                                     {
                                         throw new JsonRpcProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.service.message.unexpected_blank"), requestId);
@@ -373,39 +392,23 @@ namespace Anemonis.JsonRpc.ServiceClient
                 }
 
                 cancellationToken.ThrowIfCancellationRequested();
-                requestStream.Position = 0;
+                requestStream.Position = 0L;
 
                 using (var httpRequest = new HttpRequestMessage(HttpMethod.Post, _serviceUri))
                 {
-                    PrepareHttpRequest(httpRequest);
+                    httpRequest.Content = new StreamContent(requestStream);
 
-                    var requestContent = new StreamContent(requestStream);
+                    InternalVisitHttpRequestMessage(httpRequest);
 
-                    requestContent.Headers.ContentType = _mediaTypeHeaderValue;
-                    httpRequest.Content = requestContent;
+                    requestStream.Position = 0L;
 
                     using (var httpResponse = await _httpInvoker.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false))
                     {
-                        VisitHttpResponseHeaders(httpResponse.Headers);
-
                         switch (httpResponse.StatusCode)
                         {
                             case HttpStatusCode.OK:
                                 {
-                                    var contentTypeHeaderValue = httpResponse.Content.Headers.ContentType;
-
-                                    if (contentTypeHeaderValue == null)
-                                    {
-                                        throw new JsonRpcProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
-                                    }
-                                    if (!contentTypeHeaderValue.MediaType.Equals(_mediaTypeHeaderValue.MediaType, StringComparison.OrdinalIgnoreCase))
-                                    {
-                                        throw new JsonRpcProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
-                                    }
-                                    if (!_supportedEncodings.TryGetValue(contentTypeHeaderValue.CharSet ?? Encoding.UTF8.WebName, out var responseEncoding))
-                                    {
-                                        throw new JsonRpcProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
-                                    }
+                                    InternalVisitHttpResponseMessage(httpResponse, out var responseEncoding);
 
                                     var responseData = default(JsonRpcData<JsonRpcResponse>);
                                     var responseStream = default(Stream);
@@ -507,6 +510,8 @@ namespace Anemonis.JsonRpc.ServiceClient
                                 }
                             case HttpStatusCode.NoContent:
                                 {
+                                    InternalVisitHttpResponseMessage(httpResponse, out _);
+
                                     if (requestIdentifiers.Count != 0)
                                     {
                                         throw new JsonRpcProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.service.message.invalid_values"));
@@ -533,15 +538,15 @@ namespace Anemonis.JsonRpc.ServiceClient
             }
         }
 
-        /// <summary>Visits HTTP request headers.</summary>
-        /// <param name="headers">A collection of request headers.</param>
-        protected virtual void VisitHttpRequestHeaders(HttpRequestHeaders headers)
+        /// <summary>Visits an HTTP request message.</summary>
+        /// <param name="message">The HTTP request message.</param>
+        protected virtual void VisitHttpRequestMessage(HttpRequestMessage message)
         {
         }
 
-        /// <summary>Visits HTTP response headers.</summary>
-        /// <param name="headers">A collection of response headers.</param>
-        protected virtual void VisitHttpResponseHeaders(HttpResponseHeaders headers)
+        /// <summary>Visits an HTTP response message.</summary>
+        /// <param name="headers">The HTTP response message.</param>
+        protected virtual void VisitHttpResponseMessage(HttpResponseMessage headers)
         {
         }
 

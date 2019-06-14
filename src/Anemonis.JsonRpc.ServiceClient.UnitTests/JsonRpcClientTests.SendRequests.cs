@@ -487,7 +487,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
 
             using (var client = new TestJsonRpcClient(handler))
             {
-                client.VisitHttpRequestHeadersAction = headers => headers.Authorization = authorizationHeader;
+                client.VisitHttpRequestMessageAction = message => message.Headers.Authorization = authorizationHeader;
 
                 await client.PublicSendJsonRpcRequestsAsync(requests, default);
             }

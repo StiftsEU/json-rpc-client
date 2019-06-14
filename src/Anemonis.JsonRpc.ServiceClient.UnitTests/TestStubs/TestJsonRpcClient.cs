@@ -25,14 +25,14 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests.TestStubs
             return httpClient;
         }
 
-        protected override void VisitHttpRequestHeaders(HttpRequestHeaders headers)
+        protected override void VisitHttpRequestMessage(HttpRequestMessage message)
         {
-            VisitHttpRequestHeadersAction?.Invoke(headers);
+            VisitHttpRequestMessageAction?.Invoke(message);
         }
 
-        protected override void VisitHttpResponseHeaders(HttpResponseHeaders headers)
+        protected override void VisitHttpResponseMessage(HttpResponseMessage message)
         {
-            VisitHttpResponseHeadersAction?.Invoke(headers);
+            VisitHttpResponseMessageAction?.Invoke(message);
         }
 
         public JsonRpcId PublicGetUniqueRequestId()
@@ -55,13 +55,13 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests.TestStubs
             get => ServiceUri;
         }
 
-        public Action<HttpRequestHeaders> VisitHttpRequestHeadersAction
+        public Action<HttpRequestMessage> VisitHttpRequestMessageAction
         {
             get;
             set;
         }
 
-        public Action<HttpResponseHeaders> VisitHttpResponseHeadersAction
+        public Action<HttpResponseMessage> VisitHttpResponseMessageAction
         {
             get;
             set;

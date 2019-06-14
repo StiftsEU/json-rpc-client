@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -1001,7 +1002,63 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
 
             using (var client = new TestJsonRpcClient(handler))
             {
-                client.VisitHttpRequestHeadersAction = headers => headers.Authorization = authorizationHeader;
+                client.VisitHttpRequestMessageAction = message => message.Headers.Authorization = authorizationHeader;
+
+                await client.InvokeAsync("m");
+            }
+        }
+
+        [TestMethod]
+        public async Task InvokeAsyncWhenHttpRequestContentIsSetToNull()
+        {
+            using (var client = new TestJsonRpcClient())
+            {
+                client.VisitHttpRequestMessageAction = message => message.Content = null;
+
+                await Assert.ThrowsExceptionAsync<InvalidOperationException>(() =>
+                    client.InvokeAsync("m"));
+            }
+        }
+
+        [TestMethod]
+        public async Task InvokeAsyncWithCustomRequestHeaderBasedOnContent()
+        {
+            var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)(async (request) =>
+            {
+                Assert.IsNotNull(request.Content.Headers.ContentMD5);
+
+                var contentStream = await request.Content.ReadAsStreamAsync();
+                var contentHash = default(byte[]);
+
+                using (var hashAlgorithm = MD5.Create())
+                {
+                    contentHash = hashAlgorithm.ComputeHash(contentStream);
+                }
+
+                CollectionAssert.AreEqual(request.Content.Headers.ContentMD5, contentHash);
+
+                var message = new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.NoContent
+                };
+
+                return message;
+            });
+
+            using (var client = new TestJsonRpcClient(handler))
+            {
+                client.VisitHttpRequestMessageAction = async message =>
+                {
+                    var contentStream = await message.Content.ReadAsStreamAsync();
+                    var contentHash = default(byte[]);
+
+                    using (var hashAlgorithm = MD5.Create())
+                    {
+                        contentHash = hashAlgorithm.ComputeHash(contentStream);
+                    }
+
+                    message.Content.Headers.ContentMD5 = contentHash;
+                };
 
                 await client.InvokeAsync("m");
             }
