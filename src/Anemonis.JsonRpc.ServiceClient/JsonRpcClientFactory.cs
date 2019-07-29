@@ -202,8 +202,7 @@ namespace Anemonis.JsonRpc.ServiceClient
                 return;
             }
 
-            if ((interfaceTypeInfo.DeclaredProperties.Count() != 0) ||
-                (interfaceTypeInfo.DeclaredEvents.Count() != 0))
+            if (interfaceTypeInfo.DeclaredProperties.Any() || interfaceTypeInfo.DeclaredEvents.Any())
             {
                 var exceptionMessage = string.Format(CultureInfo.CurrentCulture, Strings.GetString("factory.interface_has_unsupported_members"),
                     interfaceType.FullName, interfaceTypeInfo.Assembly.FullName);
