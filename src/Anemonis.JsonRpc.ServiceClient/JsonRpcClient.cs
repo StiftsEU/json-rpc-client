@@ -159,7 +159,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         }
 
         /// <summary>Releases all resources used by the current instance of the <see cref="JsonRpcClient" />.</summary>
-        /// <param name="disposing">The value that indicates whether the method call comes from a dispose method (its value is <see langword="true" />) or from a finalizer (its value is <see langword="false" />).</param>
+        /// <param name="disposing">The value that indicates whether the method call comes from a dispose method (its value is <see langword="true" />) or from a finalyzer (its value is <see langword="false" />).</param>
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
