@@ -544,7 +544,7 @@ namespace Anemonis.JsonRpc.ServiceClient
             cancellationToken.ThrowIfCancellationRequested();
 
             var request = new JsonRpcRequest(GetVerifiedRequestId(), method, parameters);
-            var response = await SendJsonRpcRequestAsync(request, JsonRpcResponseContract<TResult>.Instance, cancellationToken).ConfigureAwait(false);
+            var response = await SendJsonRpcRequestAsync(request, JsonRpcResponseContract<TResult, TErrorData>.Instance, cancellationToken).ConfigureAwait(false);
 
             return (TResult)response.Result;
         }
