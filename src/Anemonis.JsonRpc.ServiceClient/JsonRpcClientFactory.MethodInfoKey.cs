@@ -7,7 +7,7 @@ namespace Anemonis.JsonRpc.ServiceClient
 {
     public partial class JsonRpcClientFactory
     {
-        private readonly struct MethodInfoKey
+        private readonly struct MethodInfoKey : IEquatable<MethodInfoKey>
         {
             private readonly string _methodName;
             private readonly ParameterInfo[] _methodParameters;
@@ -44,6 +44,29 @@ namespace Anemonis.JsonRpc.ServiceClient
 
                     return hashCode;
                 }
+            }
+
+            public override bool Equals(object obj)
+            {
+                return Equals((MethodInfoKey)obj);
+            }
+
+            public bool Equals(MethodInfoKey other)
+            {
+                if (other._methodName != _methodName)
+                {
+                    return false;
+                }
+
+                for (var i = 0; i < _methodParameters.Length; i++)
+                {
+                    if (!other._methodParameters[i].ParameterType.Equals(_methodParameters[i].ParameterType))
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
             }
 
             public string MethodName
