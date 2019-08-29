@@ -48,7 +48,7 @@ namespace Anemonis.JsonRpc.ServiceClient
 
             public override bool Equals(object obj)
             {
-                return Equals((MethodInfoKey)obj);
+                return (obj is MethodInfoKey other) && Equals(other);
             }
 
             public bool Equals(MethodInfoKey other)
