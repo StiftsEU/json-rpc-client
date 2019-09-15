@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="$(SolutionDirectory)\$(MSBuildProjectName).props" />
   <PropertyGroup>
-    <ProjectGuid>{55424C78-F5D0-4549-B369-7D833B39752F}</ProjectGuid>
     <IsPackable>true</IsPackable>
     <TargetFrameworks>netcoreapp2.1;netstandard2.0;netstandard1.1</TargetFrameworks>
     <SignAssembly>true</SignAssembly>
