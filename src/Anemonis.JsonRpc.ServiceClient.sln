@@ -12,6 +12,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution.Build", "Solution.Build", "{D7C20B1B-12C9-40FA-BE92-DDFE37352A26}"
 	ProjectSection(SolutionItems) = preProject
 		Anemonis.JsonRpc.ServiceClient.props = Anemonis.JsonRpc.ServiceClient.props
+		DataCollection.runsettings = DataCollection.runsettings
 		Directory.Build.props = Directory.Build.props
 		Directory.Build.targets = Directory.Build.targets
 	EndProjectSection
