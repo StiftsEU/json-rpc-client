@@ -20,9 +20,11 @@ namespace Anemonis.JsonRpc.ServiceClient
 
             public override int GetHashCode()
             {
+                // FNV-1a
+
                 unchecked
                 {
-                    var hashCode = (int)2166136261;
+                    var hashCode = HashCode.FNV_OFFSET_BASIS_32;
 
 #if NETCOREAPP2_1
 
@@ -34,12 +36,12 @@ namespace Anemonis.JsonRpc.ServiceClient
 
 #endif
 
-                    hashCode *= 16777619;
+                    hashCode *= HashCode.FNV_PRIME_32;
 
                     for (var i = 0; i < _methodParameters.Length; i++)
                     {
                         hashCode ^= _methodParameters[i].ParameterType.GetHashCode();
-                        hashCode *= 16777619;
+                        hashCode *= HashCode.FNV_PRIME_32;
                     }
 
                     return hashCode;
