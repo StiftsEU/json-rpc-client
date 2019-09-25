@@ -5,8 +5,8 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
-using Anemonis.JsonRpc.ServiceClient.UnitTests.Resources;
 using Anemonis.JsonRpc.ServiceClient.UnitTests.TestStubs;
+using Anemonis.Resources;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -533,5 +533,3 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         }
     }
 }
-
-#pragma warning restore IDE0034, IDE0039

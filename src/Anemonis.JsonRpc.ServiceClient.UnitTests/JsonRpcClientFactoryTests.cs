@@ -6,6 +6,8 @@ using Anemonis.JsonRpc.ServiceClient.UnitTests.TestStubs;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+#pragma warning disable IDE0067
+
 namespace Anemonis.JsonRpc.ServiceClient.UnitTests
 {
     [TestClass]

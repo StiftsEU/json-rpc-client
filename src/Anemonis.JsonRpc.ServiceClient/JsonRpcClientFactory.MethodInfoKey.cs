@@ -20,32 +20,16 @@ namespace Anemonis.JsonRpc.ServiceClient
 
             public override int GetHashCode()
             {
-                // FNV-1a
+                var hashCode = new HashCode();
 
-                unchecked
+                hashCode.Add(_methodName);
+
+                for (var i = 0; i < _methodParameters.Length; i++)
                 {
-                    var hashCode = HashCode.FNV_OFFSET_BASIS_32;
-
-#if NETCOREAPP2_1
-
-                    hashCode ^= _methodName.GetHashCode(StringComparison.Ordinal);
-
-#else
-
-                    hashCode ^= _methodName.GetHashCode();
-
-#endif
-
-                    hashCode *= HashCode.FNV_PRIME_32;
-
-                    for (var i = 0; i < _methodParameters.Length; i++)
-                    {
-                        hashCode ^= _methodParameters[i].ParameterType.GetHashCode();
-                        hashCode *= HashCode.FNV_PRIME_32;
-                    }
-
-                    return hashCode;
+                    hashCode.Add(_methodParameters[i].ParameterType);
                 }
+
+                return hashCode.ToHashCode();
             }
 
             public override bool Equals(object obj)

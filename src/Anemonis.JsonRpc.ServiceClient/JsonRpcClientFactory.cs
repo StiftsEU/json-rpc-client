@@ -271,7 +271,7 @@ namespace Anemonis.JsonRpc.ServiceClient
 
                 if (methodParameters.Length != 0)
                 {
-                    hasCancellationToken = methodParameters[methodParameters.Length - 1].ParameterType == typeof(CancellationToken);
+                    hasCancellationToken = methodParameters[^1].ParameterType == typeof(CancellationToken);
                     contractParametersCount = hasCancellationToken ? methodParameters.Length - 1 : methodParameters.Length;
                 }
 
@@ -377,7 +377,7 @@ namespace Anemonis.JsonRpc.ServiceClient
 
                 Array.Copy(contractParameterTypes, 0, methodParameterTypes, 0, contractParameterTypes.Length);
 
-                methodParameterTypes[methodParameterTypes.Length - 1] = typeof(CancellationToken);
+                methodParameterTypes[^1] = typeof(CancellationToken);
 
                 return methodParameterTypes;
             }

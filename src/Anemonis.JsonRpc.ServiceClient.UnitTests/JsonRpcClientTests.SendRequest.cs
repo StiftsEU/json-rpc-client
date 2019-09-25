@@ -9,12 +9,12 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Anemonis.JsonRpc.ServiceClient.UnitTests.Resources;
 using Anemonis.JsonRpc.ServiceClient.UnitTests.TestStubs;
+using Anemonis.Resources;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-#pragma warning disable IDE0034, IDE0039
+#pragma warning disable IDE0034, IDE0039, IDE0067
 
 namespace Anemonis.JsonRpc.ServiceClient.UnitTests
 {
@@ -1093,5 +1093,3 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         }
     }
 }
-
-#pragma warning restore IDE0034, IDE0039

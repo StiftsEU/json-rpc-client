@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -13,12 +14,6 @@ using System.Threading.Tasks;
 using Anemonis.JsonRpc.ServiceClient.Resources;
 
 using Newtonsoft.Json;
-
-#if NETCOREAPP2_1
-
-using System.IO.Compression;
-
-#endif
 
 #pragma warning disable CA2000
 
@@ -32,12 +27,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         private static readonly IReadOnlyDictionary<string, Encoding> _supportedEncodings = CreateSupportedEncodings();
         private static readonly MediaTypeHeaderValue _mediaTypeHeaderValue = MediaTypeWithQualityHeaderValue.Parse("application/json; charset=utf-8");
         private static readonly MediaTypeWithQualityHeaderValue _mediaTypeWithQualityHeaderValue = MediaTypeWithQualityHeaderValue.Parse("application/json; charset=utf-8");
-
-#if NETCOREAPP2_1
-
         private static readonly StringWithQualityHeaderValue _brotliEncodingHeaderValue = new StringWithQualityHeaderValue("br");
-
-#endif
 
         private readonly JsonRpcContractResolver _jsonRpcContractResolver = new JsonRpcContractResolver();
         private readonly JsonRpcSerializer _jsonRpcSerializer;
@@ -82,23 +72,11 @@ namespace Anemonis.JsonRpc.ServiceClient
         {
             return new Dictionary<string, Encoding>(StringComparer.OrdinalIgnoreCase)
             {
-
-#if NETSTANDARD1_1
-
-                [Encoding.UTF8.WebName] = new UTF8Encoding(false, true),
-                [Encoding.Unicode.WebName] = new UnicodeEncoding(false, false, true)
-
-#else
-
                 [Encoding.UTF8.WebName] = new UTF8Encoding(false, true),
                 [Encoding.Unicode.WebName] = new UnicodeEncoding(false, false, true),
                 [Encoding.UTF32.WebName] = new UTF32Encoding(false, false, true)
-
-#endif
             };
         }
-
-#if NETCOREAPP2_1
 
         private static bool CheckHttpContentEncoding(HttpResponseMessage httpResponse, string encoding)
         {
@@ -119,8 +97,6 @@ namespace Anemonis.JsonRpc.ServiceClient
             return string.Compare(outerContentEncoding, encoding, StringComparison.OrdinalIgnoreCase) == 0;
         }
 
-#endif
-
         private void InternalVisitHttpRequestMessage(HttpRequestMessage message)
         {
             VisitHttpRequestMessage(message);
@@ -129,15 +105,10 @@ namespace Anemonis.JsonRpc.ServiceClient
             {
                 throw new InvalidOperationException(Strings.GetString("client.http_request_content.invalid_value"));
             }
-
-#if NETCOREAPP2_1
-
             if (!message.Headers.AcceptEncoding.Contains(_brotliEncodingHeaderValue))
             {
                 message.Headers.AcceptEncoding.Add(_brotliEncodingHeaderValue);
             }
-
-#endif
 
             message.Headers.Accept.Clear();
             message.Headers.Accept.Add(_mediaTypeWithQualityHeaderValue);
@@ -271,14 +242,10 @@ namespace Anemonis.JsonRpc.ServiceClient
                                         responseStream = await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false);
                                         cancellationToken.ThrowIfCancellationRequested();
 
-#if NETCOREAPP2_1
-
                                         if (CheckHttpContentEncoding(httpResponse, _brotliEncodingHeaderValue.Value))
                                         {
                                             responseStream = new BrotliStream(responseStream, CompressionMode.Decompress);
                                         }
-
-#endif
 
                                         try
                                         {
@@ -418,14 +385,10 @@ namespace Anemonis.JsonRpc.ServiceClient
                                         responseStream = await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false);
                                         cancellationToken.ThrowIfCancellationRequested();
 
-#if NETCOREAPP2_1
-
                                         if (CheckHttpContentEncoding(httpResponse, _brotliEncodingHeaderValue.Value))
                                         {
                                             responseStream = new BrotliStream(responseStream, CompressionMode.Decompress);
                                         }
-
-#endif
 
                                         try
                                         {
@@ -517,16 +480,7 @@ namespace Anemonis.JsonRpc.ServiceClient
                                         throw new JsonRpcProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.service.message.invalid_values"));
                                     }
 
-#if NETSTANDARD1_1
-
-                                    return new JsonRpcResponse[] { };
-
-#else
-
                                     return Array.Empty<JsonRpcResponse>();
-
-#endif
-
                                 }
                             default:
                                 {
@@ -563,5 +517,3 @@ namespace Anemonis.JsonRpc.ServiceClient
         }
     }
 }
-
-#pragma warning restore CA2000
