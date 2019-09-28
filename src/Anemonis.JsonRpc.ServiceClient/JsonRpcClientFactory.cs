@@ -33,7 +33,7 @@ namespace Anemonis.JsonRpc.ServiceClient
             {
                 throw new ArgumentNullException(nameof(executor));
             }
-            if (!typeof(T).GetTypeInfo().IsInterface)
+            if (!typeof(T).IsInterface)
             {
                 throw new InvalidOperationException(Strings.GetString("factory.type_is_not_interface"));
             }
@@ -73,21 +73,22 @@ namespace Anemonis.JsonRpc.ServiceClient
 
             GetContracts(interfaceType, contracts);
 
-            var proxyTypeInfo = typeof(JsonRpcClientProxy).GetTypeInfo();
+            var proxyType = typeof(JsonRpcClientProxy);
             var typeName = $"{nameof(JsonRpcClient)}<{interfaceType.FullName}>";
             var typeAttributes = TypeAttributes.Sealed | TypeAttributes.NotPublic;
             var typeBuilder = _moduleBuilder.DefineType(typeName, typeAttributes, typeof(JsonRpcClientProxy), new[] { interfaceType });
             var methodAttributes = MethodAttributes.Virtual | MethodAttributes.Public;
-            var parametersFactoryMethodT1 = proxyTypeInfo.GetDeclaredMethod(nameof(JsonRpcClientProxy.CreateParametersT1));
-            var parametersFactoryMethodT2 = proxyTypeInfo.GetDeclaredMethod(nameof(JsonRpcClientProxy.CreateParametersT2));
-            var parametersStorageT2TypeInfo = typeof(Dictionary<,>).MakeGenericType(typeof(string), typeof(object)).GetTypeInfo();
-            var parametersStorageT2AddMethod = parametersStorageT2TypeInfo.GetDeclaredMethod(nameof(Dictionary<string, object>.Add));
+            var parametersFactoryMethodT1 = proxyType.GetMethod(nameof(JsonRpcClientProxy.CreateParametersT1));
+            var parametersFactoryMethodT2 = proxyType.GetMethod(nameof(JsonRpcClientProxy.CreateParametersT2));
+            var parametersStorageT2Type = typeof(Dictionary<,>).MakeGenericType(typeof(string), typeof(object));
+            var parametersStorageT2AddMethod = parametersStorageT2Type.GetMethod(nameof(Dictionary<string, object>.Add));
             var constructorBuilder = typeBuilder.DefineConstructor(MethodAttributes.Public, CallingConventions.HasThis, new[] { typeof(JsonRpcClient) });
             var constructorEmitter = constructorBuilder.GetILGenerator();
+            var constructorBindingFlags = BindingFlags.NonPublic | BindingFlags.Instance;
 
             constructorEmitter.Emit(OpCodes.Ldarg_0);
             constructorEmitter.Emit(OpCodes.Ldarg_1);
-            constructorEmitter.Emit(OpCodes.Call, proxyTypeInfo.DeclaredConstructors.FirstOrDefault());
+            constructorEmitter.Emit(OpCodes.Call, proxyType.GetConstructors(constructorBindingFlags).FirstOrDefault());
             constructorEmitter.Emit(OpCodes.Ret);
 
             foreach (var kvp in contracts)
@@ -132,7 +133,7 @@ namespace Anemonis.JsonRpc.ServiceClient
                                 methodEmitter.Emit(OpCodes.Ldc_I4, contractAttribute.ParameterPositions[i]);
                                 methodEmitter.Emit(OpCodes.Ldarg, i + 1);
 
-                                if (contractParameterTypes[i].GetTypeInfo().IsValueType)
+                                if (contractParameterTypes[i].IsValueType)
                                 {
                                     methodEmitter.Emit(OpCodes.Box, contractParameterTypes[i]);
                                 }
@@ -166,7 +167,7 @@ namespace Anemonis.JsonRpc.ServiceClient
                                 methodEmitter.Emit(OpCodes.Ldstr, contractAttribute.ParameterNames[i]);
                                 methodEmitter.Emit(OpCodes.Ldarg, i + 1);
 
-                                if (contractParameterTypes[i].GetTypeInfo().IsValueType)
+                                if (contractParameterTypes[i].IsValueType)
                                 {
                                     methodEmitter.Emit(OpCodes.Box, contractParameterTypes[i]);
                                 }
@@ -190,27 +191,25 @@ namespace Anemonis.JsonRpc.ServiceClient
                 }
             }
 
-            return typeBuilder.CreateTypeInfo().AsType();
+            return typeBuilder.CreateType();
         }
 
         private static void GetContracts(Type interfaceType, IDictionary<MethodInfoKey, (JsonRpcMethodAttribute, Type, Type[], bool)> contracts)
         {
-            var interfaceTypeInfo = interfaceType.GetTypeInfo();
-
-            if (interfaceTypeInfo.IsAssignableFrom(typeof(JsonRpcClientProxy).GetTypeInfo()))
+            if (interfaceType.IsAssignableFrom(typeof(JsonRpcClientProxy)))
             {
                 return;
             }
 
-            if (interfaceTypeInfo.DeclaredProperties.Any() || interfaceTypeInfo.DeclaredEvents.Any())
+            if (interfaceType.GetProperties().Any() || interfaceType.GetEvents().Any())
             {
                 var exceptionMessage = string.Format(CultureInfo.CurrentCulture, Strings.GetString("factory.interface_has_unsupported_members"),
-                    interfaceType.FullName, interfaceTypeInfo.Assembly.FullName);
+                    interfaceType.FullName, interfaceType.Assembly.FullName);
 
                 throw new InvalidOperationException(exceptionMessage);
             }
 
-            foreach (var method in interfaceTypeInfo.DeclaredMethods)
+            foreach (var method in interfaceType.GetMethods())
             {
                 var methodParameters = method.GetParameters();
                 var methodKey = new MethodInfoKey(method.Name, methodParameters);
@@ -225,19 +224,19 @@ namespace Anemonis.JsonRpc.ServiceClient
                 if (attribute == null)
                 {
                     var exceptionMessage = string.Format(CultureInfo.CurrentCulture, Strings.GetString("factory.method.attribute_not_found"),
-                        method.Name, interfaceType.FullName, interfaceTypeInfo.Assembly.FullName);
+                        method.Name, interfaceType.FullName, interfaceType.Assembly.FullName);
 
                     throw new InvalidOperationException(exceptionMessage);
                 }
 
                 var resultType = default(Type);
 
-                if (!method.ReturnType.GetTypeInfo().IsGenericType)
+                if (!method.ReturnType.IsGenericType)
                 {
                     if (method.ReturnType != typeof(Task))
                     {
                         var exceptionMessage = string.Format(CultureInfo.CurrentCulture, Strings.GetString("factory.method.invalid_return_type"),
-                            method.Name, interfaceType.FullName, interfaceTypeInfo.Assembly.FullName);
+                            method.Name, interfaceType.FullName, interfaceType.Assembly.FullName);
 
                         throw new InvalidOperationException(exceptionMessage);
                     }
@@ -247,7 +246,7 @@ namespace Anemonis.JsonRpc.ServiceClient
                     if (method.ReturnType.GetGenericTypeDefinition() != typeof(Task<>))
                     {
                         var exceptionMessage = string.Format(CultureInfo.CurrentCulture, Strings.GetString("factory.method.invalid_return_type"),
-                            method.Name, interfaceType.FullName, interfaceTypeInfo.Assembly.FullName);
+                            method.Name, interfaceType.FullName, interfaceType.Assembly.FullName);
 
                         throw new InvalidOperationException(exceptionMessage);
                     }
@@ -260,7 +259,7 @@ namespace Anemonis.JsonRpc.ServiceClient
                     if (methodParameters[i].ParameterType.IsByRef)
                     {
                         var exceptionMessage = string.Format(CultureInfo.CurrentCulture, Strings.GetString("factory.method.invalid_parameter_modifier"),
-                            methodParameters[i].Name, method.Name, interfaceType.FullName, interfaceTypeInfo.Assembly.FullName);
+                            methodParameters[i].Name, method.Name, interfaceType.FullName, interfaceType.Assembly.FullName);
 
                         throw new InvalidOperationException(exceptionMessage);
                     }
@@ -284,7 +283,7 @@ namespace Anemonis.JsonRpc.ServiceClient
                             if (parameterPositions.Length != contractParametersCount)
                             {
                                 var exceptionMessage = string.Format(CultureInfo.CurrentCulture, Strings.GetString("factory.method.invalid_parameters_count"),
-                                    method.Name, interfaceType.FullName, interfaceTypeInfo.Assembly.FullName);
+                                    method.Name, interfaceType.FullName, interfaceType.Assembly.FullName);
 
                                 throw new InvalidOperationException(exceptionMessage);
                             }
@@ -294,7 +293,7 @@ namespace Anemonis.JsonRpc.ServiceClient
                                 if (!parameterPositions.Contains(i))
                                 {
                                     var exceptionMessage = string.Format(CultureInfo.CurrentCulture, Strings.GetString("factory.method.invalid_parameter_positions"),
-                                        method.Name, interfaceType.FullName, interfaceTypeInfo.Assembly.FullName);
+                                        method.Name, interfaceType.FullName, interfaceType.Assembly.FullName);
 
                                     throw new InvalidOperationException(exceptionMessage);
                                 }
@@ -308,14 +307,14 @@ namespace Anemonis.JsonRpc.ServiceClient
                             if (parameterNames.Length != contractParametersCount)
                             {
                                 var exceptionMessage = string.Format(CultureInfo.CurrentCulture, Strings.GetString("factory.method.invalid_parameters_count"),
-                                    method.Name, interfaceType.FullName, interfaceTypeInfo.Assembly.FullName);
+                                    method.Name, interfaceType.FullName, interfaceType.Assembly.FullName);
 
                                 throw new InvalidOperationException(exceptionMessage);
                             }
                             if (parameterNames.Length != parameterNames.Distinct(StringComparer.Ordinal).Count())
                             {
                                 var exceptionMessage = string.Format(CultureInfo.CurrentCulture, Strings.GetString("factory.method.invalid_parameter_names"),
-                                    method.Name, interfaceType.FullName, interfaceTypeInfo.Assembly.FullName);
+                                    method.Name, interfaceType.FullName, interfaceType.Assembly.FullName);
 
                                 throw new InvalidOperationException(exceptionMessage);
                             }
@@ -326,7 +325,7 @@ namespace Anemonis.JsonRpc.ServiceClient
                             if (contractParametersCount != 0)
                             {
                                 var exceptionMessage = string.Format(CultureInfo.CurrentCulture, Strings.GetString("factory.method.invalid_parameters_count"),
-                                    method.Name, interfaceType.FullName, interfaceTypeInfo.Assembly.FullName);
+                                    method.Name, interfaceType.FullName, interfaceType.Assembly.FullName);
 
                                 throw new InvalidOperationException(exceptionMessage);
                             }
@@ -344,7 +343,7 @@ namespace Anemonis.JsonRpc.ServiceClient
                 contracts.Add(methodKey, (attribute, resultType, contractParameterTypes, hasCancellationToken));
             }
 
-            foreach (var implementedInterfaceType in interfaceTypeInfo.ImplementedInterfaces)
+            foreach (var implementedInterfaceType in interfaceType.GetInterfaces())
             {
                 GetContracts(implementedInterfaceType, contracts);
             }
@@ -352,7 +351,7 @@ namespace Anemonis.JsonRpc.ServiceClient
 
         private static ModuleBuilder CreateModuleBuilder()
         {
-            var currentAssemblyName = typeof(JsonRpcClient).GetTypeInfo().Assembly.GetName();
+            var currentAssemblyName = typeof(JsonRpcClient).Assembly.GetName();
             var dynamicAssemblyName = new AssemblyName(currentAssemblyName.Name + ".Dynamic");
 
             dynamicAssemblyName.SetPublicKey(currentAssemblyName.GetPublicKey());
@@ -385,7 +384,7 @@ namespace Anemonis.JsonRpc.ServiceClient
 
         private static MethodInfo GetProxyMethod(JsonRpcMethodAttribute contractAttribute, Type resultType, bool hasCancellationToken)
         {
-            var proxyTypeInfo = typeof(JsonRpcClientProxy).GetTypeInfo();
+            var proxyType = typeof(JsonRpcClientProxy);
             var proxyMethodName = default(string);
 
             if (resultType == null)
@@ -415,7 +414,7 @@ namespace Anemonis.JsonRpc.ServiceClient
                         break;
                 }
 
-                return proxyTypeInfo.GetDeclaredMethod(proxyMethodName);
+                return proxyType.GetMethod(proxyMethodName);
             }
             else
             {
@@ -446,7 +445,7 @@ namespace Anemonis.JsonRpc.ServiceClient
                             break;
                     }
 
-                    return proxyTypeInfo.GetDeclaredMethod(proxyMethodName).MakeGenericMethod(resultType);
+                    return proxyType.GetMethod(proxyMethodName).MakeGenericMethod(resultType);
                 }
                 else
                 {
@@ -475,7 +474,7 @@ namespace Anemonis.JsonRpc.ServiceClient
                             break;
                     }
 
-                    return proxyTypeInfo.GetDeclaredMethod(proxyMethodName).MakeGenericMethod(resultType, contractAttribute.ErrorDataType);
+                    return proxyType.GetMethod(proxyMethodName).MakeGenericMethod(resultType, contractAttribute.ErrorDataType);
                 }
             }
         }
