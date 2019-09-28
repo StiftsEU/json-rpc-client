@@ -3,13 +3,11 @@
 A universal [JSON-RPC 2.0](http://www.jsonrpc.org/specification) service client based on the [JSON-RPC 2.0 Transport: HTTP](https://www.simple-is-better.org/json-rpc/transport_http.html) specification and the [Anemonis.JsonRpc](https://github.com/alexanderkozlenko/json-rpc)
  serializer.
 
-[![NuGet](https://img.shields.io/nuget/vpre/Anemonis.JsonRpc.ServiceClient.svg?style=flat-square)](https://www.nuget.org/packages/Anemonis.JsonRpc.ServiceClient)
-[![MyGet](https://img.shields.io/myget/alexanderkozlenko/vpre/Anemonis.JsonRpc.ServiceClient.svg?label=myget&style=flat-square)](https://www.myget.org/feed/alexanderkozlenko/package/nuget/Anemonis.JsonRpc.ServiceClient)
-
-[![Coverage](https://img.shields.io/sonar/coverage/json-rpc-client?format=long&server=https%3A%2F%2Fsonarcloud.io&style=flat-square)](https://sonarcloud.io/component_measures?id=json-rpc-client&metric=coverage&view=list)
-[![Violations](https://img.shields.io/sonar/violations/json-rpc-client?format=long&server=https%3A%2F%2Fsonarcloud.io&style=flat-square)](https://sonarcloud.io/project/issues?id=json-rpc-client&resolved=false)
-
-[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg?style=flat-square)](https://gitter.im/anemonis/json-rpc-client)
+| [![](https://img.shields.io/gitter/room/nwjs/nw.js.svg?style=flat-square)](https://gitter.im/anemonis/json-rpc-client) | Release | Current |
+|---|---|---|
+| Artifacts | [![](https://img.shields.io/nuget/vpre/Anemonis.JsonRpc.ServiceClient.svg?style=flat-square)](https://www.nuget.org/packages/Anemonis.JsonRpc.ServiceClient) | [![](https://img.shields.io/myget/alexanderkozlenko/vpre/Anemonis.JsonRpc.ServiceClient.svg?label=myget&style=flat-square)](https://www.myget.org/feed/alexanderkozlenko/package/nuget/Anemonis.JsonRpc.ServiceClient) |
+| Code Health | | [![](https://img.shields.io/sonar/coverage/json-rpc-client?format=long&server=https%3A%2F%2Fsonarcloud.io&style=flat-square)](https://sonarcloud.io/component_measures?id=json-rpc-client&metric=coverage&view=list) [![](https://img.shields.io/sonar/violations/json-rpc-client?format=long&server=https%3A%2F%2Fsonarcloud.io&style=flat-square)](https://sonarcloud.io/project/issues?id=json-rpc-client&resolved=false) |
+| Build Status | | [![](https://img.shields.io/azure-devops/build/alexanderkozlenko/github-pipelines/2?label=master&style=flat-square)](https://dev.azure.com/alexanderkozlenko/github-pipelines/_build?definitionId=2&_a=summary) |
 
 ## Project Details
 
