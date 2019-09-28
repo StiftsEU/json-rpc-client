@@ -1,0 +1,5 @@
+<linker>
+  <assembly fullname="Anemonis.JsonRpc.ServiceClient">
+    <type fullname="Anemonis.JsonRpc.ServiceClient.JsonRpcClientProxy" />
+  </assembly>
+</linker>

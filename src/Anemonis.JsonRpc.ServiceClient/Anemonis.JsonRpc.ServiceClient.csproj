@@ -12,6 +12,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <EmbeddedResource Include="ILLinkTrim.xml" />
     <None Update="Properties\PackageIcon.png">
       <Pack>true</Pack>
       <PackagePath>PackageIcon.png</PackagePath>
