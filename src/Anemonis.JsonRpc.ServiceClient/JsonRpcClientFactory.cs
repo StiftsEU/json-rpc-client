@@ -211,6 +211,11 @@ namespace Anemonis.JsonRpc.ServiceClient
 
             foreach (var method in interfaceType.GetMethods())
             {
+                if (method.IsStatic)
+                {
+                    continue;
+                }
+
                 var methodParameters = method.GetParameters();
                 var methodKey = new MethodInfoKey(method.Name, methodParameters);
 
