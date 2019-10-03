@@ -61,8 +61,8 @@ namespace Anemonis.JsonRpc.ServiceClient
 
         private static void ValidateUriScheme(string scheme)
         {
-            if ((string.Compare(scheme, "HTTP", StringComparison.OrdinalIgnoreCase) != 0) &&
-                (string.Compare(scheme, "HTTPS", StringComparison.OrdinalIgnoreCase) != 0))
+            if ((string.Compare(scheme, Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase) != 0) &&
+                (string.Compare(scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase) != 0))
             {
                 throw new FormatException(Strings.GetString("client.uri.invalid_format"));
             }
