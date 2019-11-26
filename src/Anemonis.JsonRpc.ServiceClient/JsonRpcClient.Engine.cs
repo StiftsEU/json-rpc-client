@@ -21,7 +21,6 @@ namespace Anemonis.JsonRpc.ServiceClient
 {
     public partial class JsonRpcClient
     {
-        private const int _streamBufferSize = 1024;
         private const int _messageBufferSize = 64;
 
         private static readonly IReadOnlyDictionary<string, Encoding> _supportedEncodings = CreateSupportedEncodings();
@@ -249,10 +248,7 @@ namespace Anemonis.JsonRpc.ServiceClient
 
                                         try
                                         {
-                                            using (var streamReader = new StreamReader(responseStream, responseEncoding, false, _streamBufferSize, true))
-                                            {
-                                                responseData = await _jsonRpcSerializer.DeserializeResponseDataAsync(streamReader, cancellationToken).ConfigureAwait(false);
-                                            }
+                                            responseData = await _jsonRpcSerializer.DeserializeResponseDataAsync(responseStream, responseEncoding, cancellationToken).ConfigureAwait(false);
                                         }
                                         catch (JsonException e)
                                         {
@@ -392,10 +388,7 @@ namespace Anemonis.JsonRpc.ServiceClient
 
                                         try
                                         {
-                                            using (var streamReader = new StreamReader(responseStream, responseEncoding, false, _streamBufferSize, true))
-                                            {
-                                                responseData = await _jsonRpcSerializer.DeserializeResponseDataAsync(streamReader, cancellationToken).ConfigureAwait(false);
-                                            }
+                                            responseData = await _jsonRpcSerializer.DeserializeResponseDataAsync(responseStream, responseEncoding, cancellationToken).ConfigureAwait(false);
                                         }
                                         catch (JsonException e)
                                         {
