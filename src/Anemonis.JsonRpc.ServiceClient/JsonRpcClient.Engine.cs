@@ -24,9 +24,15 @@ namespace Anemonis.JsonRpc.ServiceClient
         private const int _messageBufferSize = 64;
 
         private static readonly IReadOnlyDictionary<string, Encoding> _supportedEncodings = CreateSupportedEncodings();
-        private static readonly MediaTypeHeaderValue _mediaTypeHeaderValue = MediaTypeWithQualityHeaderValue.Parse("application/json; charset=utf-8");
-        private static readonly MediaTypeWithQualityHeaderValue _mediaTypeWithQualityHeaderValue = MediaTypeWithQualityHeaderValue.Parse("application/json; charset=utf-8");
-        private static readonly StringWithQualityHeaderValue _brotliEncodingHeaderValue = new StringWithQualityHeaderValue("br");
+
+        private static readonly MediaTypeHeaderValue _contentTypeHeaderValue =
+            MediaTypeWithQualityHeaderValue.Parse($"{JsonRpcTransport.MediaType}; charset={JsonRpcTransport.Charset}");
+        private static readonly MediaTypeWithQualityHeaderValue _acceptHeaderValue =
+            MediaTypeWithQualityHeaderValue.Parse(JsonRpcTransport.MediaType);
+        private static readonly StringWithQualityHeaderValue _acceptCharsetHeaderValue =
+            StringWithQualityHeaderValue.Parse(JsonRpcTransport.Charset);
+        private static readonly StringWithQualityHeaderValue _brotliEncodingHeaderValue =
+            new StringWithQualityHeaderValue("br");
 
         private readonly JsonRpcContractResolver _jsonRpcContractResolver = new JsonRpcContractResolver();
         private readonly JsonRpcSerializer _jsonRpcSerializer;
@@ -110,8 +116,11 @@ namespace Anemonis.JsonRpc.ServiceClient
             }
 
             message.Headers.Accept.Clear();
-            message.Headers.Accept.Add(_mediaTypeWithQualityHeaderValue);
-            message.Content.Headers.ContentType = _mediaTypeHeaderValue;
+            message.Headers.Accept.Add(_acceptHeaderValue);
+            message.Headers.AcceptCharset.Clear();
+            message.Headers.AcceptCharset.Add(_acceptCharsetHeaderValue);
+            message.Headers.Date = DateTime.UtcNow;
+            message.Content.Headers.ContentType = _contentTypeHeaderValue;
         }
 
         private void InternalVisitHttpResponseMessage(HttpResponseMessage message, out Encoding encoding)
@@ -124,7 +133,7 @@ namespace Anemonis.JsonRpc.ServiceClient
                 {
                     throw new JsonRpcProtocolException(message.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
                 }
-                if (!contentTypeHeaderValue.MediaType.Equals(_mediaTypeHeaderValue.MediaType, StringComparison.OrdinalIgnoreCase))
+                if (!contentTypeHeaderValue.MediaType.Equals(_contentTypeHeaderValue.MediaType, StringComparison.OrdinalIgnoreCase))
                 {
                     throw new JsonRpcProtocolException(message.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
                 }

@@ -907,7 +907,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
 
                 Assert.IsNotNull(requestAcceptHeader);
 
-                CollectionAssert.Contains(requestAcceptHeader.ToArray(), MediaTypeWithQualityHeaderValue.Parse("application/json; charset=utf-8"));
+                CollectionAssert.Contains(requestAcceptHeader.ToArray(), MediaTypeWithQualityHeaderValue.Parse("application/json"));
             }
         }
 
@@ -939,7 +939,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
                 var result = await client.InvokeAsync<long>("m", 1L);
 
                 Assert.IsNotNull(requestAcceptHeader);
-                CollectionAssert.Contains(requestAcceptHeader.ToArray(), MediaTypeWithQualityHeaderValue.Parse("application/json; charset=utf-8"));
+                CollectionAssert.Contains(requestAcceptHeader.ToArray(), MediaTypeWithQualityHeaderValue.Parse("application/json"));
                 Assert.AreEqual(1L, result);
             }
         }
@@ -973,7 +973,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
                     client.InvokeAsync<long, long>("m", 1L));
 
                 Assert.IsNotNull(requestAcceptHeader);
-                CollectionAssert.Contains(requestAcceptHeader.ToArray(), MediaTypeWithQualityHeaderValue.Parse("application/json; charset=utf-8"));
+                CollectionAssert.Contains(requestAcceptHeader.ToArray(), MediaTypeWithQualityHeaderValue.Parse("application/json"));
                 Assert.AreEqual(1L, exception.Code);
                 Assert.AreEqual("m", exception.Message);
                 Assert.IsTrue(exception.HasErrorData);
