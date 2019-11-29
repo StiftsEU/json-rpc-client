@@ -23,8 +23,6 @@ namespace Anemonis.JsonRpc.ServiceClient
     {
         private const int _messageBufferSize = 64;
 
-        private static readonly IReadOnlyDictionary<string, Encoding> _supportedEncodings = CreateSupportedEncodings();
-
         private static readonly MediaTypeHeaderValue _contentTypeHeaderValue =
             MediaTypeWithQualityHeaderValue.Parse($"{JsonRpcTransport.MediaType}; charset={JsonRpcTransport.Charset}");
         private static readonly MediaTypeWithQualityHeaderValue _acceptHeaderValue =
@@ -71,16 +69,6 @@ namespace Anemonis.JsonRpc.ServiceClient
             {
                 throw new FormatException(Strings.GetString("client.uri.invalid_format"));
             }
-        }
-
-        private static IReadOnlyDictionary<string, Encoding> CreateSupportedEncodings()
-        {
-            return new Dictionary<string, Encoding>(StringComparer.OrdinalIgnoreCase)
-            {
-                [Encoding.UTF8.WebName] = new UTF8Encoding(false, true),
-                [Encoding.Unicode.WebName] = new UnicodeEncoding(false, false, true),
-                [Encoding.UTF32.WebName] = new UTF32Encoding(false, false, true)
-            };
         }
 
         private static bool CheckHttpContentEncoding(HttpResponseMessage httpResponse, string encoding)
@@ -137,7 +125,7 @@ namespace Anemonis.JsonRpc.ServiceClient
                 {
                     throw new JsonRpcProtocolException(message.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
                 }
-                if (!_supportedEncodings.TryGetValue(contentTypeHeaderValue.CharSet ?? Encoding.UTF8.WebName, out encoding))
+                if (!JsonRpcTransport.CharsetEncodings.TryGetValue(contentTypeHeaderValue.CharSet ?? JsonRpcTransport.Charset, out encoding))
                 {
                     throw new JsonRpcProtocolException(message.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
                 }
