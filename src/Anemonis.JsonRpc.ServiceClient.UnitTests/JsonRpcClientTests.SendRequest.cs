@@ -1091,5 +1091,51 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
                 Assert.AreEqual(1L, result);
             }
         }
+
+        [TestMethod]
+        public async Task InvokeAsyncWhenHUserAgentIsPresent()
+        {
+            var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
+            {
+                Assert.IsTrue(request.Headers.Contains("User-Agent"));
+
+                var message = new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.NoContent
+                };
+
+                return Task.FromResult(message);
+            });
+
+            using (var client = new TestJsonRpcClient(handler))
+            {
+                client.AddUserAgentHeader = true;
+
+                await client.InvokeAsync("m");
+            }
+        }
+
+        [TestMethod]
+        public async Task InvokeAsyncWhenHUserAgentIsNotPresent()
+        {
+            var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
+            {
+                Assert.IsFalse(request.Headers.Contains("User-Agent"));
+
+                var message = new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.NoContent
+                };
+
+                return Task.FromResult(message);
+            });
+
+            using (var client = new TestJsonRpcClient(handler))
+            {
+                client.AddUserAgentHeader = false;
+
+                await client.InvokeAsync("m");
+            }
+        }
     }
 }

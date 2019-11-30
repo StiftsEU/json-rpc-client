@@ -3,6 +3,8 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 namespace Anemonis.JsonRpc.ServiceClient.UnitTests.TestStubs
 {
     internal sealed class TestHttpHandler : HttpMessageHandler
@@ -20,6 +22,10 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests.TestStubs
             {
                 throw new InvalidOperationException("Request processing is not available");
             }
+
+            Assert.IsTrue(request.Headers.Contains("Accept"));
+            Assert.IsTrue(request.Headers.Contains("Accept-Charset"));
+            Assert.IsTrue(request.Headers.Contains("Date"));
 
             return _handler.Invoke(request);
         }

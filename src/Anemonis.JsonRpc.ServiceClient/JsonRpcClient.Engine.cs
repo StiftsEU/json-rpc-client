@@ -7,6 +7,7 @@ using System.IO.Compression;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,19 +24,16 @@ namespace Anemonis.JsonRpc.ServiceClient
     {
         private const int _messageBufferSize = 64;
 
-        private static readonly MediaTypeHeaderValue _contentTypeHeaderValue =
-            MediaTypeWithQualityHeaderValue.Parse($"{JsonRpcTransport.MediaType}; charset={JsonRpcTransport.Charset}");
-        private static readonly MediaTypeWithQualityHeaderValue _acceptHeaderValue =
-            MediaTypeWithQualityHeaderValue.Parse(JsonRpcTransport.MediaType);
-        private static readonly StringWithQualityHeaderValue _acceptCharsetHeaderValue =
-            StringWithQualityHeaderValue.Parse(JsonRpcTransport.Charset);
-        private static readonly StringWithQualityHeaderValue _brotliEncodingHeaderValue =
-            new StringWithQualityHeaderValue("br");
+        private static readonly StringWithQualityHeaderValue _brotliEncodingHeaderValue = new StringWithQualityHeaderValue("br");
+        private static readonly string _contentTypeHeaderValue = $"{JsonRpcTransport.MediaType}; charset={JsonRpcTransport.Charset}";
+        private static readonly string _userAgentHeaderValue = CreateUserAgentHeaderValue();
 
         private readonly JsonRpcContractResolver _jsonRpcContractResolver = new JsonRpcContractResolver();
         private readonly JsonRpcSerializer _jsonRpcSerializer;
         private readonly Uri _serviceUri;
         private readonly HttpMessageInvoker _httpInvoker;
+
+        private bool _addUserAgentHeader = true;
 
         private static JsonSerializer CreateJsonSerializer()
         {
@@ -47,6 +45,13 @@ namespace Anemonis.JsonRpc.ServiceClient
             return JsonSerializer.CreateDefault(settings);
         }
 
+        private static string CreateUserAgentHeaderValue()
+        {
+            var assemblyName = Assembly.GetExecutingAssembly().GetName();
+
+            return $"{nameof(Anemonis)}/{assemblyName.Version.ToString(2)} (nuget:{assemblyName.Name})";
+        }
+
         private static HttpMessageInvoker CreateHttpInvoker()
         {
             var httpHandler = new HttpClientHandler
@@ -55,11 +60,7 @@ namespace Anemonis.JsonRpc.ServiceClient
                 AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
             };
 
-            var httpClient = new HttpClient(httpHandler);
-
-            httpClient.DefaultRequestHeaders.ExpectContinue = false;
-
-            return httpClient;
+            return new HttpClient(httpHandler);
         }
 
         private static void ValidateUriScheme(string scheme)
@@ -98,17 +99,23 @@ namespace Anemonis.JsonRpc.ServiceClient
             {
                 throw new InvalidOperationException(Strings.GetString("client.http_request_content.invalid_value"));
             }
+
+            message.Content.Headers.Add("Content-Type", _contentTypeHeaderValue);
+
             if (!message.Headers.AcceptEncoding.Contains(_brotliEncodingHeaderValue))
             {
                 message.Headers.AcceptEncoding.Add(_brotliEncodingHeaderValue);
             }
 
-            message.Headers.Accept.Clear();
-            message.Headers.Accept.Add(_acceptHeaderValue);
-            message.Headers.AcceptCharset.Clear();
-            message.Headers.AcceptCharset.Add(_acceptCharsetHeaderValue);
             message.Headers.Date = DateTime.UtcNow;
-            message.Content.Headers.ContentType = _contentTypeHeaderValue;
+            message.Headers.ExpectContinue = false;
+            message.Headers.Add("Accept", JsonRpcTransport.MediaType);
+            message.Headers.Add("Accept-Charset", JsonRpcTransport.Charset);
+
+            if (_addUserAgentHeader)
+            {
+                message.Headers.Add("User-Agent", _userAgentHeaderValue);
+            }
         }
 
         private void InternalVisitHttpResponseMessage(HttpResponseMessage message, out Encoding encoding)
@@ -121,7 +128,7 @@ namespace Anemonis.JsonRpc.ServiceClient
                 {
                     throw new JsonRpcProtocolException(message.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
                 }
-                if (!contentTypeHeaderValue.MediaType.Equals(_contentTypeHeaderValue.MediaType, StringComparison.OrdinalIgnoreCase))
+                if (!contentTypeHeaderValue.MediaType.Equals(JsonRpcTransport.MediaType, StringComparison.OrdinalIgnoreCase))
                 {
                     throw new JsonRpcProtocolException(message.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
                 }
@@ -504,6 +511,13 @@ namespace Anemonis.JsonRpc.ServiceClient
         protected Uri ServiceUri
         {
             get => _serviceUri;
+        }
+
+        /// <summary>Gets or sets whether the default "User-Agent" header should be included in each request (defaults to <see langword="true" />).</summary>
+        public bool AddUserAgentHeader
+        {
+            get => _addUserAgentHeader;
+            set => _addUserAgentHeader = value;
         }
     }
 }
