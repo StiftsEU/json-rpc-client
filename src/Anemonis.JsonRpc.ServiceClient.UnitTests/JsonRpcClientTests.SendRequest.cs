@@ -14,7 +14,9 @@ using Anemonis.Resources;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-#pragma warning disable IDE0034, IDE0039, IDE0067
+#pragma warning disable IDE0034
+#pragma warning disable IDE0039
+#pragma warning disable IDE0067
 
 namespace Anemonis.JsonRpc.ServiceClient.UnitTests
 {
