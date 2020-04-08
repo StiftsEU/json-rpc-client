@@ -151,7 +151,7 @@ namespace Anemonis.JsonRpc.ServiceClient
             Dispose(false);
         }
 
-        /// <summary>Releases all resources used by the current instance of the <see cref="JsonRpcClient" />.</summary>
+        /// <inheritdoc />
         public void Dispose()
         {
             Dispose(true);
