@@ -18,7 +18,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests.TestStubs
 
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            if (_handler == null)
+            if (_handler is null)
             {
                 throw new InvalidOperationException("Request processing is not available");
             }

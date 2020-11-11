@@ -24,15 +24,15 @@ namespace Anemonis.JsonRpc.ServiceClient
         /// <exception cref="FormatException"><paramref name="serviceUri" /> is relative, or has invalid scheme, or is not correctly formed.</exception>
         public JsonRpcClient(string serviceUri, JsonSerializer jsonSerializer, HttpMessageInvoker httpInvoker, JsonRpcCompatibilityLevel compatibilityLevel = default)
         {
-            if (serviceUri == null)
+            if (serviceUri is null)
             {
                 throw new ArgumentNullException(nameof(serviceUri));
             }
-            if (jsonSerializer == null)
+            if (jsonSerializer is null)
             {
                 throw new ArgumentNullException(nameof(jsonSerializer));
             }
-            if (httpInvoker == null)
+            if (httpInvoker is null)
             {
                 throw new ArgumentNullException(nameof(httpInvoker));
             }
@@ -41,9 +41,9 @@ namespace Anemonis.JsonRpc.ServiceClient
                 throw new FormatException(Strings.GetString("client.uri.invalid_format"));
             }
 
-            _serviceUri = new Uri(serviceUri, UriKind.Absolute);
+            _serviceUri = new(serviceUri, UriKind.Absolute);
             _httpInvoker = httpInvoker;
-            _jsonRpcSerializer = new JsonRpcSerializer(_jsonRpcContractResolver, jsonSerializer, compatibilityLevel);
+            _jsonRpcSerializer = new(_jsonRpcContractResolver, jsonSerializer, compatibilityLevel);
 
             ValidateUriScheme(_serviceUri.Scheme);
         }
@@ -89,15 +89,15 @@ namespace Anemonis.JsonRpc.ServiceClient
         /// <exception cref="ArgumentNullException"><paramref name="serviceUri" />, <paramref name="jsonSerializer" />, or <paramref name="httpInvoker" /> is <see langword="null" />.</exception>
         public JsonRpcClient(Uri serviceUri, JsonSerializer jsonSerializer, HttpMessageInvoker httpInvoker, JsonRpcCompatibilityLevel compatibilityLevel = default)
         {
-            if (serviceUri == null)
+            if (serviceUri is null)
             {
                 throw new ArgumentNullException(nameof(serviceUri));
             }
-            if (jsonSerializer == null)
+            if (jsonSerializer is null)
             {
                 throw new ArgumentNullException(nameof(jsonSerializer));
             }
-            if (httpInvoker == null)
+            if (httpInvoker is null)
             {
                 throw new ArgumentNullException(nameof(httpInvoker));
             }
@@ -108,7 +108,7 @@ namespace Anemonis.JsonRpc.ServiceClient
 
             _serviceUri = serviceUri;
             _httpInvoker = httpInvoker;
-            _jsonRpcSerializer = new JsonRpcSerializer(_jsonRpcContractResolver, jsonSerializer, compatibilityLevel);
+            _jsonRpcSerializer = new(_jsonRpcContractResolver, jsonSerializer, compatibilityLevel);
 
             ValidateUriScheme(_serviceUri.Scheme);
         }
@@ -180,7 +180,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public Task InvokeAsync(string method, CancellationToken cancellationToken = default)
         {
-            if (method == null)
+            if (method is null)
             {
                 throw new ArgumentNullException(nameof(method));
             }
@@ -209,7 +209,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public Task InvokeAsync(string method, IReadOnlyList<object> parameters, CancellationToken cancellationToken = default)
         {
-            if (method == null)
+            if (method is null)
             {
                 throw new ArgumentNullException(nameof(method));
             }
@@ -217,7 +217,7 @@ namespace Anemonis.JsonRpc.ServiceClient
             {
                 throw new ArgumentException(Strings.GetString("invoke.method.invalid_name"), nameof(method));
             }
-            if (parameters == null)
+            if (parameters is null)
             {
                 throw new ArgumentNullException(nameof(parameters));
             }
@@ -242,7 +242,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public Task InvokeAsync(string method, IReadOnlyDictionary<string, object> parameters, CancellationToken cancellationToken = default)
         {
-            if (method == null)
+            if (method is null)
             {
                 throw new ArgumentNullException(nameof(method));
             }
@@ -250,7 +250,7 @@ namespace Anemonis.JsonRpc.ServiceClient
             {
                 throw new ArgumentException(Strings.GetString("invoke.method.invalid_name"), nameof(method));
             }
-            if (parameters == null)
+            if (parameters is null)
             {
                 throw new ArgumentNullException(nameof(parameters));
             }
@@ -276,7 +276,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<TResult> InvokeAsync<TResult>(string method, CancellationToken cancellationToken = default)
         {
-            if (method == null)
+            if (method is null)
             {
                 throw new ArgumentNullException(nameof(method));
             }
@@ -308,7 +308,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<TResult> InvokeAsync<TResult>(string method, IReadOnlyList<object> parameters, CancellationToken cancellationToken = default)
         {
-            if (method == null)
+            if (method is null)
             {
                 throw new ArgumentNullException(nameof(method));
             }
@@ -316,7 +316,7 @@ namespace Anemonis.JsonRpc.ServiceClient
             {
                 throw new ArgumentException(Strings.GetString("invoke.method.invalid_name"), nameof(method));
             }
-            if (parameters == null)
+            if (parameters is null)
             {
                 throw new ArgumentNullException(nameof(parameters));
             }
@@ -344,7 +344,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<TResult> InvokeAsync<TResult>(string method, IReadOnlyDictionary<string, object> parameters, CancellationToken cancellationToken = default)
         {
-            if (method == null)
+            if (method is null)
             {
                 throw new ArgumentNullException(nameof(method));
             }
@@ -352,7 +352,7 @@ namespace Anemonis.JsonRpc.ServiceClient
             {
                 throw new ArgumentException(Strings.GetString("invoke.method.invalid_name"), nameof(method));
             }
-            if (parameters == null)
+            if (parameters is null)
             {
                 throw new ArgumentNullException(nameof(parameters));
             }
@@ -379,7 +379,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<TResult> InvokeAsync<TResult>(string method, JsonRpcId requestId, CancellationToken cancellationToken = default)
         {
-            if (method == null)
+            if (method is null)
             {
                 throw new ArgumentNullException(nameof(method));
             }
@@ -415,7 +415,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<TResult> InvokeAsync<TResult>(string method, JsonRpcId requestId, IReadOnlyList<object> parameters, CancellationToken cancellationToken = default)
         {
-            if (method == null)
+            if (method is null)
             {
                 throw new ArgumentNullException(nameof(method));
             }
@@ -427,7 +427,7 @@ namespace Anemonis.JsonRpc.ServiceClient
             {
                 throw new ArgumentException(Strings.GetString("invoke.identifier.invalid_value"), nameof(requestId));
             }
-            if (parameters == null)
+            if (parameters is null)
             {
                 throw new ArgumentNullException(nameof(parameters));
             }
@@ -455,7 +455,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<TResult> InvokeAsync<TResult>(string method, JsonRpcId requestId, IReadOnlyDictionary<string, object> parameters, CancellationToken cancellationToken = default)
         {
-            if (method == null)
+            if (method is null)
             {
                 throw new ArgumentNullException(nameof(method));
             }
@@ -467,7 +467,7 @@ namespace Anemonis.JsonRpc.ServiceClient
             {
                 throw new ArgumentException(Strings.GetString("invoke.identifier.invalid_value"), nameof(requestId));
             }
-            if (parameters == null)
+            if (parameters is null)
             {
                 throw new ArgumentNullException(nameof(parameters));
             }
@@ -495,7 +495,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<TResult> InvokeAsync<TResult, TErrorData>(string method, CancellationToken cancellationToken = default)
         {
-            if (method == null)
+            if (method is null)
             {
                 throw new ArgumentNullException(nameof(method));
             }
@@ -528,7 +528,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<TResult> InvokeAsync<TResult, TErrorData>(string method, IReadOnlyList<object> parameters, CancellationToken cancellationToken = default)
         {
-            if (method == null)
+            if (method is null)
             {
                 throw new ArgumentNullException(nameof(method));
             }
@@ -536,7 +536,7 @@ namespace Anemonis.JsonRpc.ServiceClient
             {
                 throw new ArgumentException(Strings.GetString("invoke.method.invalid_name"), nameof(method));
             }
-            if (parameters == null)
+            if (parameters is null)
             {
                 throw new ArgumentNullException(nameof(parameters));
             }
@@ -565,7 +565,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<TResult> InvokeAsync<TResult, TErrorData>(string method, IReadOnlyDictionary<string, object> parameters, CancellationToken cancellationToken = default)
         {
-            if (method == null)
+            if (method is null)
             {
                 throw new ArgumentNullException(nameof(method));
             }
@@ -573,7 +573,7 @@ namespace Anemonis.JsonRpc.ServiceClient
             {
                 throw new ArgumentException(Strings.GetString("invoke.method.invalid_name"), nameof(method));
             }
-            if (parameters == null)
+            if (parameters is null)
             {
                 throw new ArgumentNullException(nameof(parameters));
             }
@@ -601,7 +601,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<TResult> InvokeAsync<TResult, TErrorData>(string method, JsonRpcId requestId, CancellationToken cancellationToken = default)
         {
-            if (method == null)
+            if (method is null)
             {
                 throw new ArgumentNullException(nameof(method));
             }
@@ -638,7 +638,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<TResult> InvokeAsync<TResult, TErrorData>(string method, JsonRpcId requestId, IReadOnlyList<object> parameters, CancellationToken cancellationToken = default)
         {
-            if (method == null)
+            if (method is null)
             {
                 throw new ArgumentNullException(nameof(method));
             }
@@ -650,7 +650,7 @@ namespace Anemonis.JsonRpc.ServiceClient
             {
                 throw new ArgumentException(Strings.GetString("invoke.identifier.invalid_value"), nameof(requestId));
             }
-            if (parameters == null)
+            if (parameters is null)
             {
                 throw new ArgumentNullException(nameof(parameters));
             }
@@ -679,7 +679,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<TResult> InvokeAsync<TResult, TErrorData>(string method, JsonRpcId requestId, IReadOnlyDictionary<string, object> parameters, CancellationToken cancellationToken = default)
         {
-            if (method == null)
+            if (method is null)
             {
                 throw new ArgumentNullException(nameof(method));
             }
@@ -691,7 +691,7 @@ namespace Anemonis.JsonRpc.ServiceClient
             {
                 throw new ArgumentException(Strings.GetString("invoke.identifier.invalid_value"), nameof(requestId));
             }
-            if (parameters == null)
+            if (parameters is null)
             {
                 throw new ArgumentNullException(nameof(parameters));
             }

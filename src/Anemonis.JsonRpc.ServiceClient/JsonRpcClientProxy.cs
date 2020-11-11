@@ -23,7 +23,7 @@ namespace Anemonis.JsonRpc.ServiceClient
 
         public static Dictionary<string, object> CreateParametersT2(int capacity)
         {
-            return new Dictionary<string, object>(capacity, StringComparer.Ordinal);
+            return new(capacity, StringComparer.Ordinal);
         }
 
         public Task InvokeT000Async(string method)

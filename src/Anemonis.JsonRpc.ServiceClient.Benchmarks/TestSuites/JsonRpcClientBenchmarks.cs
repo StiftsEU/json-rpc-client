@@ -13,37 +13,37 @@ namespace Anemonis.JsonRpc.ServiceClient.Benchmarks.TestSuites
 {
     public class JsonRpcClientBenchmarks
     {
-        private static readonly IReadOnlyDictionary<string, byte[]> _resources = CreateResourceDictionary();
-        private static readonly IReadOnlyList<object> _params0 = CreateParametersByPosition();
-        private static readonly IReadOnlyDictionary<string, object> _params1 = CreateParametersByName();
+        private static readonly Dictionary<string, byte[]> s_resources = CreateResourceDictionary();
+        private static readonly List<object> s_params0 = CreateParametersByPosition();
+        private static readonly Dictionary<string, object> s_params1 = CreateParametersByName();
 
         private readonly JsonRpcClient _clientB0I0E0D0 =
             new JsonRpcClient("https://localhost", new HttpClient(new JsonRpcClientBenchmarkHandler()));
         private readonly JsonRpcClient _clientB0I1E0D0 =
-            new JsonRpcClient("https://localhost", new HttpClient(new JsonRpcClientBenchmarkHandler(_resources["res_b0i1e0d0"])));
+            new JsonRpcClient("https://localhost", new HttpClient(new JsonRpcClientBenchmarkHandler(s_resources["res_b0i1e0d0"])));
         private readonly JsonRpcClient _clientB0I1E1D0 =
-            new JsonRpcClient("https://localhost", new HttpClient(new JsonRpcClientBenchmarkHandler(_resources["res_b0i1e1d0"])));
+            new JsonRpcClient("https://localhost", new HttpClient(new JsonRpcClientBenchmarkHandler(s_resources["res_b0i1e1d0"])));
 
-        private static IReadOnlyDictionary<string, byte[]> CreateResourceDictionary()
+        private static Dictionary<string, byte[]> CreateResourceDictionary()
         {
-            return new Dictionary<string, byte[]>(StringComparer.Ordinal)
+            return new(StringComparer.Ordinal)
             {
                 ["res_b0i1e1d0"] = Encoding.UTF8.GetBytes(EmbeddedResourceManager.GetString($"Assets.res_b0i1e1d0.json")),
                 ["res_b0i1e0d0"] = Encoding.UTF8.GetBytes(EmbeddedResourceManager.GetString($"Assets.res_b0i1e0d0.json")),
             };
         }
 
-        private static IReadOnlyList<object> CreateParametersByPosition()
+        private static List<object> CreateParametersByPosition()
         {
-            return new object[]
+            return new()
             {
                 1L
             };
         }
 
-        private static IReadOnlyDictionary<string, object> CreateParametersByName()
+        private static Dictionary<string, object> CreateParametersByName()
         {
-            return new Dictionary<string, object>(2, StringComparer.Ordinal)
+            return new(2, StringComparer.Ordinal)
             {
                 ["p"] = 1L
             };
@@ -58,13 +58,13 @@ namespace Anemonis.JsonRpc.ServiceClient.Benchmarks.TestSuites
         [Benchmark(Description = "InvokeAsync-ID=N-PARAMS=P-ERROR=N")]
         public async Task InvokeAsyncB0I0P1E0D0()
         {
-            await _clientB0I0E0D0.InvokeAsync("m", _params0).ConfigureAwait(false);
+            await _clientB0I0E0D0.InvokeAsync("m", s_params0).ConfigureAwait(false);
         }
 
         [Benchmark(Description = "InvokeAsync-ID=N-PARAMS=N-ERROR=N")]
         public async Task InvokeAsyncB0I0P2E0D0()
         {
-            await _clientB0I0E0D0.InvokeAsync("m", _params1).ConfigureAwait(false);
+            await _clientB0I0E0D0.InvokeAsync("m", s_params1).ConfigureAwait(false);
         }
 
         [Benchmark(Description = "InvokeAsync-ID=Y-PARAMS=U-ERROR=N")]
@@ -76,13 +76,13 @@ namespace Anemonis.JsonRpc.ServiceClient.Benchmarks.TestSuites
         [Benchmark(Description = "InvokeAsync-ID=Y-PARAMS=P-ERROR=N")]
         public async Task<long> InvokeAsyncB0I1P1E0D0()
         {
-            return await _clientB0I1E0D0.InvokeAsync<long>("m", 0L, _params0).ConfigureAwait(false);
+            return await _clientB0I1E0D0.InvokeAsync<long>("m", 0L, s_params0).ConfigureAwait(false);
         }
 
         [Benchmark(Description = "InvokeAsync-ID=Y-PARAMS=N-ERROR=N")]
         public async Task<long> InvokeAsyncB0I1P2E0D0()
         {
-            return await _clientB0I1E0D0.InvokeAsync<long>("m", 0L, _params1).ConfigureAwait(false);
+            return await _clientB0I1E0D0.InvokeAsync<long>("m", 0L, s_params1).ConfigureAwait(false);
         }
 
         [Benchmark(Description = "InvokeAsync-ID=Y-PARAMS=U-ERROR=Y")]
@@ -103,7 +103,7 @@ namespace Anemonis.JsonRpc.ServiceClient.Benchmarks.TestSuites
         {
             try
             {
-                return await _clientB0I1E1D0.InvokeAsync<long>("m", 0L, _params0).ConfigureAwait(false);
+                return await _clientB0I1E1D0.InvokeAsync<long>("m", 0L, s_params0).ConfigureAwait(false);
             }
             catch (JsonRpcServiceException)
             {
@@ -116,7 +116,7 @@ namespace Anemonis.JsonRpc.ServiceClient.Benchmarks.TestSuites
         {
             try
             {
-                return await _clientB0I1E1D0.InvokeAsync<long>("m", 0L, _params1).ConfigureAwait(false);
+                return await _clientB0I1E1D0.InvokeAsync<long>("m", 0L, s_params1).ConfigureAwait(false);
             }
             catch (JsonRpcServiceException)
             {

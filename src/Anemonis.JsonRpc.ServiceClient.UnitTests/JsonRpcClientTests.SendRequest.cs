@@ -16,7 +16,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 #pragma warning disable IDE0034
 #pragma warning disable IDE0039
-#pragma warning disable IDE0067
 
 namespace Anemonis.JsonRpc.ServiceClient.UnitTests
 {
@@ -1095,7 +1094,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         }
 
         [TestMethod]
-        public async Task InvokeAsyncWhenHUserAgentIsPresent()
+        public async Task InvokeAsyncWhenUserAgentIsPresent()
         {
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
             {
@@ -1118,7 +1117,7 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         }
 
         [TestMethod]
-        public async Task InvokeAsyncWhenHUserAgentIsNotPresent()
+        public async Task InvokeAsyncWhenUserAgentIsNotPresent()
         {
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
             {

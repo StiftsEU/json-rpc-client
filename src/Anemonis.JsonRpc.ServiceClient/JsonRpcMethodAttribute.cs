@@ -16,7 +16,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         /// <exception cref="ArgumentNullException"><paramref name="methodName" /> is <see langword="null" />.</exception>
         public JsonRpcMethodAttribute(string methodName)
         {
-            if (methodName == null)
+            if (methodName is null)
             {
                 throw new ArgumentNullException(nameof(methodName));
             }
@@ -36,7 +36,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         public JsonRpcMethodAttribute(string methodName, params int[] parameterPositions)
             : this(methodName)
         {
-            if (parameterPositions == null)
+            if (parameterPositions is null)
             {
                 throw new ArgumentNullException(nameof(parameterPositions));
             }
@@ -53,7 +53,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         public JsonRpcMethodAttribute(string methodName, params string[] parameterNames)
             : this(methodName)
         {
-            if (parameterNames == null)
+            if (parameterNames is null)
             {
                 throw new ArgumentNullException(nameof(parameterNames));
             }
@@ -70,7 +70,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         public JsonRpcMethodAttribute(string methodName, Type errorDataType)
             : this(methodName)
         {
-            if (errorDataType == null)
+            if (errorDataType is null)
             {
                 throw new ArgumentNullException(nameof(errorDataType));
             }
@@ -87,7 +87,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         public JsonRpcMethodAttribute(string methodName, Type errorDataType, params int[] parameterPositions)
             : this(methodName, errorDataType)
         {
-            if (parameterPositions == null)
+            if (parameterPositions is null)
             {
                 throw new ArgumentNullException(nameof(parameterPositions));
             }
@@ -105,7 +105,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         public JsonRpcMethodAttribute(string methodName, Type errorDataType, params string[] parameterNames)
             : this(methodName, errorDataType)
         {
-            if (parameterNames == null)
+            if (parameterNames is null)
             {
                 throw new ArgumentNullException(nameof(parameterNames));
             }

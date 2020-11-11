@@ -6,7 +6,7 @@ namespace Anemonis.JsonRpc.ServiceClient.Benchmarks.TestSuites
 {
     public class JsonRpcClientFactoryBenchmarks
     {
-        private static readonly JsonRpcClient _executor = new JsonRpcClient("https://localhost");
+        private readonly JsonRpcClient _executor = new JsonRpcClient("https://localhost");
 
         [Benchmark(Description = "Create-PARAMS=U-ERROR=N")]
         public object CreateP0E0D0()

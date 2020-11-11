@@ -17,19 +17,17 @@ using Anemonis.JsonRpc.ServiceClient.Resources;
 
 using Newtonsoft.Json;
 
-#pragma warning disable CA2000
-
 namespace Anemonis.JsonRpc.ServiceClient
 {
     public partial class JsonRpcClient
     {
-        private const int _messageBufferSize = 64;
+        private const int MessageBufferSize = 64;
 
-        private static readonly StringWithQualityHeaderValue _brotliEncodingHeaderValue = new StringWithQualityHeaderValue("br");
-        private static readonly string _contentTypeHeaderValue = $"{JsonRpcTransport.MediaType}; charset={JsonRpcTransport.Charset}";
-        private static readonly string _userAgentHeaderValue = CreateUserAgentHeaderValue();
+        private static readonly StringWithQualityHeaderValue s_brotliEncodingHeaderValue = new("br");
+        private static readonly string s_contentTypeHeaderValue = $"{JsonRpcTransport.MediaType}; charset={JsonRpcTransport.Charset}";
+        private static readonly string s_userAgentHeaderValue = CreateUserAgentHeaderValue();
 
-        private readonly JsonRpcContractResolver _jsonRpcContractResolver = new JsonRpcContractResolver();
+        private readonly JsonRpcContractResolver _jsonRpcContractResolver = new();
         private readonly JsonRpcSerializer _jsonRpcSerializer;
         private readonly Uri _serviceUri;
         private readonly HttpMessageInvoker _httpInvoker;
@@ -99,16 +97,16 @@ namespace Anemonis.JsonRpc.ServiceClient
         {
             VisitHttpRequestMessage(message);
 
-            if (message.Content == null)
+            if (message.Content is null)
             {
                 throw new InvalidOperationException(Strings.GetString("client.http_request_content.invalid_value"));
             }
 
-            message.Content.Headers.Add("Content-Type", _contentTypeHeaderValue);
+            message.Content.Headers.Add("Content-Type", s_contentTypeHeaderValue);
 
-            if (!message.Headers.AcceptEncoding.Contains(_brotliEncodingHeaderValue))
+            if (!message.Headers.AcceptEncoding.Contains(s_brotliEncodingHeaderValue))
             {
-                message.Headers.AcceptEncoding.Add(_brotliEncodingHeaderValue);
+                message.Headers.AcceptEncoding.Add(s_brotliEncodingHeaderValue);
             }
 
             message.Headers.Date = DateTime.UtcNow;
@@ -118,17 +116,17 @@ namespace Anemonis.JsonRpc.ServiceClient
 
             if (_addUserAgentHeader)
             {
-                message.Headers.Add("User-Agent", _userAgentHeaderValue);
+                message.Headers.Add("User-Agent", s_userAgentHeaderValue);
             }
         }
 
         private void InternalVisitHttpResponseMessage(HttpResponseMessage message, out Encoding encoding)
         {
-            if (message.Content != null)
+            if (message.StatusCode != HttpStatusCode.NoContent)
             {
-                var contentTypeHeaderValue = message.Content.Headers.ContentType;
+                var contentTypeHeaderValue = message.Content?.Headers.ContentType;
 
-                if (contentTypeHeaderValue == null)
+                if (contentTypeHeaderValue is null)
                 {
                     throw new JsonRpcProtocolException(message.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
                 }
@@ -181,7 +179,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         /// <returns>An instance of the <see cref="JsonRpcId" /> type.</returns>
         protected virtual JsonRpcId GetUniqueRequestId()
         {
-            return new JsonRpcId(Guid.NewGuid().ToString());
+            return new(Guid.NewGuid().ToString());
         }
 
         /// <summary>Sends the specified JSON-RPC request as an asynchronous operation.</summary>
@@ -195,14 +193,14 @@ namespace Anemonis.JsonRpc.ServiceClient
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         protected async Task<JsonRpcResponse> SendJsonRpcRequestAsync(JsonRpcRequest request, CancellationToken cancellationToken = default)
         {
-            if (request == null)
+            if (request is null)
             {
                 throw new ArgumentNullException(nameof(request));
             }
 
             var requestId = request.Id;
 
-            using (var requestStream = new MemoryStream(_messageBufferSize))
+            using (var requestStream = new MemoryStream(MessageBufferSize))
             {
                 try
                 {
@@ -217,7 +215,6 @@ namespace Anemonis.JsonRpc.ServiceClient
                     throw new JsonRpcClientException(Strings.GetString("invoke.params.invalid_values"), requestId, e);
                 }
 
-                cancellationToken.ThrowIfCancellationRequested();
                 requestStream.Position = 0L;
 
                 using (var httpRequest = new HttpRequestMessage(HttpMethod.Post, _serviceUri))
@@ -246,10 +243,9 @@ namespace Anemonis.JsonRpc.ServiceClient
 
                                     try
                                     {
-                                        responseStream = await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                                        cancellationToken.ThrowIfCancellationRequested();
+                                        responseStream = await httpResponse.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
 
-                                        if (CheckHttpContentEncoding(httpResponse, _brotliEncodingHeaderValue.Value))
+                                        if (CheckHttpContentEncoding(httpResponse, s_brotliEncodingHeaderValue.Value))
                                         {
                                             responseStream = new BrotliStream(responseStream, CompressionMode.Decompress);
                                         }
@@ -326,7 +322,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         protected async Task<IReadOnlyList<JsonRpcResponse>> SendJsonRpcRequestsAsync(IReadOnlyList<JsonRpcRequest> requests, CancellationToken cancellationToken = default)
         {
-            if (requests == null)
+            if (requests is null)
             {
                 throw new ArgumentNullException(nameof(requests));
             }
@@ -347,7 +343,7 @@ namespace Anemonis.JsonRpc.ServiceClient
                 }
             }
 
-            using (var requestStream = new MemoryStream(_messageBufferSize * requests.Count))
+            using (var requestStream = new MemoryStream(MessageBufferSize * requests.Count))
             {
                 try
                 {
@@ -362,7 +358,6 @@ namespace Anemonis.JsonRpc.ServiceClient
                     throw new JsonRpcClientException(Strings.GetString("invoke.params.invalid_values"), default, e);
                 }
 
-                cancellationToken.ThrowIfCancellationRequested();
                 requestStream.Position = 0L;
 
                 using (var httpRequest = new HttpRequestMessage(HttpMethod.Post, _serviceUri))
@@ -386,10 +381,9 @@ namespace Anemonis.JsonRpc.ServiceClient
 
                                     try
                                     {
-                                        responseStream = await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                                        cancellationToken.ThrowIfCancellationRequested();
+                                        responseStream = await httpResponse.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
 
-                                        if (CheckHttpContentEncoding(httpResponse, _brotliEncodingHeaderValue.Value))
+                                        if (CheckHttpContentEncoding(httpResponse, s_brotliEncodingHeaderValue.Value))
                                         {
                                             responseStream = new BrotliStream(responseStream, CompressionMode.Decompress);
                                         }

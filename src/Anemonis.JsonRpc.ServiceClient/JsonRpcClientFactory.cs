@@ -17,8 +17,8 @@ namespace Anemonis.JsonRpc.ServiceClient
     /// <summary>Represents a factory of interface-defined JSON-RPC client instances.</summary>
     public static partial class JsonRpcClientFactory
     {
-        private static readonly ConcurrentDictionary<Type, Type> _types = new ConcurrentDictionary<Type, Type>();
-        private static readonly ModuleBuilder _moduleBuilder = CreateModuleBuilder();
+        private static readonly ConcurrentDictionary<Type, Type> s_types = new();
+        private static readonly ModuleBuilder s_moduleBuilder = CreateModuleBuilder();
 
         /// <summary>Creates an instance of an interface-defined JSON-RPC client.</summary>
         /// <typeparam name="T">The type of the interface which defines JSON-RPC methods.</typeparam>
@@ -29,7 +29,7 @@ namespace Anemonis.JsonRpc.ServiceClient
         public static T Create<T>(JsonRpcClient executor)
             where T : class
         {
-            if (executor == null)
+            if (executor is null)
             {
                 throw new ArgumentNullException(nameof(executor));
             }
@@ -38,7 +38,7 @@ namespace Anemonis.JsonRpc.ServiceClient
                 throw new InvalidOperationException(Strings.GetString("factory.type_is_not_interface"));
             }
 
-            return (T)Activator.CreateInstance(_types.GetOrAdd(typeof(T), CreateType), executor);
+            return (T)Activator.CreateInstance(s_types.GetOrAdd(typeof(T), CreateType), executor);
         }
 
         /// <summary>Creates an instance of an interface-defined JSON-RPC client.</summary>
@@ -76,7 +76,7 @@ namespace Anemonis.JsonRpc.ServiceClient
             var proxyType = typeof(JsonRpcClientProxy);
             var typeName = $"{nameof(JsonRpcClient)}<{interfaceType.FullName}>";
             var typeAttributes = TypeAttributes.Sealed | TypeAttributes.NotPublic;
-            var typeBuilder = _moduleBuilder.DefineType(typeName, typeAttributes, typeof(JsonRpcClientProxy), new[] { interfaceType });
+            var typeBuilder = s_moduleBuilder.DefineType(typeName, typeAttributes, typeof(JsonRpcClientProxy), new[] { interfaceType });
             var methodAttributes = MethodAttributes.Virtual | MethodAttributes.Public;
             var parametersFactoryMethodT1 = proxyType.GetMethod(nameof(JsonRpcClientProxy.CreateParametersT1));
             var parametersFactoryMethodT2 = proxyType.GetMethod(nameof(JsonRpcClientProxy.CreateParametersT2));
@@ -98,7 +98,7 @@ namespace Anemonis.JsonRpc.ServiceClient
                 var contractParameterTypes = kvp.Value.Item3;
                 var contractHasCancellationToken = kvp.Value.Item4;
                 var methodName = kvp.Key.MethodName;
-                var methodReturnType = contractResultType == null ? typeof(Task) : typeof(Task<>).MakeGenericType(contractResultType);
+                var methodReturnType = contractResultType is null ? typeof(Task) : typeof(Task<>).MakeGenericType(contractResultType);
                 var methodParameterTypes = GetProxyMethodParameterTypes(contractParameterTypes, contractHasCancellationToken);
                 var methodBuilder = typeBuilder.DefineMethod(methodName, methodAttributes, methodReturnType, methodParameterTypes);
                 var methodEmitter = methodBuilder.GetILGenerator();
@@ -226,7 +226,7 @@ namespace Anemonis.JsonRpc.ServiceClient
 
                 var attribute = method.GetCustomAttribute<JsonRpcMethodAttribute>();
 
-                if (attribute == null)
+                if (attribute is null)
                 {
                     var exceptionMessage = string.Format(CultureInfo.CurrentCulture, Strings.GetString("factory.method.attribute_not_found"),
                         method.Name, interfaceType.FullName, interfaceType.Assembly.FullName);
@@ -392,7 +392,7 @@ namespace Anemonis.JsonRpc.ServiceClient
             var proxyType = typeof(JsonRpcClientProxy);
             var proxyMethodName = default(string);
 
-            if (resultType == null)
+            if (resultType is null)
             {
                 switch (contractAttribute.ParametersType)
                 {
@@ -423,7 +423,7 @@ namespace Anemonis.JsonRpc.ServiceClient
             }
             else
             {
-                if (contractAttribute.ErrorDataType == null)
+                if (contractAttribute.ErrorDataType is null)
                 {
                     switch (contractAttribute.ParametersType)
                     {
