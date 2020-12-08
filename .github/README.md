@@ -3,7 +3,7 @@
 A universal [JSON-RPC 2.0](http://www.jsonrpc.org/specification) service client based on the [JSON-RPC 2.0 Transport: HTTP](https://www.simple-is-better.org/json-rpc/transport_http.html) specification and the [Anemonis.JsonRpc](https://github.com/alexanderkozlenko/json-rpc)
  serializer.
 
-| [![](https://img.shields.io/gitter/room/nwjs/nw.js.svg?style=flat-square)](https://gitter.im/anemonis/json-rpc-client) | Release | Current |
+| | Release | Current |
 |---|---|---|
 | Artifacts | [![](https://img.shields.io/nuget/vpre/Anemonis.JsonRpc.ServiceClient.svg?style=flat-square)](https://www.nuget.org/packages/Anemonis.JsonRpc.ServiceClient) | [![](https://img.shields.io/myget/alexanderkozlenko/vpre/Anemonis.JsonRpc.ServiceClient.svg?label=myget&style=flat-square)](https://www.myget.org/feed/alexanderkozlenko/package/nuget/Anemonis.JsonRpc.ServiceClient) |
 | Code Health | | [![](https://img.shields.io/sonar/coverage/json-rpc-client?format=long&server=https%3A%2F%2Fsonarcloud.io&style=flat-square)](https://sonarcloud.io/component_measures?id=json-rpc-client&metric=coverage&view=list) [![](https://img.shields.io/sonar/violations/json-rpc-client?format=long&server=https%3A%2F%2Fsonarcloud.io&style=flat-square)](https://sonarcloud.io/project/issues?id=json-rpc-client&resolved=false) |
