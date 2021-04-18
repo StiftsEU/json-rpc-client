@@ -3,10 +3,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -23,7 +21,6 @@ namespace Anemonis.JsonRpc.ServiceClient
     {
         private const int MessageBufferSize = 64;
 
-        private static readonly StringWithQualityHeaderValue s_brotliEncodingHeaderValue = new("br");
         private static readonly string s_contentTypeHeaderValue = $"{JsonRpcTransport.MediaType}; charset={JsonRpcTransport.Charset}";
         private static readonly string s_userAgentHeaderValue = CreateUserAgentHeaderValue();
 
@@ -56,10 +53,10 @@ namespace Anemonis.JsonRpc.ServiceClient
 
         private static HttpMessageInvoker CreateHttpInvoker()
         {
-            var httpHandler = new HttpClientHandler
+            var httpHandler = new SocketsHttpHandler
             {
                 AllowAutoRedirect = false,
-                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+                AutomaticDecompression = DecompressionMethods.All
             };
 
             return new HttpClient(httpHandler);
@@ -74,25 +71,6 @@ namespace Anemonis.JsonRpc.ServiceClient
             }
         }
 
-        private static bool CheckHttpContentEncoding(HttpResponseMessage httpResponse, string encoding)
-        {
-            var contentEncodings = httpResponse.Content.Headers.ContentEncoding;
-
-            if (contentEncodings.Count == 0)
-            {
-                return false;
-            }
-
-            var outerContentEncoding = default(string);
-
-            foreach (var contentEncoding in contentEncodings)
-            {
-                outerContentEncoding = contentEncoding;
-            }
-
-            return string.Compare(outerContentEncoding, encoding, StringComparison.OrdinalIgnoreCase) == 0;
-        }
-
         private void InternalVisitHttpRequestMessage(HttpRequestMessage message)
         {
             VisitHttpRequestMessage(message);
@@ -103,11 +81,6 @@ namespace Anemonis.JsonRpc.ServiceClient
             }
 
             message.Content.Headers.Add("Content-Type", s_contentTypeHeaderValue);
-
-            if (!message.Headers.AcceptEncoding.Contains(s_brotliEncodingHeaderValue))
-            {
-                message.Headers.AcceptEncoding.Add(s_brotliEncodingHeaderValue);
-            }
 
             message.Headers.Date = DateTime.UtcNow;
             message.Headers.ExpectContinue = false;
@@ -245,11 +218,6 @@ namespace Anemonis.JsonRpc.ServiceClient
                                     {
                                         responseStream = await httpResponse.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
 
-                                        if (CheckHttpContentEncoding(httpResponse, s_brotliEncodingHeaderValue.Value))
-                                        {
-                                            responseStream = new BrotliStream(responseStream, CompressionMode.Decompress);
-                                        }
-
                                         try
                                         {
                                             responseData = await _jsonRpcSerializer.DeserializeResponseDataAsync(responseStream, responseEncoding, cancellationToken).ConfigureAwait(false);
@@ -382,11 +350,6 @@ namespace Anemonis.JsonRpc.ServiceClient
                                     try
                                     {
                                         responseStream = await httpResponse.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
-
-                                        if (CheckHttpContentEncoding(httpResponse, s_brotliEncodingHeaderValue.Value))
-                                        {
-                                            responseStream = new BrotliStream(responseStream, CompressionMode.Decompress);
-                                        }
 
                                         try
                                         {

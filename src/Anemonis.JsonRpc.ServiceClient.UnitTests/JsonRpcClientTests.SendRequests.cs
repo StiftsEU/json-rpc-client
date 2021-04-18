@@ -494,45 +494,6 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         }
 
         [TestMethod]
-        public async Task SendJsonRpcRequestsAsyncWithBrotliEncodedResponse()
-        {
-            var requests = new[]
-            {
-                new JsonRpcRequest(1L, "m"),
-                new JsonRpcRequest(2L, "m")
-            };
-
-            var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
-            {
-                var contentBytes = Encoding.UTF8.GetBytes(EmbeddedResourceManager.GetString("Assets.res_b1i1e0d0.json"));
-                var content = new ByteArrayContent(CompressionEncoder.Encode(contentBytes, "br"));
-
-                content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
-                content.Headers.ContentEncoding.Add("br");
-
-                var message = new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.OK,
-                    Content = content
-                };
-
-                return Task.FromResult(message);
-            });
-
-            using (var client = new TestJsonRpcClient(handler))
-            {
-                client.PublicContractResolver.AddResponseContract("m", new JsonRpcResponseContract(typeof(string)));
-                client.PublicContractResolver.AddResponseBinding(1L, "m");
-                client.PublicContractResolver.AddResponseBinding(2L, "m");
-
-                var responses = await client.PublicSendJsonRpcRequestsAsync(requests, default);
-
-                Assert.IsNotNull(responses);
-                Assert.AreEqual(2, responses.Count);
-            }
-        }
-
-        [TestMethod]
         public async Task SendJsonRpcRequestsAsyncWhenHUserAgentIsPresent()
         {
             var requests = new[]

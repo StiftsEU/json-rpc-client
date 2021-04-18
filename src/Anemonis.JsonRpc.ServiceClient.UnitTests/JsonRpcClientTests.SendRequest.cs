@@ -1066,34 +1066,6 @@ namespace Anemonis.JsonRpc.ServiceClient.UnitTests
         }
 
         [TestMethod]
-        public async Task InvokeAsyncWithBrotliEncodedResponse()
-        {
-            var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
-            {
-                var contentBytes = Encoding.UTF8.GetBytes(EmbeddedResourceManager.GetString("Assets.res_b0i1e0d0.json"));
-                var content = new ByteArrayContent(CompressionEncoder.Encode(contentBytes, "br"));
-
-                content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
-                content.Headers.ContentEncoding.Add("br");
-
-                var message = new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.OK,
-                    Content = content
-                };
-
-                return Task.FromResult(message);
-            });
-
-            using (var client = new TestJsonRpcClient(handler))
-            {
-                var result = await client.InvokeAsync<long>("m", 1L);
-
-                Assert.AreEqual(1L, result);
-            }
-        }
-
-        [TestMethod]
         public async Task InvokeAsyncWhenUserAgentIsPresent()
         {
             var handler = (Func<HttpRequestMessage, Task<HttpResponseMessage>>)((request) =>
