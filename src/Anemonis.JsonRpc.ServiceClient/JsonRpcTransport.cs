@@ -8,7 +8,7 @@ namespace Anemonis.JsonRpc.ServiceClient
 {
     internal static class JsonRpcTransport
     {
-        public const string MediaType = "application/json";
+        public const string MediaType = "application/json-rpc";
 
         public static readonly string Charset = Encoding.UTF8.WebName;
         public static readonly IReadOnlyDictionary<string, Encoding> CharsetEncodings = CreateCharsetEncodingsDictionary();
