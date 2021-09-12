@@ -22,4 +22,4 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Publish
-      run: dotnet nuget add source --username kinnajowa --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/StiftsEU/index.json" && dotnet pack --configuration Release && dotnet nuget push "bin\Anemonis.JsonRpc.ServiceClient\Release\Anemonis.JsonRpc.ServiceClient.1.17.0.nupkg" --api-key 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 --source "github"
+      run: dotnet nuget add source --username kinnajowa --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/StiftsEU/index.json" && dotnet pack --configuration Release && dotnet nuget push "/home/runner/work/json-rpc-client/json-rpc-client/bin/Anemonis.JsonRpc.ServiceClient/Release/Anemonis.JsonRpc.ServiceClient.1.17.0.nupkg" --api-key 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 --source "github"
