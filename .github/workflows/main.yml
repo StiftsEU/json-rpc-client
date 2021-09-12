@@ -53,7 +53,7 @@ jobs:
         # API key to authenticate with NuGet server
         NUGET_KEY: ${{ secrets.GITHUB_TOKEN }} # optional
         # NuGet server uri hosting the packages, defaults to https://nuget.pkg.github.com
-        #NUGET_SOURCE: # optional, default is https://nuget.pkg.github.com
+        NUGET_SOURCE: nuget.pkg.github.com # optional, default is https://nuget.pkg.github.com
         # The Organisation Name
         ORGANISATION: StiftsEU # default is Organisation
         # Flag to toggle pushing symbols along with nuget package to the server, disabled by default
