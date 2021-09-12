@@ -34,7 +34,7 @@ jobs:
       with:
         dotnet-version: 5.0.x
     - name: Publish GH Package
-      uses: brandedoutcast/publish-nuget@v2.5.5
+      uses: rohan-buchner/publish-gh-package@v1.1.4
       with:
         # Filepath of the project to be packaged, relative to root of repository
         PROJECT_FILE_PATH: "src/Anemonis.JsonRpc.ServiceClient/Anemonis.JsonRpc.ServiceClient.csproj"
@@ -52,7 +52,9 @@ jobs:
         #TAG_FORMAT: # optional, default is v*
         # API key to authenticate with NuGet server
         NUGET_KEY: ${{ secrets.GITHUB_TOKEN }} # optional
-        # NuGet server uri hosting the packages, defaults to https://api.nuget.org
-        NUGET_SOURCE: "https://nuget.pkg.github.com/StiftsEU/index.json" # optional, default is https://api.nuget.org
+        # NuGet server uri hosting the packages, defaults to https://nuget.pkg.github.com
+        #NUGET_SOURCE: # optional, default is https://nuget.pkg.github.com
+        # The Organisation Name
+        ORGANISATION: StiftsEU # default is Organisation
         # Flag to toggle pushing symbols along with nuget package to the server, disabled by default
         #INCLUDE_SYMBOLS: # optional
