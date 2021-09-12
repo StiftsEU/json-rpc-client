@@ -21,5 +21,38 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
-    - name: Publish
-      run: dotnet nuget add source --username kinnajowa --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/StiftsEU/index.json" && dotnet pack --configuration Release && dotnet nuget push "/home/runner/work/json-rpc-client/json-rpc-client/bin/Anemonis.JsonRpc.ServiceClient/Release/Anemonis.JsonRpc.ServiceClient.1.17.0.nupkg" --api-key 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 --source "github"
+    #- name: Publish
+    #  run: dotnet pack --configuration Release && dotnet nuget push "bin/Anemonis.JsonRpc.ServiceClient/Release/Anemonis.JsonRpc.ServiceClient.1.17.0.nupkg" --api-key ${{ secrets.GITHUB_TOKEN }} --source "https://nuget.pkg.github.com/StiftsEU/index.json"
+    
+  publish:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+    - name: Publish GH Package
+      uses: brandedoutcast/publish-nuget@v2.5.5
+      with:
+        # Filepath of the project to be packaged, relative to root of repository
+        PROJECT_FILE_PATH: "src/Anemonis.JsonRpc.ServiceClient/Anemonis.JsonRpc.ServiceClient.csproj"
+        # NuGet package id, used for version detection & defaults to project name
+        #PACKAGE_NAME: # optional
+        # Filepath with version info, relative to root of repository & defaults to PROJECT_FILE_PATH
+        #VERSION_FILE_PATH: # optional
+        # Regex pattern to extract version info in a capturing group
+        #VERSION_REGEX: # optional, default is ^\s*<Version>(.*)<\/Version>\s*$
+        # Useful with external providers like Nerdbank.GitVersioning, ignores VERSION_FILE_PATH & VERSION_REGEX
+        #VERSION_STATIC: # optional
+        # Flag to toggle git tagging, enabled by default
+        #TAG_COMMIT: # optional, default is true
+        # Format of the git tag, [*] gets replaced with actual version
+        #TAG_FORMAT: # optional, default is v*
+        # API key to authenticate with NuGet server
+        NUGET_KEY: ${{ secrets.GITHUB_TOKEN }} # optional
+        # NuGet server uri hosting the packages, defaults to https://api.nuget.org
+        NUGET_SOURCE: "https://nuget.pkg.github.com/StiftsEU/index.json" # optional, default is https://api.nuget.org
+        # Flag to toggle pushing symbols along with nuget package to the server, disabled by default
+        #INCLUDE_SYMBOLS: # optional
