@@ -1,0 +1,27 @@
+name: .NET
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+    - name: Publish
+      run: dotnet pack --configuration Release && dotnet nuget push "bin\Anemonis.JsonRpc.ServiceClient\Release\Anemonis.JsonRpc.ServiceClient.1.17.0.nupkg" --api-key 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 --source="github"
