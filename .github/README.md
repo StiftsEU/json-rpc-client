@@ -1,3 +1,7 @@
+- dotnet pack --configuration Release
+- cd "Dir in der die nupkg Datei liegt"
+- dotnet nuget push "Name der nupkg Datei" --source https://nuget.pkg.github.com/StiftsEU/index.json --api-key
+
 # Anemonis.JsonRpc.ServiceClient
 
 A universal [JSON-RPC 2.0](http://www.jsonrpc.org/specification) service client based on the [JSON-RPC 2.0 Transport: HTTP](https://www.simple-is-better.org/json-rpc/transport_http.html) specification and the [Anemonis.JsonRpc](https://github.com/alexanderkozlenko/json-rpc)
